@@ -3,6 +3,8 @@ import { useState } from "react";
 import { useXP } from "@/context/XPContext";
 import { useTheme } from "@/context/ThemeContext";
 import { ThemePicker } from "@/components/ThemePicker";
+import { GoogleAuthButton } from "@/components/GoogleAuthButton";
+import { EmailOtpVerifier } from "@/components/EmailOtpVerifier";
 import { Home, Gamepad2, PhoneCall, Wallet, Trophy, Menu, X } from "lucide-react";
 
 const NAV = [
@@ -88,6 +90,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
               <span className="text-xs font-bold" style={{ color: activeColor }}>{xpState.xp} XP</span>
             </div>
 
+            <GoogleAuthButton />
             <ThemePicker />
 
             {/* Mobile menu button */}
@@ -145,6 +148,8 @@ export function Layout({ children }: { children: React.ReactNode }) {
       <main className="flex-1 relative z-10">
         {children}
       </main>
+
+      <EmailOtpVerifier />
 
       <footer className="border-t border-white/10 py-4 text-center text-xs text-white/30 relative z-10">
         <div className="max-w-6xl mx-auto px-4">
