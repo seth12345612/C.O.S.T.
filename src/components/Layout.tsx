@@ -1,0 +1,156 @@
+import { Link, useLocation } from "wouter";
+import { useState } from "react";
+import { useXP } from "@/context/XPContext";
+import { useTheme } from "@/context/ThemeContext";
+import { ThemePicker } from "@/components/ThemePicker";
+import { Home, Gamepad2, PhoneCall, Wallet, Trophy, Menu, X } from "lucide-react";
+
+const NAV = [
+  { href: "/", label: "Acasă", icon: Home },
+  { href: "/game", label: "Joacă", icon: Gamepad2 },
+  { href: "/finance", label: "Finanțe", icon: Wallet },
+  { href: "/leaderboard", label: "Clasament", icon: Trophy },
+  { href: "/contact", label: "Contact", icon: PhoneCall },
+];
+
+export function Layout({ children }: { children: React.ReactNode }) {
+  const { xpState, xpProgress } = useXP();
+  const { themeState, currentPreset } = useTheme();
+  const [location] = useLocation();
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  const activeColor = themeState.customColor ?? currentPreset.primary;
+  const secondaryColor = currentPreset.secondary;
+
+  return (
+    <div className="min-h-screen flex flex-col relative">
+      <header className="sticky top-0 z-50 border-b border-white/10 backdrop-blur-xl bg-black/40">
+        <div className="max-w-6xl mx-auto px-4 h-14 flex items-center justify-between gap-3">
+          <Link href="/" className="flex items-center gap-2 shrink-0">
+            <span
+              className="text-xl font-black bg-clip-text text-transparent"
+              style={{ backgroundImage: `linear-gradient(to right, ${activeColor}, ${secondaryColor})` }}
+            >
+              C.O.S.T.
+            </span>
+            <span className="hidden sm:block text-xs text-white/40 font-medium">Educație Financiară</span>
+          </Link>
+
+          {/* Desktop nav */}
+          <nav className="hidden md:flex items-center gap-1">
+            {NAV.map((item) => {
+              const active = location === item.href || (item.href !== "/" && location.startsWith(item.href));
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-all"
+                  style={active ? {
+                    background: `${activeColor}22`,
+                    color: activeColor,
+                    border: `1px solid ${activeColor}55`,
+                  } : undefined}
+                  onMouseEnter={(e) => {
+                    if (!active) {
+                      (e.currentTarget as HTMLElement).style.color = "white";
+                      (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.05)";
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (!active) {
+                      (e.currentTarget as HTMLElement).style.color = "";
+                      (e.currentTarget as HTMLElement).style.background = "";
+                    }
+                  }}
+                >
+                  <item.icon size={14} style={active ? { color: activeColor } : { color: "rgba(255,255,255,0.6)" }} />
+                  <span style={!active ? { color: "rgba(255,255,255,0.6)" } : undefined}>{item.label}</span>
+                </Link>
+              );
+            })}
+          </nav>
+
+          {/* Right side: XP + ThemePicker */}
+          <div className="flex items-center gap-2 shrink-0">
+            <div className="hidden sm:flex items-center gap-2">
+              <div className="flex flex-col items-end gap-0.5">
+                <span className="text-xs text-white/50">Nivel {xpState.level}</span>
+                <div className="w-20 h-1.5 bg-white/10 rounded-full overflow-hidden">
+                  <div
+                    className="h-full rounded-full transition-all duration-700"
+                    style={{
+                      width: `${xpProgress * 100}%`,
+                      backgroundImage: `linear-gradient(to right, ${activeColor}, ${secondaryColor})`,
+                    }}
+                  />
+                </div>
+              </div>
+              <span className="text-xs font-bold" style={{ color: activeColor }}>{xpState.xp} XP</span>
+            </div>
+
+            <ThemePicker />
+
+            {/* Mobile menu button */}
+            <button
+              className="md:hidden p-2 rounded-lg text-white/60 hover:text-white hover:bg-white/10 transition-colors"
+              onClick={() => setMenuOpen((v) => !v)}
+            >
+              {menuOpen ? <X size={20} /> : <Menu size={20} />}
+            </button>
+          </div>
+        </div>
+
+        {/* Mobile nav */}
+        {menuOpen && (
+          <div className="md:hidden border-t border-white/10 bg-black/60 backdrop-blur-xl">
+            <nav className="max-w-6xl mx-auto px-4 py-3 flex flex-col gap-1">
+              {NAV.map((item) => {
+                const active = location === item.href || (item.href !== "/" && location.startsWith(item.href));
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    onClick={() => setMenuOpen(false)}
+                    className="flex items-center gap-2 px-3 py-2.5 rounded-lg text-sm font-medium transition-all"
+                    style={active ? {
+                      background: `${activeColor}22`,
+                      color: activeColor,
+                      border: `1px solid ${activeColor}55`,
+                    } : { color: "rgba(255,255,255,0.6)" }}
+                  >
+                    <item.icon size={16} />
+                    {item.label}
+                  </Link>
+                );
+              })}
+              <div className="flex items-center gap-2 px-3 py-2 mt-1 border-t border-white/10">
+                <div className="flex-1 h-1.5 bg-white/10 rounded-full overflow-hidden">
+                  <div
+                    className="h-full rounded-full"
+                    style={{
+                      width: `${xpProgress * 100}%`,
+                      backgroundImage: `linear-gradient(to right, ${activeColor}, ${secondaryColor})`,
+                    }}
+                  />
+                </div>
+                <span className="text-xs font-bold" style={{ color: activeColor }}>
+                  Niv. {xpState.level} · {xpState.xp} XP
+                </span>
+              </div>
+            </nav>
+          </div>
+        )}
+      </header>
+
+      <main className="flex-1 relative z-10">
+        {children}
+      </main>
+
+      <footer className="border-t border-white/10 py-4 text-center text-xs text-white/30 relative z-10">
+        <div className="max-w-6xl mx-auto px-4">
+          C.O.S.T. — College Operating &amp; Survival Tactics &copy; 2025 · Educație financiară pentru studenți
+        </div>
+      </footer>
+    </div>
+  );
+}
