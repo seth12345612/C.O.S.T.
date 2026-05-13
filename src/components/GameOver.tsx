@@ -4,23 +4,42 @@ import { useGame } from "@/context/GameContext";
 import { useXP } from "@/context/XPContext";
 import { Trophy, RotateCcw, TrendingUp, Coins, Smile } from "lucide-react";
 import { useEffect, useRef } from "react";
+import { saveLeaderboardEntry, getScenarioLabel } from "@/lib/leaderboard";
 
 export function GameOver() {
   const { state, startEndless, resetGame } = useGame();
   const { addXP } = useXP();
   const xpAdded = useRef(false);
+  const scoreSaved = useRef(false);
 
   const isWin = state && state.saptamana >= 48 && state.bani >= 0 && state.fericire > 0;
 
   useEffect(() => {
-    if (state?.isGameOver && !xpAdded.current) {
+    if (!state?.isGameOver) {
+      xpAdded.current = false;
+      scoreSaved.current = false;
+      return;
+    }
+
+    if (!xpAdded.current) {
       xpAdded.current = true;
       const baseXP = state.saptamana * 2;
       const bonusXP = state.limitedEventBonus?.xp ?? 0;
       const totalXP = Math.max(20, baseXP) + bonusXP;
       addXP(totalXP);
     }
-  }, [state?.isGameOver, addXP, state?.saptamana, state?.limitedEventBonus]);
+
+    if (!scoreSaved.current) {
+      scoreSaved.current = true;
+      const months = Math.max(1, Math.ceil(state.saptamana / 4));
+      saveLeaderboardEntry({
+        username: "Tu",
+        score: Math.round(state.bani),
+        months,
+        scenario: getScenarioLabel(state.scenariuId, state.subScenariuId),
+      });
+    }
+  }, [state, addXP]);
 
   if (!state || !state.isGameOver) return null;
 

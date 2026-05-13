@@ -1,16 +1,18 @@
+import { useEffect, useState } from "react";
 import { OrbBackground } from "@/components/OrbBackground";
 import { Layout } from "@/components/Layout";
 import { Trophy, Medal, Star } from "lucide-react";
+import { loadLeaderboardEntries, type LeaderboardEntry } from "@/lib/leaderboard";
 
-const MOCK_SCORES = [
-  { rank: 1, username: "StudentCampion", score: 18540, months: 12, scenario: "garsoniera" },
-  { rank: 2, username: "IonMihalache", score: 14200, months: 12, scenario: "chirie" },
-  { rank: 3, username: "MariaPopescu", score: 12800, months: 12, scenario: "navetist" },
-  { rank: 4, username: "AlexIT", score: 11500, months: 11, scenario: "garsoniera" },
-  { rank: 5, username: "StudentEconom", score: 9800, months: 12, scenario: "camin" },
-  { rank: 6, username: "FinanceKid", score: 8400, months: 10, scenario: "chirie" },
-  { rank: 7, username: "BudgetHero", score: 7200, months: 9, scenario: "camin" },
-  { rank: 8, username: "NavetistPro", score: 6100, months: 12, scenario: "navetist" },
+const MOCK_SCORES: LeaderboardEntry[] = [
+  { id: "mock-1", username: "StudentCampion", score: 18540, months: 12, scenario: "garsoniera", date: 0 },
+  { id: "mock-2", username: "IonMihalache", score: 14200, months: 12, scenario: "chirie", date: 0 },
+  { id: "mock-3", username: "MariaPopescu", score: 12800, months: 12, scenario: "navetist", date: 0 },
+  { id: "mock-4", username: "AlexIT", score: 11500, months: 11, scenario: "garsoniera", date: 0 },
+  { id: "mock-5", username: "StudentEconom", score: 9800, months: 12, scenario: "camin", date: 0 },
+  { id: "mock-6", username: "FinanceKid", score: 8400, months: 10, scenario: "chirie", date: 0 },
+  { id: "mock-7", username: "BudgetHero", score: 7200, months: 9, scenario: "camin", date: 0 },
+  { id: "mock-8", username: "NavetistPro", score: 6100, months: 12, scenario: "navetist", date: 0 },
 ];
 
 const RANK_ICONS = [
@@ -20,6 +22,16 @@ const RANK_ICONS = [
 ];
 
 export default function Leaderboard() {
+  const [savedScores, setSavedScores] = useState<LeaderboardEntry[]>([]);
+
+  useEffect(() => {
+    setSavedScores(loadLeaderboardEntries());
+  }, []);
+
+  const allScores = [...savedScores, ...MOCK_SCORES]
+    .sort((a, b) => b.score - a.score)
+    .slice(0, 10);
+
   return (
     <Layout>
       <OrbBackground />
@@ -31,12 +43,12 @@ export default function Leaderboard() {
         </div>
 
         <div className="space-y-2">
-          {MOCK_SCORES.map((s, i) => {
+          {allScores.map((s, i) => {
             const isTop3 = i < 3;
             const RankIcon = RANK_ICONS[i]?.icon;
             return (
               <div
-                key={s.rank}
+                key={s.id}
                 className={`flex items-center gap-4 p-4 rounded-2xl border transition-all ${
                   isTop3
                     ? "border-yellow-500/20 bg-yellow-500/5"
@@ -47,7 +59,7 @@ export default function Leaderboard() {
                   {RankIcon ? (
                     <RankIcon size={20} className={RANK_ICONS[i].color} />
                   ) : (
-                    <span className="text-sm font-black text-white/40">#{s.rank}</span>
+                    <span className="text-sm font-black text-white/40">#{i + 1}</span>
                   )}
                 </div>
                 <div className="flex-1 min-w-0">
