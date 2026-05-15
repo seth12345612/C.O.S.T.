@@ -274,10 +274,10 @@ export default function Contact() {
               <h3 className="text-sm font-bold text-white mb-1">Contact direct</h3>
               <p className="text-xs text-white/50 mb-3">Preferi să ne scrii direct?</p>
               <a
-                href="mailto:contact@cost-game.ro"
+                href="mailto:alexandruaoglagioaie@gmail.com"
                 className="text-sm font-semibold text-purple-400 hover:text-purple-300 transition-colors"
               >
-                contact@cost-game.ro
+                alexandruaoglagioaie@gmail.com
               </a>
             </div>
 
