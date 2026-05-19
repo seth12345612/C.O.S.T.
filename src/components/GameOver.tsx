@@ -2,21 +2,32 @@ import { motion } from "framer-motion";
 import { Link } from "wouter";
 import { useGame } from "@/context/GameContext";
 import { useXP } from "@/context/XPContext";
+<<<<<<< HEAD
 import { useFinance } from "@/context/FinanceContext";
 import { useAuth } from "@/context/AuthContext";
 import { Trophy, RotateCcw, TrendingUp, Coins, Smile } from "lucide-react";
 import { useEffect, useRef } from "react";
 import { saveLeaderboardEntry, getScenarioLabel } from "@/lib/leaderboard";
 import { DIFICULTATI } from "@/data/scenarios";
+=======
+import { Trophy, RotateCcw, TrendingUp, Coins, Smile } from "lucide-react";
+import { useEffect, useRef } from "react";
+import { saveLeaderboardEntry, getScenarioLabel } from "@/lib/leaderboard";
+>>>>>>> bca33c6a3a6b536a83ed88053ea89ffdd976de0f
 
 export function GameOver() {
   const { state, startEndless, resetGame } = useGame();
   const { addXP } = useXP();
+<<<<<<< HEAD
   const { addTransaction } = useFinance();
   const { user } = useAuth();
   const xpAdded = useRef(false);
   const scoreSaved = useRef(false);
   const moneyTransferred = useRef(false);
+=======
+  const xpAdded = useRef(false);
+  const scoreSaved = useRef(false);
+>>>>>>> bca33c6a3a6b536a83ed88053ea89ffdd976de0f
 
   const isWin = state && state.saptamana >= 48 && state.bani >= 0 && state.fericire > 0;
 
@@ -29,6 +40,7 @@ export function GameOver() {
 
     if (!xpAdded.current) {
       xpAdded.current = true;
+<<<<<<< HEAD
       const diffXP = { usor: 50, mediu: 75, greu: 100 };
       const baseXP = diffXP[state.dificultateKey] ?? 50;
       const bonusXP = state.limitedEventBonus?.xp ?? 0;
@@ -53,11 +65,25 @@ export function GameOver() {
       const username = user?.name || "Anonim";
       saveLeaderboardEntry({
         username,
+=======
+      const baseXP = state.saptamana * 2;
+      const bonusXP = state.limitedEventBonus?.xp ?? 0;
+      const totalXP = Math.max(20, baseXP) + bonusXP;
+      addXP(totalXP);
+    }
+
+    if (!scoreSaved.current) {
+      scoreSaved.current = true;
+      const months = Math.max(1, Math.ceil(state.saptamana / 4));
+      saveLeaderboardEntry({
+        username: "Tu",
+>>>>>>> bca33c6a3a6b536a83ed88053ea89ffdd976de0f
         score: Math.round(state.bani),
         months,
         scenario: getScenarioLabel(state.scenariuId, state.subScenariuId),
       });
     }
+<<<<<<< HEAD
   }, [state, addXP, addTransaction, user]);
 
   if (!state || !state.isGameOver) return null;
@@ -65,6 +91,13 @@ export function GameOver() {
   const diffXP = { usor: 50, mediu: 75, greu: 100 };
   const xpEarned = diffXP[state.dificultateKey] ?? 50 + (state.limitedEventBonus?.xp ?? 0);
   const difficultyName = DIFICULTATI[state.dificultateKey]?.nume ?? "Ușor";
+=======
+  }, [state, addXP]);
+
+  if (!state || !state.isGameOver) return null;
+
+  const xpEarned = Math.max(20, state.saptamana * 2) + (state.limitedEventBonus?.xp ?? 0);
+>>>>>>> bca33c6a3a6b536a83ed88053ea89ffdd976de0f
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
@@ -89,6 +122,7 @@ export function GameOver() {
           </div>
 
           {/* Final stats */}
+<<<<<<< HEAD
           <div className="grid grid-cols-4 gap-2 mb-5">
             <div className="p-2.5 rounded-2xl bg-white/5 border border-white/10 text-center">
               <Coins size={14} className="text-yellow-400 mx-auto mb-1" />
@@ -108,6 +142,23 @@ export function GameOver() {
             <div className="p-2.5 rounded-2xl bg-orange-600/20 border border-orange-500/30 text-center">
               <div className="font-black text-orange-300 text-xs">{difficultyName}</div>
               <div className="text-[10px] text-white/40">Dificultate</div>
+=======
+          <div className="grid grid-cols-3 gap-3 mb-5">
+            <div className="p-3 rounded-2xl bg-white/5 border border-white/10 text-center">
+              <Coins size={16} className="text-yellow-400 mx-auto mb-1" />
+              <div className="font-black text-white text-sm">{Math.round(state.bani)} RON</div>
+              <div className="text-xs text-white/40">Bani finali</div>
+            </div>
+            <div className="p-3 rounded-2xl bg-white/5 border border-white/10 text-center">
+              <Smile size={16} className="text-green-400 mx-auto mb-1" />
+              <div className="font-black text-white text-sm">{Math.round(state.fericire)}%</div>
+              <div className="text-xs text-white/40">Fericire</div>
+            </div>
+            <div className="p-3 rounded-2xl bg-purple-600/20 border border-purple-500/30 text-center">
+              <TrendingUp size={16} className="text-purple-400 mx-auto mb-1" />
+              <div className="font-black text-purple-300 text-sm">+{xpEarned} XP</div>
+              <div className="text-xs text-white/40">Câștigat</div>
+>>>>>>> bca33c6a3a6b536a83ed88053ea89ffdd976de0f
             </div>
           </div>
 

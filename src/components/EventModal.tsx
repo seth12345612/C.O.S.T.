@@ -1,6 +1,7 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { useGame } from "@/context/GameContext";
 import { Coins, Smile, BookOpen } from "lucide-react";
+<<<<<<< HEAD
 import type { GameEvent } from "@/data/events";
 
 function getMergedEvent(event: GameEvent, subScenariuId: string | undefined): GameEvent {
@@ -17,13 +18,19 @@ function getMergedEvent(event: GameEvent, subScenariuId: string | undefined): Ga
     optiuni: override.optiuni ?? event.optiuni,
   };
 }
+=======
+>>>>>>> bca33c6a3a6b536a83ed88053ea89ffdd976de0f
 
 export function EventModal() {
   const { state, chooseOption } = useGame();
 
   if (!state || !state.evenimentCurent) return null;
+<<<<<<< HEAD
   const baseEvent = state.evenimentCurent;
   const ev = getMergedEvent(baseEvent, state.subScenariuId);
+=======
+  const ev = state.evenimentCurent;
+>>>>>>> bca33c6a3a6b536a83ed88053ea89ffdd976de0f
 
   return (
     <AnimatePresence>

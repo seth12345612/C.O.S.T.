@@ -2,7 +2,10 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { OrbBackground } from "@/components/OrbBackground";
 import { Layout } from "@/components/Layout";
+<<<<<<< HEAD
 import { MentorChat } from "@/components/MentorChat";
+=======
+>>>>>>> bca33c6a3a6b536a83ed88053ea89ffdd976de0f
 import { useFinance } from "@/context/FinanceContext";
 import { Plus, Trash2, TrendingUp, TrendingDown, PiggyBank, Target } from "lucide-react";
 import type { TransactionType } from "@/context/FinanceContext";
@@ -21,13 +24,17 @@ export default function Finance() {
   const [form, setForm] = useState({ tip: "cheltuiala" as TransactionType, descriere: "", suma: "", categorie: "Mâncare", data: new Date().toISOString().slice(0, 10) });
   const [showForm, setShowForm] = useState(false);
   const [newObiectiv, setNewObiectiv] = useState(financeState.obiectivEconomii.toString());
+<<<<<<< HEAD
   const [showLargeExpenseWarning, setShowLargeExpenseWarning] = useState(false);
   const [pendingTransaction, setPendingTransaction] = useState<typeof form | null>(null);
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
+=======
+>>>>>>> bca33c6a3a6b536a83ed88053ea89ffdd976de0f
 
   function submitTransaction(e: React.FormEvent) {
     e.preventDefault();
     if (!form.descriere || !form.suma) return;
+<<<<<<< HEAD
     
     if (form.tip === "cheltuiala" && parseFloat(form.suma) > 500) {
       setPendingTransaction(form);
@@ -35,11 +42,14 @@ export default function Finance() {
       return;
     }
     
+=======
+>>>>>>> bca33c6a3a6b536a83ed88053ea89ffdd976de0f
     addTransaction({ ...form, suma: parseFloat(form.suma) });
     setForm({ tip: "cheltuiala", descriere: "", suma: "", categorie: "Mâncare", data: new Date().toISOString().slice(0, 10) });
     setShowForm(false);
   }
 
+<<<<<<< HEAD
   function confirmLargeExpense() {
     if (pendingTransaction) {
       addTransaction({ ...pendingTransaction, suma: parseFloat(pendingTransaction.suma) });
@@ -57,6 +67,8 @@ export default function Finance() {
     }
   }
 
+=======
+>>>>>>> bca33c6a3a6b536a83ed88053ea89ffdd976de0f
   const totalCheltuieliLuna = Object.values(cheltuieliPerCategorie).reduce((s, v) => s + v, 0);
 
   return (
@@ -178,6 +190,7 @@ export default function Finance() {
           </motion.div>
         )}
 
+<<<<<<< HEAD
         {/* Large expense warning modal */}
         {showLargeExpenseWarning && (
           <motion.div
@@ -242,6 +255,8 @@ export default function Finance() {
           </motion.div>
         )}
 
+=======
+>>>>>>> bca33c6a3a6b536a83ed88053ea89ffdd976de0f
         {/* Tabs */}
         <div className="flex gap-1 mb-5 p-1 bg-white/5 rounded-2xl border border-white/10">
           {(["tranzactii", "bugete", "obiectiv"] as const).map((t) => (
@@ -283,7 +298,11 @@ export default function Finance() {
                     {t.tip === "venit" ? "+" : "-"}{t.suma.toFixed(0)} RON
                   </div>
                   <button
+<<<<<<< HEAD
                     onClick={() => setDeleteConfirmId(t.id)}
+=======
+                    onClick={() => deleteTransaction(t.id)}
+>>>>>>> bca33c6a3a6b536a83ed88053ea89ffdd976de0f
                     className="p-1.5 rounded-lg text-white/20 hover:text-red-400 hover:bg-red-500/10 opacity-0 group-hover:opacity-100 transition-all"
                   >
                     <Trash2 size={14} />
@@ -317,7 +336,10 @@ export default function Finance() {
                         onChange={(e) => updateBudget(b.categorie, parseInt(e.target.value) || 0)}
                         className="w-20 px-2 py-1 rounded-lg border border-white/15 bg-white/5 text-white text-xs focus:outline-none focus:border-purple-500/50 text-right"
                       />
+<<<<<<< HEAD
                       {overBudget && <span className="text-xs text-red-400 font-semibold">⚠️ Ai depășit bugetul propus!</span>}
+=======
+>>>>>>> bca33c6a3a6b536a83ed88053ea89ffdd976de0f
                     </div>
                   </div>
                   <div className="w-full h-2 bg-white/10 rounded-full overflow-hidden">
@@ -348,6 +370,7 @@ export default function Finance() {
                 <h3 className="font-bold text-white">Obiectiv de economii</h3>
               </div>
               <div className="mb-4">
+<<<<<<< HEAD
                 {financeState.obiectivEconomii > 0 && (
                   <>
                     <div className="flex items-center justify-between mb-2">
@@ -370,6 +393,23 @@ export default function Finance() {
                 {financeState.obiectivEconomii === 0 && (
                   <div className="text-sm text-white/60">Setează un obiectiv pentru a vedea progresul.</div>
                 )}
+=======
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-xs text-white/50">Progres</span>
+                  <span className="text-xs font-bold text-purple-300">
+                    {financeState.economiiCurente.toFixed(0)} / {financeState.obiectivEconomii} RON
+                  </span>
+                </div>
+                <div className="w-full h-4 bg-white/10 rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-gradient-to-r from-purple-500 to-fuchsia-500 rounded-full transition-all duration-700"
+                    style={{ width: `${Math.min(100, (financeState.economiiCurente / financeState.obiectivEconomii) * 100)}%` }}
+                  />
+                </div>
+                <div className="text-xs text-white/40 mt-1 text-right">
+                  {Math.round((financeState.economiiCurente / financeState.obiectivEconomii) * 100)}%
+                </div>
+>>>>>>> bca33c6a3a6b536a83ed88053ea89ffdd976de0f
               </div>
               <div className="flex gap-2">
                 <input
@@ -409,7 +449,10 @@ export default function Finance() {
           </div>
         )}
       </div>
+<<<<<<< HEAD
       <MentorChat />
+=======
+>>>>>>> bca33c6a3a6b536a83ed88053ea89ffdd976de0f
     </Layout>
   );
 }

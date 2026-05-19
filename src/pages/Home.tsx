@@ -1,5 +1,6 @@
 import { Link } from "wouter";
 import { motion } from "framer-motion";
+<<<<<<< HEAD
 import { Clock, Star, Lock, Zap, TrendingUp, Users, Gamepad2, Crown, X, Calendar } from "lucide-react";
 import { OrbBackground } from "@/components/OrbBackground";
 import { Layout } from "@/components/Layout";
@@ -10,12 +11,21 @@ import { getActiveLimitedEvents, getTimeRemaining, type LimitedEvent } from "@/d
 import { useState } from "react";
 import { AnimatePresence } from "framer-motion";
 import { LimitedEventModal } from "@/components/LimitedEventModal";
+=======
+import { Clock, Star, Lock, Zap, TrendingUp, Users, Gamepad2 } from "lucide-react";
+import { OrbBackground } from "@/components/OrbBackground";
+import { Layout } from "@/components/Layout";
+import { useXP } from "@/context/XPContext";
+import { SCENARII } from "@/data/scenarios";
+import { getActiveLimitedEvents, getTimeRemaining } from "@/data/limitedEvents";
+>>>>>>> bca33c6a3a6b536a83ed88053ea89ffdd976de0f
 
 const fadeUp = {
   hidden: { opacity: 0, y: 24 },
   visible: (i: number) => ({ opacity: 1, y: 0, transition: { delay: i * 0.08, duration: 0.45 } }),
 };
 
+<<<<<<< HEAD
 function isInSeason(seasonTag: string | undefined): boolean {
   if (!seasonTag) return true;
   const month = new Date().getMonth();
@@ -93,6 +103,11 @@ export default function Home() {
   const [showPremiumModal, setShowPremiumModal] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState<LimitedEvent | null>(null);
   const isPremiumActive = isPremium && premiumTrialEndsAt && premiumTrialEndsAt > Date.now();
+=======
+export default function Home() {
+  const { xpState, isUnlocked, xpRequiredFor } = useXP();
+  const limitedEvents = getActiveLimitedEvents();
+>>>>>>> bca33c6a3a6b536a83ed88053ea89ffdd976de0f
 
   const scenariiList = Object.values(SCENARII);
 
@@ -127,9 +142,12 @@ export default function Home() {
             <Link href="/game" className="px-8 py-3 bg-gradient-to-r from-purple-600 to-fuchsia-600 hover:from-purple-500 hover:to-fuchsia-500 text-white rounded-2xl font-bold text-lg transition-all shadow-lg shadow-purple-900/30 hover:shadow-purple-900/50 hover:-translate-y-0.5 active:translate-y-0">
               Joacă acum
             </Link>
+<<<<<<< HEAD
             <Link href="/tutorial" className="px-8 py-3 border border-blue-400/40 hover:border-blue-400 bg-blue-500/10 text-blue-300 hover:text-blue-200 rounded-2xl font-bold text-lg transition-all hover:bg-blue-500/20">
               Tutorial
             </Link>
+=======
+>>>>>>> bca33c6a3a6b536a83ed88053ea89ffdd976de0f
             <Link href="/finance" className="px-8 py-3 border border-white/20 hover:border-white/40 text-white/80 hover:text-white rounded-2xl font-bold text-lg transition-all hover:bg-white/5">
               Finanțele mele
             </Link>
@@ -156,9 +174,14 @@ export default function Home() {
                   <motion.div
                     key={ev.id}
                     whileHover={{ scale: 1.02 }}
+<<<<<<< HEAD
                     className="relative p-4 rounded-2xl border border-white/10 bg-white/5 backdrop-blur-sm overflow-hidden cursor-pointer"
                     style={{ borderColor: `${ev.culoare}50` }}
                     onClick={() => setSelectedEvent(ev)}
+=======
+                    className="relative p-4 rounded-2xl border border-white/10 bg-white/5 backdrop-blur-sm overflow-hidden"
+                    style={{ borderColor: `${ev.culoare}50` }}
+>>>>>>> bca33c6a3a6b536a83ed88053ea89ffdd976de0f
                   >
                     <div className="absolute inset-0 opacity-10" style={{ background: `linear-gradient(135deg, ${ev.culoare} 0%, transparent 70%)` }} />
                     <div className="relative flex items-start gap-3">
@@ -180,10 +203,20 @@ export default function Home() {
                         </div>
                       </div>
                     </div>
+<<<<<<< HEAD
                     <div className="mt-3 w-full flex items-center justify-center gap-1.5 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-semibold transition-colors">
                       <Gamepad2 size={12} />
                       Participă
                     </div>
+=======
+                    <Link
+                      href={`/game?event=${ev.id}`}
+                      className="mt-3 w-full flex items-center justify-center gap-1.5 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-semibold transition-colors"
+                    >
+                      <Gamepad2 size={12} />
+                      Joacă cu bonus
+                    </Link>
+>>>>>>> bca33c6a3a6b536a83ed88053ea89ffdd976de0f
                   </motion.div>
                 );
               })}
@@ -221,6 +254,7 @@ export default function Home() {
             {scenariiList.map((sc, i) => {
               const unlocked = isUnlocked(sc.id);
               const xpNeeded = xpRequiredFor(sc.id);
+<<<<<<< HEAD
               const inSeason = isInSeason(sc.seasonTag);
               const isPremiumLocked = sc.isPremium && !unlocked && !isPremiumActive;
 
@@ -230,6 +264,8 @@ export default function Home() {
                 }
               };
 
+=======
+>>>>>>> bca33c6a3a6b536a83ed88053ea89ffdd976de0f
               return (
                 <motion.div
                   key={sc.id}
@@ -237,6 +273,7 @@ export default function Home() {
                   variants={fadeUp}
                   initial="hidden"
                   animate="visible"
+<<<<<<< HEAD
                   whileHover={unlocked && inSeason ? { scale: 1.03, y: -4 } : {}}
                   onClick={handleClick}
                   className={`relative rounded-2xl border overflow-hidden transition-all ${
@@ -246,11 +283,20 @@ export default function Home() {
                       ? "border-yellow-500/30 bg-yellow-500/5 cursor-pointer hover:border-yellow-500/50"
                       : "border-white/8 bg-white/3 cursor-not-allowed"
                   } ${!inSeason ? "opacity-50" : ""}`}
+=======
+                  whileHover={unlocked ? { scale: 1.03, y: -4 } : {}}
+                  className={`relative rounded-2xl border overflow-hidden transition-all ${
+                    unlocked
+                      ? "border-white/15 bg-white/5 cursor-pointer hover:border-white/30"
+                      : "border-white/8 bg-white/3 cursor-not-allowed opacity-60"
+                  }`}
+>>>>>>> bca33c6a3a6b536a83ed88053ea89ffdd976de0f
                 >
                   <div className={`absolute inset-0 ${sc.bgClass} opacity-40`} />
                   <div className="relative p-4">
                     <div className="flex items-start justify-between mb-3">
                       <span className="text-3xl">{sc.emoji}</span>
+<<<<<<< HEAD
                       <div className="flex flex-col items-end gap-1">
                         {sc.isPremium && (
                           <span className="text-xs px-2 py-0.5 rounded-full border border-yellow-500/40 text-yellow-300 bg-yellow-500/10 flex items-center gap-1">
@@ -265,6 +311,19 @@ export default function Home() {
                           </span>
                         )}
                       </div>
+=======
+                      {sc.seasonal && (
+                        <span className="text-xs px-2 py-0.5 rounded-full border border-orange-500/40 text-orange-300 bg-orange-500/10">
+                          Sezonier
+                        </span>
+                      )}
+                      {!unlocked && (
+                        <div className="flex items-center gap-1 text-xs text-white/50">
+                          <Lock size={12} />
+                          <span>{xpNeeded} XP</span>
+                        </div>
+                      )}
+>>>>>>> bca33c6a3a6b536a83ed88053ea89ffdd976de0f
                     </div>
                     <h3 className="font-bold text-white text-sm mb-1">{sc.nume}</h3>
                     <p className="text-xs text-white/50 line-clamp-2 mb-3">{sc.descriere}</p>
@@ -273,6 +332,7 @@ export default function Home() {
                       <span className="text-xs text-white/40">·</span>
                       <span className="text-xs text-white/40">{sc.subScenarii.length} sub-scenarii</span>
                     </div>
+<<<<<<< HEAD
                     {!inSeason && (
                       <div className="mt-2 text-xs text-orange-300 flex items-center gap-1">
                         <Clock size={10} />
@@ -280,11 +340,15 @@ export default function Home() {
                       </div>
                     )}
                     {(unlocked || (sc.isPremium && isPremiumActive)) && inSeason ? (
+=======
+                    {unlocked ? (
+>>>>>>> bca33c6a3a6b536a83ed88053ea89ffdd976de0f
                       <Link
                         href={`/game?scenario=${sc.id}`}
                         className="mt-3 w-full block text-center py-1.5 rounded-xl text-xs font-bold transition-all"
                         style={{ background: `${sc.accentColor}30`, color: sc.accentColor, border: `1px solid ${sc.accentColor}40` }}
                       >
+<<<<<<< HEAD
                         {isPremiumActive && sc.isPremium ? "PRO · Joacă" : "Joacă"}
                       </Link>
                     ) : isPremiumLocked ? (
@@ -295,6 +359,12 @@ export default function Home() {
                     ) : (
                       <div className="mt-3 w-full text-center py-1.5 rounded-xl bg-white/5 text-xs font-medium text-white/30 border border-white/10 flex items-center justify-center gap-1">
                         <Lock size={10} />
+=======
+                        Joacă
+                      </Link>
+                    ) : (
+                      <div className="mt-3 w-full text-center py-1.5 rounded-xl bg-white/5 text-xs font-medium text-white/30 border border-white/10">
+>>>>>>> bca33c6a3a6b536a83ed88053ea89ffdd976de0f
                         Necesită {xpNeeded} XP
                       </div>
                     )}
@@ -324,6 +394,7 @@ export default function Home() {
             </div>
           ))}
         </motion.section>
+<<<<<<< HEAD
 
         {/* Premium Info Section */}
         <motion.section
@@ -379,6 +450,9 @@ export default function Home() {
           <LimitedEventModal event={selectedEvent} onClose={() => setSelectedEvent(null)} />
         )}
       </AnimatePresence>
+=======
+      </div>
+>>>>>>> bca33c6a3a6b536a83ed88053ea89ffdd976de0f
     </Layout>
   );
 }

@@ -2,6 +2,7 @@ import { Link, useLocation } from "wouter";
 import { useState } from "react";
 import { useXP } from "@/context/XPContext";
 import { useTheme } from "@/context/ThemeContext";
+<<<<<<< HEAD
 import { useAuth } from "@/context/AuthContext";
 import { ThemePicker } from "@/components/ThemePicker";
 import { GoogleAuthButton } from "@/components/GoogleAuthButton";
@@ -10,6 +11,16 @@ import { Home, PhoneCall, Wallet, Trophy, Menu, X, Crown } from "lucide-react";
 
 const NAV = [
   { href: "/", label: "Acasă", icon: Home },
+=======
+import { ThemePicker } from "@/components/ThemePicker";
+import { GoogleAuthButton } from "@/components/GoogleAuthButton";
+import { EmailOtpVerifier } from "@/components/EmailOtpVerifier";
+import { Home, Gamepad2, PhoneCall, Wallet, Trophy, Menu, X } from "lucide-react";
+
+const NAV = [
+  { href: "/", label: "Acasă", icon: Home },
+  { href: "/game", label: "Joacă", icon: Gamepad2 },
+>>>>>>> bca33c6a3a6b536a83ed88053ea89ffdd976de0f
   { href: "/finance", label: "Finanțe", icon: Wallet },
   { href: "/leaderboard", label: "Clasament", icon: Trophy },
   { href: "/contact", label: "Contact", icon: PhoneCall },
@@ -18,13 +29,19 @@ const NAV = [
 export function Layout({ children }: { children: React.ReactNode }) {
   const { xpState, xpProgress } = useXP();
   const { themeState, currentPreset } = useTheme();
+<<<<<<< HEAD
   const { isPremium, premiumTrialEndsAt, getPremiumTimeRemaining } = useAuth();
+=======
+>>>>>>> bca33c6a3a6b536a83ed88053ea89ffdd976de0f
   const [location] = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
 
   const activeColor = themeState.customColor ?? currentPreset.primary;
   const secondaryColor = currentPreset.secondary;
+<<<<<<< HEAD
   const isPremiumActive = isPremium && premiumTrialEndsAt && premiumTrialEndsAt > Date.now();
+=======
+>>>>>>> bca33c6a3a6b536a83ed88053ea89ffdd976de0f
 
   return (
     <div className="min-h-screen flex flex-col relative">
@@ -90,12 +107,15 @@ export function Layout({ children }: { children: React.ReactNode }) {
                 </div>
               </div>
               <span className="text-xs font-bold" style={{ color: activeColor }}>{xpState.xp} XP</span>
+<<<<<<< HEAD
               {isPremiumActive && (
                 <span className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-yellow-500/20 border border-yellow-500/40 text-yellow-400 text-xs font-bold">
                   <Crown size={10} />
                   PRO
                 </span>
               )}
+=======
+>>>>>>> bca33c6a3a6b536a83ed88053ea89ffdd976de0f
             </div>
 
             <GoogleAuthButton />

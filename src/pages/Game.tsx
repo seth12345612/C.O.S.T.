@@ -15,6 +15,7 @@ import type { DecizieIstorica } from "@/context/GameContext";
 
 type HistoryFilter = "tutto" | "luna" | "saptamana";
 
+<<<<<<< HEAD
 interface IncomeType {
   id: string;
   label: string;
@@ -32,11 +33,16 @@ const VENITURI: IncomeType[] = [
   { id: "combinat", label: "Combinat (salariu + bursă)", amount: 1000, emoji: "💰" },
 ];
 
+=======
+>>>>>>> bca33c6a3a6b536a83ed88053ea89ffdd976de0f
 function SetupScreen() {
   const [, navigate] = useLocation();
   const { initGame } = useGame();
   const { isUnlocked, xpRequiredFor } = useXP();
+<<<<<<< HEAD
   const [selectedVenit, setSelectedVenit] = useState<string>("ajutor_parinti");
+=======
+>>>>>>> bca33c6a3a6b536a83ed88053ea89ffdd976de0f
   const [selectedScenariu, setSelectedScenariu] = useState("camin");
   const [selectedSub, setSelectedSub] = useState("coleg");
   const [selectedDiff, setSelectedDiff] = useState<DifficultyKey>("mediu");
@@ -59,9 +65,14 @@ function SetupScreen() {
   const limitedEvent = eventId ? LIMITED_EVENTS.find((e) => e.id === eventId) : null;
 
   function start() {
+<<<<<<< HEAD
     const selectedIncome = VENITURI.find((v) => v.id === selectedVenit);
     const bonus = limitedEvent ? { xp: limitedEvent.bonusXP, bani: limitedEvent.bonusBani, fericire: limitedEvent.bonusFericire } : undefined;
     initGame(selectedScenariu, selectedSub, selectedDiff, selectedIncome?.amount ?? 0, bonus);
+=======
+    const bonus = limitedEvent ? { xp: limitedEvent.bonusXP, bani: limitedEvent.bonusBani, fericire: limitedEvent.bonusFericire } : undefined;
+    initGame(selectedScenariu, selectedSub, selectedDiff, bonus);
+>>>>>>> bca33c6a3a6b536a83ed88053ea89ffdd976de0f
   }
 
   const allScenarii = Object.values(SCENARII);
@@ -72,6 +83,7 @@ function SetupScreen() {
         <ArrowLeft size={14} /> Înapoi
       </Link>
 
+<<<<<<< HEAD
       <div className="flex items-center justify-between mb-2">
         <h1 className="text-3xl font-black text-white">Configurează jocul</h1>
         <Link
@@ -81,6 +93,9 @@ function SetupScreen() {
           📖 Tutorial
         </Link>
       </div>
+=======
+      <h1 className="text-3xl font-black text-white mb-2">Configurează jocul</h1>
+>>>>>>> bca33c6a3a6b536a83ed88053ea89ffdd976de0f
       <p className="text-white/50 text-sm mb-8">Alege scenariul, sub-scenariul și dificultatea ta.</p>
 
       {limitedEvent && (
@@ -98,6 +113,7 @@ function SetupScreen() {
         </div>
       )}
 
+<<<<<<< HEAD
       {/* Income selection */}
       <div className="mb-6">
         <h2 className="text-sm font-bold text-white/60 uppercase tracking-wider mb-3">Venituri</h2>
@@ -128,6 +144,8 @@ function SetupScreen() {
         </div>
       </div>
 
+=======
+>>>>>>> bca33c6a3a6b536a83ed88053ea89ffdd976de0f
       {/* Scenario selection */}
       <div className="mb-6">
         <h2 className="text-sm font-bold text-white/60 uppercase tracking-wider mb-3">Scenariu</h2>

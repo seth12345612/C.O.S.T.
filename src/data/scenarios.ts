@@ -21,8 +21,11 @@ export interface Scenario {
   xpRequired: number;
   seasonal?: boolean;
   seasonTag?: string;
+<<<<<<< HEAD
   isPremium?: boolean;
   isInternal?: boolean;
+=======
+>>>>>>> bca33c6a3a6b536a83ed88053ea89ffdd976de0f
 }
 
 export const SCENARII: Record<string, Scenario> = {
@@ -62,6 +65,7 @@ export const SCENARII: Record<string, Scenario> = {
       },
     ],
     xpRequired: 0,
+<<<<<<< HEAD
     isPremium: false,
   },
   navetist: {
@@ -101,6 +105,8 @@ export const SCENARII: Record<string, Scenario> = {
     ],
     xpRequired: 0,
     isPremium: false,
+=======
+>>>>>>> bca33c6a3a6b536a83ed88053ea89ffdd976de0f
   },
   chirie: {
     id: "chirie",
@@ -138,7 +144,10 @@ export const SCENARII: Record<string, Scenario> = {
       },
     ],
     xpRequired: 200,
+<<<<<<< HEAD
     isPremium: false,
+=======
+>>>>>>> bca33c6a3a6b536a83ed88053ea89ffdd976de0f
   },
   garsoniera: {
     id: "garsoniera",
@@ -176,8 +185,50 @@ export const SCENARII: Record<string, Scenario> = {
       },
     ],
     xpRequired: 500,
+<<<<<<< HEAD
     isPremium: true,
   },
+=======
+  },
+  navetist: {
+    id: "navetist",
+    nume: "Student Navetist",
+    descriere: "Locuiești cu părinții, faci naveta. Economisești chiria, dar pierzi timp pe drum.",
+    emoji: "🚂",
+    bgClass: "bg-scenario-navetist",
+    accentColor: "#0284c7",
+    venitLunar: 1200,
+    cheltuieliFixe: [
+      { nume: "Abonament transport", suma: 400 },
+      { nume: "Contribuție casă", suma: 200 },
+    ],
+    subScenarii: [
+      {
+        id: "tren",
+        label: "Cu trenul",
+        description: "Faci naveta cu trenul. Mai ieftin, dar mai lent.",
+        venitBonus: 0,
+        cheltuieliExtra: [],
+      },
+      {
+        id: "masina",
+        label: "Cu mașina personală",
+        description: "Conduci la facultate. Mai rapid, dar cheltuieli mari cu carburantul.",
+        venitBonus: 0,
+        cheltuieliExtra: [{ nume: "Carburant", suma: 300 }, { nume: "Parcare", suma: 100 }],
+      },
+      {
+        id: "bursier",
+        label: "Bursier + navetist",
+        description: "Ai bursă și locuiești acasă. Maxim de economii, minim de cheltuieli.",
+        venitBonus: 350,
+        cheltuieliExtra: [],
+      },
+    ],
+    xpRequired: 0,
+  },
+
+>>>>>>> bca33c6a3a6b536a83ed88053ea89ffdd976de0f
   iarna: {
     id: "iarna",
     nume: "Iarna Studentului",
@@ -210,8 +261,13 @@ export const SCENARII: Record<string, Scenario> = {
     xpRequired: 300,
     seasonal: true,
     seasonTag: "iarna",
+<<<<<<< HEAD
     isPremium: true,
   },
+=======
+  },
+
+>>>>>>> bca33c6a3a6b536a83ed88053ea89ffdd976de0f
   vara: {
     id: "vara",
     nume: "Vara Studentului",
@@ -243,8 +299,13 @@ export const SCENARII: Record<string, Scenario> = {
     xpRequired: 400,
     seasonal: true,
     seasonTag: "vara",
+<<<<<<< HEAD
     isPremium: true,
   },
+=======
+  },
+
+>>>>>>> bca33c6a3a6b536a83ed88053ea89ffdd976de0f
   vacanta: {
     id: "vacanta",
     nume: "Vacanță & Călătorii",
@@ -276,6 +337,7 @@ export const SCENARII: Record<string, Scenario> = {
     xpRequired: 600,
     seasonal: true,
     seasonTag: "vacanta",
+<<<<<<< HEAD
     isPremium: true,
   },
   recuperare: {
@@ -290,6 +352,8 @@ export const SCENARII: Record<string, Scenario> = {
     subScenarii: [],
     xpRequired: 0,
     isInternal: true,
+=======
+>>>>>>> bca33c6a3a6b536a83ed88053ea89ffdd976de0f
   },
 };
 

@@ -75,6 +75,7 @@ export function FinanceProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const deleteTransaction = useCallback((id: string) => {
+<<<<<<< HEAD
     setFinanceState((prev) => {
       const transactionToDelete = prev.tranzactii.find((t) => t.id === id);
       let economiiCurente = prev.economiiCurente;
@@ -87,6 +88,12 @@ export function FinanceProvider({ children }: { children: ReactNode }) {
         economiiCurente,
       };
     });
+=======
+    setFinanceState((prev) => ({
+      ...prev,
+      tranzactii: prev.tranzactii.filter((t) => t.id !== id),
+    }));
+>>>>>>> bca33c6a3a6b536a83ed88053ea89ffdd976de0f
   }, []);
 
   const updateBudget = useCallback((categorie: string, limita: number) => {
