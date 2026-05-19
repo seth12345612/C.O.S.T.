@@ -1,36 +1,12 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { useGame } from "@/context/GameContext";
 import { Coins, Smile, BookOpen } from "lucide-react";
-<<<<<<< HEAD
-import type { GameEvent } from "@/data/events";
-
-function getMergedEvent(event: GameEvent, subScenariuId: string | undefined): GameEvent {
-  if (!subScenariuId || !event.subScenariuModificari) {
-    return event;
-  }
-  const override = event.subScenariuModificari[subScenariuId];
-  if (!override) {
-    return event;
-  }
-  return {
-    ...event,
-    descriere: override.descriere ?? event.descriere,
-    optiuni: override.optiuni ?? event.optiuni,
-  };
-}
-=======
->>>>>>> bca33c6a3a6b536a83ed88053ea89ffdd976de0f
 
 export function EventModal() {
   const { state, chooseOption } = useGame();
 
   if (!state || !state.evenimentCurent) return null;
-<<<<<<< HEAD
-  const baseEvent = state.evenimentCurent;
-  const ev = getMergedEvent(baseEvent, state.subScenariuId);
-=======
   const ev = state.evenimentCurent;
->>>>>>> bca33c6a3a6b536a83ed88053ea89ffdd976de0f
 
   return (
     <AnimatePresence>
@@ -48,10 +24,8 @@ export function EventModal() {
           transition={{ type: "spring", damping: 24, stiffness: 300 }}
           className="relative w-full max-w-lg bg-[#0d0820] border border-purple-500/30 rounded-3xl shadow-2xl shadow-purple-900/40 overflow-hidden"
         >
-          {/* Header glow */}
           <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-purple-500 via-fuchsia-500 to-orange-500" />
 
-          {/* Current stats badge */}
           <div className="flex items-center gap-4 px-5 pt-5 pb-3 border-b border-white/10">
             <div className="flex items-center gap-1.5 text-sm">
               <Coins size={14} className="text-yellow-400" />
@@ -68,7 +42,6 @@ export function EventModal() {
             <h3 className="text-xl font-black text-white mb-2">{ev.titlu}</h3>
             <p className="text-white/70 text-sm mb-5">{ev.descriere}</p>
 
-            {/* Options */}
             <div className="space-y-2.5">
               {ev.optiuni.map((opt, i) => {
                 const baniPositive = opt.bani >= 0;

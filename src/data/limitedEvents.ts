@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 export interface Optiune {
   text: string;
   bani: number;
@@ -8,8 +7,6 @@ export interface Optiune {
   bonusXP?: number;
 }
 
-=======
->>>>>>> bca33c6a3a6b536a83ed88053ea89ffdd976de0f
 export interface LimitedEvent {
   id: string;
   titlu: string;
@@ -21,11 +18,8 @@ export interface LimitedEvent {
   bonusFericire?: number;
   scenariuCompatibil: string[];
   culoare: string;
-<<<<<<< HEAD
   optiuni?: Optiune[];
   sezon?: "iarna" | "vara";
-=======
->>>>>>> bca33c6a3a6b536a83ed88053ea89ffdd976de0f
 }
 
 function endOfDay(daysFromNow: number): number {
@@ -35,7 +29,6 @@ function endOfDay(daysFromNow: number): number {
   return d.getTime();
 }
 
-<<<<<<< HEAD
 function getCurrentSezon(): "iarna" | "vara" | null {
   const month = new Date().getMonth();
   if (month === 11 || month === 0 || month === 1) return "iarna";
@@ -43,8 +36,6 @@ function getCurrentSezon(): "iarna" | "vara" | null {
   return null;
 }
 
-=======
->>>>>>> bca33c6a3a6b536a83ed88053ea89ffdd976de0f
 export const LIMITED_EVENTS: LimitedEvent[] = [
   {
     id: "black_friday",
@@ -57,7 +48,6 @@ export const LIMITED_EVENTS: LimitedEvent[] = [
     bonusFericire: 10,
     scenariuCompatibil: ["chirie", "garsoniera", "camin", "navetist"],
     culoare: "#1a1a1a",
-<<<<<<< HEAD
     sezon: "iarna",
     optiuni: [
       {
@@ -83,8 +73,6 @@ export const LIMITED_EVENTS: LimitedEvent[] = [
         explicatie: "Multe 'oferte' sunt prețuri umflate înainte de Black Friday. Studiază prețurile cu câteva săptămâni înainte. Unele produse sunt mai ieftine chiar și în mod normal, nu doar în perioada reducerilor.",
       },
     ],
-=======
->>>>>>> bca33c6a3a6b536a83ed88053ea89ffdd976de0f
   },
   {
     id: "sesiune_examene",
@@ -97,7 +85,6 @@ export const LIMITED_EVENTS: LimitedEvent[] = [
     bonusFericire: -15,
     scenariuCompatibil: ["camin", "chirie", "navetist"],
     culoare: "#1e3a5f",
-<<<<<<< HEAD
     optiuni: [
       {
         text: "Investesc în materiale de studiu și meditații",
@@ -122,8 +109,6 @@ export const LIMITED_EVENTS: LimitedEvent[] = [
         explicatie: "Bibliotecile publice și universitare sunt gratuite și au conexiune Wi-Fi rapidă. Sigur, nu ai cafea la discretie, dar economia de 50-100 lei pe săptămână înseamnă mâncare pentru încă 3 zile.",
       },
     ],
-=======
->>>>>>> bca33c6a3a6b536a83ed88053ea89ffdd976de0f
   },
   {
     id: "revelion",
@@ -135,7 +120,6 @@ export const LIMITED_EVENTS: LimitedEvent[] = [
     bonusFericire: 25,
     scenariuCompatibil: ["camin", "chirie", "garsoniera", "navetist", "iarna", "craciun"],
     culoare: "#4a0080",
-<<<<<<< HEAD
     sezon: "iarna",
     optiuni: [
       {
@@ -161,8 +145,6 @@ export const LIMITED_EVENTS: LimitedEvent[] = [
         explicatie: "Nu toată lumea vrea să petreacă în club. Unii studiați preferă să fie acasă cu familia, să mănânce pizza și să se uite la TV. Economisești 300+ lei și ești odihnit pentru 1 ianuarie.",
       },
     ],
-=======
->>>>>>> bca33c6a3a6b536a83ed88053ea89ffdd976de0f
   },
   {
     id: "bursa",
@@ -174,7 +156,6 @@ export const LIMITED_EVENTS: LimitedEvent[] = [
     bonusBani: 500,
     scenariuCompatibil: ["camin", "navetist"],
     culoare: "#7c4a00",
-<<<<<<< HEAD
     optiuni: [
       {
         text: "Aplic pentru bursă — investesc timp pentru succes",
@@ -199,8 +180,6 @@ export const LIMITED_EVENTS: LimitedEvent[] = [
         explicatie: "Mulți studiați nu aplică pentru că 'nu au șanse' sau 'e prea multă muncă'. Dar bursele rămân uneori neacordate pentru că nu sunt suficiente aplicații calificate. Dacă îndeplinești măcar 70% din cerințe, încearcă.",
       },
     ],
-=======
->>>>>>> bca33c6a3a6b536a83ed88053ea89ffdd976de0f
   },
   {
     id: "festival_vara",
@@ -213,7 +192,6 @@ export const LIMITED_EVENTS: LimitedEvent[] = [
     bonusBani: -400,
     scenariuCompatibil: ["vara", "vacanta", "chirie", "garsoniera"],
     culoare: "#2a4a00",
-<<<<<<< HEAD
     sezon: "vara",
     optiuni: [
       {
@@ -239,14 +217,11 @@ export const LIMITED_EVENTS: LimitedEvent[] = [
         explicatie: "Multe festivaluri au bilete și pentru o singură zi, la 100-150 lei. Nu stai în cort, nu mănânci acolo, dar vezi artiștii principali și simți atmosfera. Alternativ, multe festivaluri au voluntari care primesc acces gratuit.",
       },
     ],
-=======
->>>>>>> bca33c6a3a6b536a83ed88053ea89ffdd976de0f
   },
 ];
 
 export function getActiveLimitedEvents(): LimitedEvent[] {
   const now = Date.now();
-<<<<<<< HEAD
   const currentSezon = getCurrentSezon();
 
   return LIMITED_EVENTS.filter((e) => {
@@ -254,9 +229,6 @@ export function getActiveLimitedEvents(): LimitedEvent[] {
     if (e.sezon && currentSezon && e.sezon !== currentSezon) return false;
     return true;
   });
-=======
-  return LIMITED_EVENTS.filter((e) => e.endsAt > now);
->>>>>>> bca33c6a3a6b536a83ed88053ea89ffdd976de0f
 }
 
 export function getTimeRemaining(endsAt: number): string {
@@ -268,8 +240,4 @@ export function getTimeRemaining(endsAt: number): string {
   if (days > 0) return `${days}z ${hours}h`;
   if (hours > 0) return `${hours}h ${minutes}m`;
   return `${minutes}m`;
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> bca33c6a3a6b536a83ed88053ea89ffdd976de0f

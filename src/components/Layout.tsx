@@ -2,25 +2,15 @@ import { Link, useLocation } from "wouter";
 import { useState } from "react";
 import { useXP } from "@/context/XPContext";
 import { useTheme } from "@/context/ThemeContext";
-<<<<<<< HEAD
 import { useAuth } from "@/context/AuthContext";
 import { ThemePicker } from "@/components/ThemePicker";
 import { GoogleAuthButton } from "@/components/GoogleAuthButton";
 import { EmailOtpVerifier } from "@/components/EmailOtpVerifier";
-import { Home, PhoneCall, Wallet, Trophy, Menu, X, Crown } from "lucide-react";
-
-const NAV = [
-  { href: "/", label: "Acasă", icon: Home },
-=======
-import { ThemePicker } from "@/components/ThemePicker";
-import { GoogleAuthButton } from "@/components/GoogleAuthButton";
-import { EmailOtpVerifier } from "@/components/EmailOtpVerifier";
-import { Home, Gamepad2, PhoneCall, Wallet, Trophy, Menu, X } from "lucide-react";
+import { Home, Gamepad2, PhoneCall, Wallet, Trophy, Menu, X, Crown } from "lucide-react";
 
 const NAV = [
   { href: "/", label: "Acasă", icon: Home },
   { href: "/game", label: "Joacă", icon: Gamepad2 },
->>>>>>> bca33c6a3a6b536a83ed88053ea89ffdd976de0f
   { href: "/finance", label: "Finanțe", icon: Wallet },
   { href: "/leaderboard", label: "Clasament", icon: Trophy },
   { href: "/contact", label: "Contact", icon: PhoneCall },
@@ -29,19 +19,13 @@ const NAV = [
 export function Layout({ children }: { children: React.ReactNode }) {
   const { xpState, xpProgress } = useXP();
   const { themeState, currentPreset } = useTheme();
-<<<<<<< HEAD
-  const { isPremium, premiumTrialEndsAt, getPremiumTimeRemaining } = useAuth();
-=======
->>>>>>> bca33c6a3a6b536a83ed88053ea89ffdd976de0f
+  const { isPremium, premiumTrialEndsAt } = useAuth();
   const [location] = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
 
   const activeColor = themeState.customColor ?? currentPreset.primary;
   const secondaryColor = currentPreset.secondary;
-<<<<<<< HEAD
   const isPremiumActive = isPremium && premiumTrialEndsAt && premiumTrialEndsAt > Date.now();
-=======
->>>>>>> bca33c6a3a6b536a83ed88053ea89ffdd976de0f
 
   return (
     <div className="min-h-screen flex flex-col relative">
@@ -57,7 +41,6 @@ export function Layout({ children }: { children: React.ReactNode }) {
             <span className="hidden sm:block text-xs text-white/40 font-medium">Educație Financiară</span>
           </Link>
 
-          {/* Desktop nav */}
           <nav className="hidden md:flex items-center gap-1">
             {NAV.map((item) => {
               const active = location === item.href || (item.href !== "/" && location.startsWith(item.href));
@@ -91,7 +74,6 @@ export function Layout({ children }: { children: React.ReactNode }) {
             })}
           </nav>
 
-          {/* Right side: XP + ThemePicker */}
           <div className="flex items-center gap-2 shrink-0">
             <div className="hidden sm:flex items-center gap-2">
               <div className="flex flex-col items-end gap-0.5">
@@ -107,21 +89,17 @@ export function Layout({ children }: { children: React.ReactNode }) {
                 </div>
               </div>
               <span className="text-xs font-bold" style={{ color: activeColor }}>{xpState.xp} XP</span>
-<<<<<<< HEAD
               {isPremiumActive && (
                 <span className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-yellow-500/20 border border-yellow-500/40 text-yellow-400 text-xs font-bold">
                   <Crown size={10} />
                   PRO
                 </span>
               )}
-=======
->>>>>>> bca33c6a3a6b536a83ed88053ea89ffdd976de0f
             </div>
 
             <GoogleAuthButton />
             <ThemePicker />
 
-            {/* Mobile menu button */}
             <button
               className="md:hidden p-2 rounded-lg text-white/60 hover:text-white hover:bg-white/10 transition-colors"
               onClick={() => setMenuOpen((v) => !v)}
@@ -131,7 +109,6 @@ export function Layout({ children }: { children: React.ReactNode }) {
           </div>
         </div>
 
-        {/* Mobile nav */}
         {menuOpen && (
           <div className="md:hidden border-t border-white/10 bg-black/60 backdrop-blur-xl">
             <nav className="max-w-6xl mx-auto px-4 py-3 flex flex-col gap-1">

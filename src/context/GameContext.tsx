@@ -31,21 +31,14 @@ export interface GameState {
   evenimentCurent: GameEvent | null;
   evenimenteRamase: GameEvent[];
   limitedEventBonus?: { xp: number; bani?: number; fericire?: number };
-<<<<<<< HEAD
   isRecoveryMode: boolean;
   recoveryWeeksRemaining: number;
   originalScenarioId?: string;
-=======
->>>>>>> bca33c6a3a6b536a83ed88053ea89ffdd976de0f
 }
 
 interface GameContextType {
   state: GameState | null;
-<<<<<<< HEAD
   initGame: (scenariuId: string, subScenariuId: string, dificultate: DifficultyKey, venitLunar?: number, limitedEventBonus?: GameState["limitedEventBonus"]) => void;
-=======
-  initGame: (scenariuId: string, subScenariuId: string, dificultate: DifficultyKey, limitedEventBonus?: GameState["limitedEventBonus"]) => void;
->>>>>>> bca33c6a3a6b536a83ed88053ea89ffdd976de0f
   nextWeek: () => void;
   chooseOption: (optionIndex: number) => void;
   startEndless: () => void;
@@ -62,10 +55,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
     scenariuId: string,
     subScenariuId: string,
     dificultateKey: DifficultyKey,
-<<<<<<< HEAD
     venitLunar?: number,
-=======
->>>>>>> bca33c6a3a6b536a83ed88053ea89ffdd976de0f
     limitedEventBonus?: GameState["limitedEventBonus"],
   ) => {
     const scenario = SCENARII[scenariuId];
@@ -74,12 +64,8 @@ export function GameProvider({ children }: { children: ReactNode }) {
     const subScenariu = scenario.subScenarii.find((s) => s.id === subScenariuId) ?? scenario.subScenarii[0];
 
     const cheltuieliExtra = subScenariu.cheltuieliExtra.reduce((sum, c) => sum + c.suma, 0);
-<<<<<<< HEAD
     const venitLunarBase = venitLunar ?? 0;
     const startBani = startCfg.bani + subScenariu.venitBonus + venitLunarBase - cheltuieliExtra;
-=======
-    const startBani = startCfg.bani + subScenariu.venitBonus - cheltuieliExtra;
->>>>>>> bca33c6a3a6b536a83ed88053ea89ffdd976de0f
 
     const rawEvents = GAME_EVENTS[scenariuId] ?? [];
     const shuffled = shuffleArray(rawEvents);
@@ -107,7 +93,6 @@ export function GameProvider({ children }: { children: ReactNode }) {
       evenimentCurent: null,
       evenimenteRamase: [],
       limitedEventBonus,
-<<<<<<< HEAD
       isRecoveryMode: false,
       recoveryWeeksRemaining: 0,
     });
@@ -119,16 +104,6 @@ export function GameProvider({ children }: { children: ReactNode }) {
     if (fericire <= 0) return { over: true, enterRecovery: false, title: "Game Over — Epuizare", reason: "Energia ta a ajuns la 0. Burnout-ul te-a doborât." };
     if (!isEndless && saptamana >= 48) return { over: false, enterRecovery: false, title: "Felicitări! Ai terminat cei 12 luni!", reason: "Ai reușit să supraviețuiești financiar un an întreg!" };
     return { over: false, enterRecovery: false, title: "", reason: "" };
-=======
-    });
-  }, []);
-
-  const checkGameOver = useCallback((bani: number, fericire: number, saptamana: number, isEndless: boolean): { over: boolean; title: string; reason: string } => {
-    if (bani < 0) return { over: true, title: "Game Over — Faliment", reason: "Banii tăi au ajuns sub 0. Nu ai mai putut acoperi cheltuielile." };
-    if (fericire <= 0) return { over: true, title: "Game Over — Epuizare", reason: "Energia ta a ajuns la 0. Burnout-ul te-a doborât." };
-    if (!isEndless && saptamana >= 48) return { over: false, title: "Felicitări! Ai terminat cei 12 luni!", reason: "Ai reușit să supraviețuiești financiar un an întreg!" };
-    return { over: false, title: "", reason: "" };
->>>>>>> bca33c6a3a6b536a83ed88053ea89ffdd976de0f
   }, []);
 
   const getNextEvent = useCallback((scenariuId: string): GameEvent | null => {
@@ -149,19 +124,13 @@ export function GameProvider({ children }: { children: ReactNode }) {
 
       let newBani = prev.bani;
       let newFericire = prev.fericire;
-<<<<<<< HEAD
       let newRecoveryWeeks = prev.recoveryWeeksRemaining;
       let isRecoveryMode = prev.isRecoveryMode;
       let originalScenarioId = prev.originalScenarioId;
 
       if (newSaptamana % 4 === 0 && !isRecoveryMode) {
-=======
-
-      if (newSaptamana % 4 === 0) {
->>>>>>> bca33c6a3a6b536a83ed88053ea89ffdd976de0f
         const scenario = SCENARII[prev.scenariuId];
         const subScenariu = scenario.subScenarii.find((s) => s.id === prev.subScenariuId) ?? scenario.subScenarii[0];
-        const diff = DIFICULTATI[prev.dificultateKey];
 
         let venit = scenario.venitLunar + subScenariu.venitBonus;
         if (prev.dificultateKey === "usor") venit *= 1.0;
@@ -171,10 +140,8 @@ export function GameProvider({ children }: { children: ReactNode }) {
         const cheltuieliFixe = scenario.cheltuieliFixe.reduce((s, c) => s + c.suma, 0);
         const cheltuieliExtra = subScenariu.cheltuieliExtra.filter((c) => c.suma > 0).reduce((s, c) => s + c.suma, 0);
         newBani += venit - cheltuieliFixe - cheltuieliExtra;
-        _ = diff;
       }
 
-<<<<<<< HEAD
       if (isRecoveryMode) {
         newRecoveryWeeks -= 1;
         newFericire -= 5;
@@ -217,14 +184,6 @@ export function GameProvider({ children }: { children: ReactNode }) {
       return {
         ...prev,
         scenariuId: newScenariuId,
-=======
-      const go = checkGameOver(newBani, newFericire, newSaptamana, prev.isEndless);
-
-      const nextEvent = !go.over && !(newSaptamana >= 48 && !prev.isEndless) ? getNextEvent(prev.scenariuId) : null;
-
-      return {
-        ...prev,
->>>>>>> bca33c6a3a6b536a83ed88053ea89ffdd976de0f
         saptamana: newSaptamana,
         luna: newLuna,
         saptamanaInLuna: newSaptamanaInLuna,
@@ -234,12 +193,9 @@ export function GameProvider({ children }: { children: ReactNode }) {
         gameOverTitle: go.title,
         gameOverReason: go.reason,
         evenimentCurent: nextEvent,
-<<<<<<< HEAD
         isRecoveryMode,
         recoveryWeeksRemaining: newRecoveryWeeks,
         originalScenarioId,
-=======
->>>>>>> bca33c6a3a6b536a83ed88053ea89ffdd976de0f
       };
     });
   }, [checkGameOver, getNextEvent]);
@@ -250,7 +206,6 @@ export function GameProvider({ children }: { children: ReactNode }) {
       const opt = prev.evenimentCurent.optiuni[optionIndex];
       if (!opt) return prev;
 
-      const diff = DIFICULTATI[prev.dificultateKey];
       let baniDelta = opt.bani;
       let fericireDelta = opt.fericirePct;
 
@@ -261,7 +216,6 @@ export function GameProvider({ children }: { children: ReactNode }) {
         baniDelta = baniDelta < 0 ? baniDelta * 1.0 : baniDelta * 0.8;
         fericireDelta = fericireDelta < 0 ? fericireDelta * 1.0 : fericireDelta * 0.8;
       }
-      _ = diff;
 
       const newBani = prev.bani + baniDelta;
       const newFericire = Math.max(0, Math.min(100, prev.fericire + fericireDelta));
@@ -278,7 +232,6 @@ export function GameProvider({ children }: { children: ReactNode }) {
         timestamp: Date.now(),
       };
 
-<<<<<<< HEAD
       const go = checkGameOver(newBani, newFericire, prev.saptamana, prev.isEndless, prev.isRecoveryMode, prev.recoveryWeeksRemaining);
 
       let isRecoveryMode = prev.isRecoveryMode;
@@ -297,12 +250,6 @@ export function GameProvider({ children }: { children: ReactNode }) {
       return {
         ...prev,
         scenariuId: newScenariuId,
-=======
-      const go = checkGameOver(newBani, newFericire, prev.saptamana, prev.isEndless);
-
-      return {
-        ...prev,
->>>>>>> bca33c6a3a6b536a83ed88053ea89ffdd976de0f
         bani: newBani,
         fericire: newFericire,
         istoricDecizii: [...prev.istoricDecizii, decizie],
@@ -310,12 +257,9 @@ export function GameProvider({ children }: { children: ReactNode }) {
         isGameOver: go.over,
         gameOverTitle: go.over ? go.title : prev.gameOverTitle,
         gameOverReason: go.over ? go.reason : prev.gameOverReason,
-<<<<<<< HEAD
         isRecoveryMode,
         recoveryWeeksRemaining,
         originalScenarioId,
-=======
->>>>>>> bca33c6a3a6b536a83ed88053ea89ffdd976de0f
       };
     });
   }, [checkGameOver]);
@@ -343,6 +287,3 @@ export function useGame() {
   if (!ctx) throw new Error("useGame must be used inside GameProvider");
   return ctx;
 }
-
-// dummy to silence ts unused var warnings
-function _(_: unknown) { return _; }

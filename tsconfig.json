@@ -1,6 +1,5 @@
 {
   "compilerOptions": {
-    "ignoreDeprecations": "6.0",
     "target": "ES2020",
     "useDefineForClassFields": true,
     "lib": ["esnext", "dom", "dom.iterable"],
@@ -14,6 +13,7 @@
     "jsx": "react-jsx",
     "strict": false,
     "types": ["node", "vite/client"],
+    "ignoreDeprecations": "6.0",
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"],

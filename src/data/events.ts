@@ -6,7 +6,6 @@ export interface Optiune {
   bonusXP?: number;
 }
 
-<<<<<<< HEAD
 export interface SubScenariuModificari {
   descriere?: string;
   optiuni?: Optiune[];
@@ -14,19 +13,14 @@ export interface SubScenariuModificari {
 
 export type SubScenariuOverrides = Record<string, SubScenariuModificari>;
 
-=======
->>>>>>> bca33c6a3a6b536a83ed88053ea89ffdd976de0f
 export interface GameEvent {
   id: string;
   titlu: string;
   descriere: string;
   optiuni: Optiune[];
   sezon?: string;
-<<<<<<< HEAD
   subScenariuModificari?: SubScenariuOverrides;
   isTutorialEvent?: boolean;
-=======
->>>>>>> bca33c6a3a6b536a83ed88053ea89ffdd976de0f
 }
 
 const caminEvents: GameEvent[] = [
@@ -48,7 +42,6 @@ const caminEvents: GameEvent[] = [
       { text: "O împart cu colegii — toată lumea mănâncă", bani: 0, fericirePct: 20, lectie: "Dărnicia îți face prieteni." },
       { text: "O păstrez pentru mine, economisesc la mâncare", bani: 100, fericirePct: 5, lectie: "Uneori e ok să grijești de tine întâi." },
     ],
-<<<<<<< HEAD
     subScenariuModificari: {
       sustinator: {
         descriere: "Părinții au trimis și ceva bani în pachet. Ce faci?",
@@ -64,8 +57,6 @@ const caminEvents: GameEvent[] = [
         ],
       },
     },
-=======
->>>>>>> bca33c6a3a6b536a83ed88053ea89ffdd976de0f
   },
   {
     id: "c3",
@@ -76,7 +67,6 @@ const caminEvents: GameEvent[] = [
       { text: "Plătesc eu tot ca să evit conflictul", bani: -200, fericirePct: -5, lectie: "Evitarea conflictului costă bani." },
       { text: "Raportez administratorului căminului", bani: 0, fericirePct: -10, lectie: "Autoritățile pot interveni, dar relațiile suferă." },
     ],
-<<<<<<< HEAD
     subScenariuModificari: {
       sustinator: {
         descriere: "Colegul știe că părinții te pot ajuta. Consideră că nu e treaba ta să-l presez.",
@@ -93,8 +83,6 @@ const caminEvents: GameEvent[] = [
         ],
       },
     },
-=======
->>>>>>> bca33c6a3a6b536a83ed88053ea89ffdd976de0f
   },
   {
     id: "c4",
@@ -151,7 +139,6 @@ const caminEvents: GameEvent[] = [
       { text: "Plătesc meditații pentru a fi sigur că îl iau", bani: -400, fericirePct: 5, lectie: "Investiția în educație plătește pe termen lung." },
       { text: "Studiez singur intens", bani: 0, fericirePct: -10, lectie: "Autodisciplina e cea mai valoroasă abilitate." },
     ],
-<<<<<<< HEAD
     subScenariuModificari: {
       singur: {
         descriere: "Ai picat examenul. Nu ai pe cine să întrebi pentru ajutor.",
@@ -169,8 +156,6 @@ const caminEvents: GameEvent[] = [
         ],
       },
     },
-=======
->>>>>>> bca33c6a3a6b536a83ed88053ea89ffdd976de0f
   },
   {
     id: "c10",
@@ -180,7 +165,6 @@ const caminEvents: GameEvent[] = [
       { text: "Accept — banii în plus ajută mult", bani: 400, fericirePct: -10, lectie: "Banii în plus vin cu sacrificarea timpului." },
       { text: "Refuz — prioritizez studiile", bani: 0, fericirePct: 5, lectie: "Focusul pe termen lung e mai valoros." },
     ],
-<<<<<<< HEAD
     subScenariuModificari: {
       bursier: {
         descriere: "Ai primit o ofertă de job part-time, dar bursa de merit necesită rezultate bune.",
@@ -198,8 +182,6 @@ const caminEvents: GameEvent[] = [
         ],
       },
     },
-=======
->>>>>>> bca33c6a3a6b536a83ed88053ea89ffdd976de0f
   },
   {
     id: "c11",
@@ -228,7 +210,6 @@ const caminEvents: GameEvent[] = [
       { text: "Acceptă bursa și planifică bugetul inteligent", bani: 500, fericirePct: 20, lectie: "Recompensele pentru efort merită sărbătorite.", bonusXP: 50 },
       { text: "Acceptă și cheltuiești pe ceva util", bani: 200, fericirePct: 15, lectie: "Echilibrul între recompensă și responsabilitate." },
     ],
-<<<<<<< HEAD
     subScenariuModificari: {
       bursier: {
         optiuni: [
@@ -244,8 +225,6 @@ const caminEvents: GameEvent[] = [
         ],
       },
     },
-=======
->>>>>>> bca33c6a3a6b536a83ed88053ea89ffdd976de0f
   },
   {
     id: "c14",
@@ -277,7 +256,6 @@ const chirieEvents: GameEvent[] = [
       { text: "Negociez cu proprietarul", bani: -100, fericirePct: 0, lectie: "Negocierea e o abilitate financiară valoroasă." },
       { text: "Caut alt apartament mai ieftin", bani: -500, fericirePct: -15, lectie: "Mutarea costă pe termen scurt, dar economisești pe termen lung." },
     ],
-<<<<<<< HEAD
     subScenariuModificari: {
       sustinator: {
         descriere: "Chiria crește. Părinții te pot ajuta cu diferența.",
@@ -295,8 +273,6 @@ const chirieEvents: GameEvent[] = [
       },
     },
     isTutorialEvent: true,
-=======
->>>>>>> bca33c6a3a6b536a83ed88053ea89ffdd976de0f
   },
   {
     id: "h2",
@@ -326,7 +302,6 @@ const chirieEvents: GameEvent[] = [
       { text: "Negociez un program part-time", bani: 400, fericirePct: 5, lectie: "Flexibilitatea are valoare." },
       { text: "Refuz — prioritizez finalizarea facultății", bani: 0, fericirePct: 5, lectie: "Diplome pe termen lung vs bani pe termen scurt." },
     ],
-<<<<<<< HEAD
     subScenariuModificari: {
       singur: {
         descriere: "Ai nevoie de bani stabili. Acest job ar putea acoperi chiria.",
@@ -342,8 +317,6 @@ const chirieEvents: GameEvent[] = [
         ],
       },
     },
-=======
->>>>>>> bca33c6a3a6b536a83ed88053ea89ffdd976de0f
   },
   {
     id: "h5",
@@ -391,7 +364,6 @@ const chirieEvents: GameEvent[] = [
       { text: "Îl ajut să caute alternative mai ieftine", bani: 0, fericirePct: 5, lectie: "Ajutorul nu înseamnă întotdeauna bani." },
       { text: "Nu pot — bugetul meu e la limită", bani: 0, fericirePct: -10, lectie: "E ok să spui nu când ești în dificultate financiară." },
     ],
-<<<<<<< HEAD
     subScenariuModificari: {
       sustinator: {
         descriere: "Prietenul știe că părinții tăi te pot ajuta. Insistă pentru împrumut.",
@@ -407,8 +379,6 @@ const chirieEvents: GameEvent[] = [
         ],
       },
     },
-=======
->>>>>>> bca33c6a3a6b536a83ed88053ea89ffdd976de0f
   },
   {
     id: "h10",
@@ -441,7 +411,6 @@ const garsonieraEvents: GameEvent[] = [
       { text: "Negociez un program hibrid", bani: 400, fericirePct: 0, lectie: "Negocierea condițiilor e o abilitate managerială." },
       { text: "Refuz — cursurile și viața personală sunt prioritare", bani: 0, fericirePct: 5, lectie: "Echilibrul muncă-viață are o valoare reală." },
     ],
-<<<<<<< HEAD
     subScenariuModificari: {
       sustinator: {
         descriere: "Părinții sunt mândri de tine. Vor să sărbătorească succesul.",
@@ -452,8 +421,6 @@ const garsonieraEvents: GameEvent[] = [
       },
     },
     isTutorialEvent: true,
-=======
->>>>>>> bca33c6a3a6b536a83ed88053ea89ffdd976de0f
   },
   {
     id: "g2",
@@ -560,7 +527,6 @@ const navetistEvents: GameEvent[] = [
       { text: "Îmi cumpăr abonament anual la preț redus", bani: -600, fericirePct: 5, lectie: "Plata anticipată economisește pe termen lung." },
       { text: "Continui cu bilete zilnice", bani: -100, fericirePct: 0, lectie: "Uneori flexibilitatea costă mai mult." },
     ],
-<<<<<<< HEAD
     subScenariuModificari: {
       sustinator: {
         descriere: "Părinții propun să te ajute cu chiria dacă te muți în oraș.",
@@ -576,8 +542,6 @@ const navetistEvents: GameEvent[] = [
         ],
       },
     },
-=======
->>>>>>> bca33c6a3a6b536a83ed88053ea89ffdd976de0f
   },
   {
     id: "n5",
@@ -694,7 +658,6 @@ const varaEvents: GameEvent[] = [
   },
 ];
 
-<<<<<<< HEAD
 const recuperareEvents: GameEvent[] = [
   {
     id: "rec1",
@@ -785,8 +748,6 @@ const recuperareEvents: GameEvent[] = [
   },
 ];
 
-=======
->>>>>>> bca33c6a3a6b536a83ed88053ea89ffdd976de0f
 const vacantaEvents: GameEvent[] = [
   {
     id: "vac1",
@@ -829,10 +790,7 @@ export const GAME_EVENTS: Record<string, GameEvent[]> = {
   iarna: [...iarnaEvents, ...caminEvents.slice(0, 5)],
   vara: [...varaEvents, ...chirieEvents.slice(0, 5)],
   vacanta: [...vacantaEvents, ...garsonieraEvents.slice(0, 5)],
-<<<<<<< HEAD
   recuperare: recuperareEvents,
-=======
->>>>>>> bca33c6a3a6b536a83ed88053ea89ffdd976de0f
 };
 
 export function shuffleArray<T>(arr: T[]): T[] {
