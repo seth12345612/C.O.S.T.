@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useCallback, useEffect, type ReactNode } from "react";
+import { SCENARII } from "@/data/scenarios";
 
 export interface XPState {
   xp: number;
@@ -7,16 +8,23 @@ export interface XPState {
 }
 
 const XP_PER_LEVEL = 200;
-const ALL_SCENARIOS_ORDER = ["camin", "navetist", "chirie", "iarna", "garsoniera", "vara", "vacanta"];
-const XP_UNLOCK: Record<string, number> = {
-  camin: 0,
-  navetist: 0,
-  chirie: 200,
-  iarna: 300,
-  garsoniera: 500,
-  vara: 400,
-  vacanta: 600,
-};
+
+const ALL_SCENARIOS_ORDER = [
+  "camin", "navetist", "chirie", "supermarket", "bursa_sociala", "rude", "meditatii", "schimbari",
+  "garsoniera", "antreprenor", "privat", "erasmus", "masina", "parinte", "iarna", "vara", "vacanta"
+];
+
+function getXPUnlock(): Record<string, number> {
+  const unlock: Record<string, number> = {};
+  for (const [id, scenario] of Object.entries(SCENARII)) {
+    if (!scenario.isInternal) {
+      unlock[id] = scenario.xpRequired;
+    }
+  }
+  return unlock;
+}
+
+const XP_UNLOCK = getXPUnlock();
 
 function loadXP(): XPState {
   try {
@@ -47,12 +55,15 @@ interface XPContextType {
   xpProgress: number;
   isUnlocked: (scenariuId: string) => boolean;
   xpRequiredFor: (scenariuId: string) => number;
+  setPremiumOverride: (active: boolean) => void;
+  premiumOverride: boolean;
 }
 
 const XPContext = createContext<XPContextType | null>(null);
 
 export function XPProvider({ children }: { children: ReactNode }) {
   const [xpState, setXPState] = useState<XPState>(loadXP);
+  const [premiumOverride, setPremiumOverride] = useState(false);
 
   useEffect(() => { saveXP(xpState); }, [xpState]);
 
@@ -67,11 +78,16 @@ export function XPProvider({ children }: { children: ReactNode }) {
 
   const xpForNextLevel = XP_PER_LEVEL;
   const xpProgress = (xpState.xp % XP_PER_LEVEL) / XP_PER_LEVEL;
-  const isUnlocked = useCallback((id: string) => xpState.scenariiDeblocate.includes(id), [xpState]);
+  
+  const isUnlocked = useCallback((id: string) => {
+    if (premiumOverride) return true;
+    return xpState.scenariiDeblocate.includes(id);
+  }, [xpState, premiumOverride]);
+  
   const xpRequiredFor = useCallback((id: string) => XP_UNLOCK[id] ?? 0, []);
 
   return (
-    <XPContext.Provider value={{ xpState, addXP, xpForNextLevel, xpProgress, isUnlocked, xpRequiredFor }}>
+    <XPContext.Provider value={{ xpState, addXP, xpForNextLevel, xpProgress, isUnlocked, xpRequiredFor, setPremiumOverride, premiumOverride }}>
       {children}
     </XPContext.Provider>
   );

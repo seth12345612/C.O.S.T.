@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, useCallback, useRef, type ReactNode } from "react";
 import { SCENARII, DIFICULTATI, START_CONFIG, type DifficultyKey } from "@/data/scenarios";
 import { GAME_EVENTS, shuffleArray, type GameEvent } from "@/data/events";
+import { useAuth } from "./AuthContext";
 
 export interface DecizieIstorica {
   id: string;
@@ -50,6 +51,9 @@ const GameContext = createContext<GameContextType | null>(null);
 export function GameProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<GameState | null>(null);
   const eventQueueRef = useRef<GameEvent[]>([]);
+  const { isPremium } = useAuth();
+  const isPremiumRef = useRef(isPremium);
+  isPremiumRef.current = isPremium;
 
   const initGame = useCallback((
     scenariuId: string,
@@ -67,7 +71,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
     const venitLunarBase = venitLunar ?? 0;
     const startBani = startCfg.bani + subScenariu.venitBonus + venitLunarBase - cheltuieliExtra;
 
-    const rawEvents = GAME_EVENTS[scenariuId] ?? [];
+    const rawEvents = (GAME_EVENTS[scenariuId] ?? []).filter((e) => !e.isPremium || isPremiumRef.current);
     const shuffled = shuffleArray(rawEvents);
     eventQueueRef.current = shuffled;
 
@@ -108,7 +112,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
 
   const getNextEvent = useCallback((scenariuId: string): GameEvent | null => {
     if (eventQueueRef.current.length === 0) {
-      const rawEvents = GAME_EVENTS[scenariuId] ?? [];
+      const rawEvents = (GAME_EVENTS[scenariuId] ?? []).filter((e) => !e.isPremium || isPremiumRef.current);
       eventQueueRef.current = shuffleArray(rawEvents);
     }
     return eventQueueRef.current.pop() ?? null;

@@ -95,6 +95,12 @@ export default function Home() {
   const isPremiumActive = isPremium && premiumTrialEndsAt && premiumTrialEndsAt > Date.now();
 
   const scenariiList = Object.values(SCENARII);
+  const freeScenarii = scenariiList
+    .filter((sc) => !sc.isPremium)
+    .sort((a, b) => a.xpRequired - b.xpRequired);
+  const premiumScenarii = scenariiList
+    .filter((sc) => sc.isPremium)
+    .sort((a, b) => a.xpRequired - b.xpRequired);
 
   return (
     <Layout>
@@ -201,7 +207,7 @@ export default function Home() {
           {[
             { label: "XP Total", value: xpState.xp.toString(), icon: Star, color: "text-yellow-400" },
             { label: "Nivel", value: xpState.level.toString(), icon: TrendingUp, color: "text-purple-400" },
-            { label: "Scenarii deblocate", value: `${xpState.scenariiDeblocate.length}/${scenariiList.length}`, icon: Users, color: "text-orange-400" },
+            { label: "Scenarii deblocate", value: `${xpState.scenariiDeblocate.filter(id => !SCENARII[id]?.isPremium).length}/${freeScenarii.length}`, icon: Users, color: "text-orange-400" },
           ].map((stat) => (
             <div key={stat.label} className="p-4 rounded-2xl border border-white/10 bg-white/5 text-center">
               <stat.icon size={20} className={`${stat.color} mx-auto mb-2`} />
@@ -211,24 +217,18 @@ export default function Home() {
           ))}
         </motion.div>
 
-        {/* Scenarios Grid */}
+        {/* Scenarios Grid - Free */}
         <motion.section initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.6 }}>
           <div className="flex items-center gap-2 mb-6">
-            <Gamepad2 size={18} className="text-purple-400" />
-            <h2 className="text-xl font-bold text-white">Scenarii disponibile</h2>
+            <Gamepad2 size={18} className="text-green-400" />
+            <h2 className="text-xl font-bold text-white">Scenarii Gratuite</h2>
+            <span className="ml-2 text-xs text-white/40">Ordonate după XP necesar</span>
           </div>
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-            {scenariiList.map((sc, i) => {
+            {freeScenarii.map((sc, i) => {
               const unlocked = isUnlocked(sc.id);
               const xpNeeded = xpRequiredFor(sc.id);
               const inSeason = isInSeason(sc.seasonTag);
-              const isPremiumLocked = sc.isPremium && !unlocked && !isPremiumActive;
-
-              const handleClick = () => {
-                if (sc.isPremium && !unlocked && !isPremiumActive) {
-                  setShowPremiumModal(true);
-                }
-              };
 
               return (
                 <motion.div
@@ -238,12 +238,9 @@ export default function Home() {
                   initial="hidden"
                   animate="visible"
                   whileHover={unlocked && inSeason ? { scale: 1.03, y: -4 } : {}}
-                  onClick={handleClick}
                   className={`relative rounded-2xl border overflow-hidden transition-all ${
-                    unlocked || (sc.isPremium && isPremiumActive)
+                    unlocked
                       ? "border-white/15 bg-white/5 cursor-pointer hover:border-white/30"
-                      : sc.isPremium && !unlocked
-                      ? "border-yellow-500/30 bg-yellow-500/5 cursor-pointer hover:border-yellow-500/50"
                       : "border-white/8 bg-white/3 cursor-not-allowed"
                   } ${!inSeason ? "opacity-50" : ""}`}
                 >
@@ -252,12 +249,6 @@ export default function Home() {
                     <div className="flex items-start justify-between mb-3">
                       <span className="text-3xl">{sc.emoji}</span>
                       <div className="flex flex-col items-end gap-1">
-                        {sc.isPremium && (
-                          <span className="text-xs px-2 py-0.5 rounded-full border border-yellow-500/40 text-yellow-300 bg-yellow-500/10 flex items-center gap-1">
-                            <Crown size={10} />
-                            PRO
-                          </span>
-                        )}
                         {sc.seasonal && (
                           <span className="text-xs px-2 py-0.5 rounded-full border border-orange-500/40 text-orange-300 bg-orange-500/10 flex items-center gap-1">
                             <Calendar size={10} />
@@ -279,23 +270,108 @@ export default function Home() {
                         Revine în sezonul {getSeasonName(sc.seasonTag)}
                       </div>
                     )}
-                    {(unlocked || (sc.isPremium && isPremiumActive)) && inSeason ? (
+                    {unlocked && inSeason ? (
                       <Link
                         href={`/game?scenario=${sc.id}`}
                         className="mt-3 w-full block text-center py-1.5 rounded-xl text-xs font-bold transition-all"
                         style={{ background: `${sc.accentColor}30`, color: sc.accentColor, border: `1px solid ${sc.accentColor}40` }}
                       >
-                        {isPremiumActive && sc.isPremium ? "PRO · Joacă" : "Joacă"}
+                        Joacă
                       </Link>
-                    ) : isPremiumLocked ? (
-                      <div className="mt-3 w-full text-center py-1.5 rounded-xl bg-gradient-to-r from-yellow-500/20 to-orange-500/20 text-xs font-bold text-yellow-300 border border-yellow-500/30 flex items-center justify-center gap-1">
-                        <Crown size={12} />
-                        Premium — Dezblochează cu PRO
-                      </div>
                     ) : (
                       <div className="mt-3 w-full text-center py-1.5 rounded-xl bg-white/5 text-xs font-medium text-white/30 border border-white/10 flex items-center justify-center gap-1">
                         <Lock size={10} />
                         Necesită {xpNeeded} XP
+                      </div>
+                    )}
+                  </div>
+                </motion.div>
+              );
+            })}
+          </div>
+        </motion.section>
+
+        {/* Scenarios Grid - Premium */}
+        <motion.section initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.7 }}>
+          <div className="flex items-center gap-2 mb-6">
+            <Crown size={18} className="text-yellow-400" />
+            <h2 className="text-xl font-bold text-white">Scenarii Premium</h2>
+            <span className="ml-2 text-xs text-white/40">Necesită XP sau abonament PRO</span>
+          </div>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+            {premiumScenarii.map((sc, i) => {
+              const unlocked = isUnlocked(sc.id);
+              const xpNeeded = xpRequiredFor(sc.id);
+              const inSeason = isInSeason(sc.seasonTag);
+              const isPremiumLocked = !unlocked && !isPremiumActive;
+
+              const handleClick = () => {
+                if (isPremiumLocked) {
+                  setShowPremiumModal(true);
+                }
+              };
+
+              return (
+                <motion.div
+                  key={sc.id}
+                  custom={i}
+                  variants={fadeUp}
+                  initial="hidden"
+                  animate="visible"
+                  whileHover={unlocked || isPremiumActive ? { scale: 1.03, y: -4 } : {}}
+                  onClick={handleClick}
+                  className={`relative rounded-2xl border overflow-hidden transition-all ${
+                    unlocked || isPremiumActive
+                      ? "border-yellow-500/30 bg-yellow-500/5 cursor-pointer hover:border-yellow-500/50"
+                      : "border-yellow-500/20 bg-yellow-500/5 cursor-pointer hover:border-yellow-500/40"
+                  } ${!inSeason ? "opacity-50" : ""}`}
+                >
+                  <div className={`absolute inset-0 ${sc.bgClass} opacity-40`} />
+                  <div className="relative p-4">
+                    <div className="flex items-start justify-between mb-3">
+                      <span className="text-3xl">{sc.emoji}</span>
+                      <div className="flex flex-col items-end gap-1">
+                        <span className="text-xs px-2 py-0.5 rounded-full border border-yellow-500/40 text-yellow-300 bg-yellow-500/10 flex items-center gap-1">
+                          <Crown size={10} />
+                          PRO
+                        </span>
+                        {sc.seasonal && (
+                          <span className="text-xs px-2 py-0.5 rounded-full border border-orange-500/40 text-orange-300 bg-orange-500/10 flex items-center gap-1">
+                            <Calendar size={10} />
+                            Sezonier
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                    <h3 className="font-bold text-white text-sm mb-1">{sc.nume}</h3>
+                    <p className="text-xs text-white/50 line-clamp-2 mb-3">{sc.descriere}</p>
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="text-xs text-yellow-300/60">{sc.cheltuieliFixe.length} cheltuieli fixe</span>
+                      <span className="text-xs text-yellow-300/60">·</span>
+                      <span className="text-xs text-yellow-300/60">{sc.subScenarii.length} sub-scenarii</span>
+                    </div>
+                    {!inSeason && (
+                      <div className="mt-2 text-xs text-orange-300 flex items-center gap-1">
+                        <Clock size={10} />
+                        Revine în sezonul {getSeasonName(sc.seasonTag)}
+                      </div>
+                    )}
+                    {(unlocked || isPremiumActive) && inSeason ? (
+                      <Link
+                        href={`/game?scenario=${sc.id}`}
+                        className="mt-3 w-full block text-center py-1.5 rounded-xl text-xs font-bold transition-all bg-gradient-to-r from-yellow-500/20 to-orange-500/20 text-yellow-300 border border-yellow-500/30"
+                      >
+                        PRO · Joacă
+                      </Link>
+                    ) : isPremiumLocked ? (
+                      <div className="mt-3 w-full text-center py-1.5 rounded-xl bg-gradient-to-r from-yellow-500/20 to-orange-500/20 text-xs font-bold text-yellow-300 border border-yellow-500/30 flex items-center justify-center gap-1">
+                        <Lock size={10} />
+                        Necesită {xpNeeded} XP sau PRO
+                      </div>
+                    ) : (
+                      <div className="mt-3 w-full text-center py-1.5 rounded-xl bg-white/5 text-xs font-medium text-white/30 border border-white/10 flex items-center justify-center gap-1">
+                        <Lock size={10} />
+                        Sezon inactiv
                       </div>
                     )}
                   </div>
