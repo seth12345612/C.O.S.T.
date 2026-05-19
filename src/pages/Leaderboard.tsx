@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { OrbBackground } from "@/components/OrbBackground";
 import { Layout } from "@/components/Layout";
 import { Trophy, Medal, Star, User } from "lucide-react";
-import { loadLeaderboardEntries, type LeaderboardEntry } from "@/lib/leaderboard";
+import { loadLeaderboardEntries, getBannedUsers, type LeaderboardEntry } from "@/lib/leaderboard";
 
 const MOCK_SCORES: LeaderboardEntry[] = [
   { id: "mock-1", username: "StudentCampion", score: 18540, months: 12, scenario: "Garsoniera", date: 0 },
@@ -91,16 +91,19 @@ export default function Leaderboard() {
   const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
-    const loaded = loadLeaderboardEntries();
+    const banned = getBannedUsers();
+    const loaded = loadLeaderboardEntries().filter((e) => !banned.includes(e.username));
     setUserScores(loaded);
     setIsLoaded(true);
   }, []);
 
   const hasUserScores = userScores.length > 0;
-  const sortedMock = [...MOCK_SCORES].sort((a, b) => b.score - a.score).slice(0, 10);
+  const banned = getBannedUsers();
+  const filteredMock = MOCK_SCORES.filter((e) => !banned.includes(e.username));
+  const sortedMock = [...filteredMock].sort((a, b) => b.score - a.score).slice(0, 10);
   const sortedUser = [...userScores].sort((a, b) => b.score - a.score);
 
-  const allSorted = [...userScores, ...MOCK_SCORES].sort((a, b) => b.score - a.score).slice(0, 10);
+  const allSorted = [...userScores, ...filteredMock].sort((a, b) => b.score - a.score).slice(0, 10);
   const top10WithUserMarked = allSorted.map(entry => ({
     ...entry,
     isUserScore: userScores.some(u => u.id === entry.id)

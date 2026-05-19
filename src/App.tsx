@@ -14,6 +14,7 @@ import Contact from "@/pages/Contact";
 import Finance from "@/pages/Finance";
 import Leaderboard from "@/pages/Leaderboard";
 import Premium from "@/pages/Premium";
+import Admin from "@/pages/Admin";
 import { useEffect } from "react";
 
 const queryClient = new QueryClient();
@@ -40,6 +41,7 @@ function Router() {
       <Route path="/finance" component={Finance} />
       <Route path="/premium" component={Premium} />
       <Route path="/leaderboard" component={Leaderboard} />
+      <Route path="/admin" component={Admin} />
       <Route component={NotFound} />
     </Switch>
   );

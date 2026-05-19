@@ -8,9 +8,12 @@ export interface AuthUser {
   picture?: string;
 }
 
+const ADMIN_EMAILS = ["alexandruaoglagioaie@gmail.com"];
+
 interface AuthContextType {
   user: AuthUser | null;
   isVerified: boolean;
+  isAdmin: boolean;
   isPremium: boolean;
   premiumTrialEndsAt: number | null;
   otpSentAt: number | null;
@@ -193,6 +196,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       value={{
         user,
         isVerified,
+        isAdmin: user ? ADMIN_EMAILS.includes(user.email) : false,
         isPremium,
         premiumTrialEndsAt,
         otpSentAt,

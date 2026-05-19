@@ -6,7 +6,7 @@ import { useAuth } from "@/context/AuthContext";
 import { ThemePicker } from "@/components/ThemePicker";
 import { GoogleAuthButton } from "@/components/GoogleAuthButton";
 import { EmailOtpVerifier } from "@/components/EmailOtpVerifier";
-import { Home, PhoneCall, Wallet, Trophy, Menu, X, Crown } from "lucide-react";
+import { Home, PhoneCall, Wallet, Trophy, Menu, X, Crown, Shield, ShieldCheck } from "lucide-react";
 
 const NAV = [
   { href: "/", label: "Acasă", icon: Home },
@@ -18,7 +18,7 @@ const NAV = [
 export function Layout({ children }: { children: React.ReactNode }) {
   const { xpState, xpProgress } = useXP();
   const { themeState, currentPreset } = useTheme();
-  const { isPremium, premiumTrialEndsAt } = useAuth();
+  const { isPremium, premiumTrialEndsAt, isAdmin } = useAuth();
   const [location] = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -41,6 +41,20 @@ export function Layout({ children }: { children: React.ReactNode }) {
           </Link>
 
           <nav className="hidden md:flex items-center gap-1">
+            {isAdmin && (
+              <Link
+                href="/admin"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-all"
+                style={location === "/admin" ? {
+                  background: `${activeColor}22`,
+                  color: activeColor,
+                  border: `1px solid ${activeColor}55`,
+                } : { color: "rgba(255,255,255,0.6)" }}
+              >
+                <ShieldCheck size={14} style={location === "/admin" ? { color: activeColor } : { color: "rgba(255,255,255,0.6)" }} />
+                <span>Admin</span>
+              </Link>
+            )}
             {NAV.map((item) => {
               const active = location === item.href || (item.href !== "/" && location.startsWith(item.href));
               return (
@@ -88,6 +102,12 @@ export function Layout({ children }: { children: React.ReactNode }) {
                 </div>
               </div>
               <span className="text-xs font-bold" style={{ color: activeColor }}>{xpState.xp} XP</span>
+              {isAdmin && (
+                <span className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-red-500/20 border border-red-500/40 text-red-400 text-xs font-bold">
+                  <Shield size={10} />
+                  ADMIN
+                </span>
+              )}
               {isPremiumActive && (
                 <span className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-yellow-500/20 border border-yellow-500/40 text-yellow-400 text-xs font-bold">
                   <Crown size={10} />
@@ -111,6 +131,21 @@ export function Layout({ children }: { children: React.ReactNode }) {
         {menuOpen && (
           <div className="md:hidden border-t border-white/10 bg-black/60 backdrop-blur-xl">
             <nav className="max-w-6xl mx-auto px-4 py-3 flex flex-col gap-1">
+              {isAdmin && (
+                <Link
+                  href="/admin"
+                  onClick={() => setMenuOpen(false)}
+                  className="flex items-center gap-2 px-3 py-2.5 rounded-lg text-sm font-medium transition-all"
+                  style={location === "/admin" ? {
+                    background: `${activeColor}22`,
+                    color: activeColor,
+                    border: `1px solid ${activeColor}55`,
+                  } : { color: "rgba(255,255,255,0.6)" }}
+                >
+                  <ShieldCheck size={16} />
+                  Admin
+                </Link>
+              )}
               {NAV.map((item) => {
                 const active = location === item.href || (item.href !== "/" && location.startsWith(item.href));
                 return (
