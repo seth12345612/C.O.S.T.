@@ -58,8 +58,9 @@ export function GameOver() {
       scoreSaved.current = true;
       const months = Math.max(1, Math.ceil(state.saptamana / 4));
       const username = user?.name || "Anonim";
+      const uid = dbUser?.id;
       saveLeaderboardEntry({
-        userId: dbUser?.id ?? crypto.randomUUID(),
+        userId: uid ?? "",
         username,
         score: Math.round(state.bani),
         months,

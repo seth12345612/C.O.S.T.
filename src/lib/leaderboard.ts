@@ -60,10 +60,12 @@ export async function saveLeaderboardEntry(entry: { userId: string; username: st
   local.push(localEntry);
   saveLocal(local);
 
-  try {
-    await withTimeout(supabaseSave(entry), 8000);
-  } catch (e) {
-    console.warn("Supabase save failed, saved locally only:", e);
+  if (entry.userId) {
+    try {
+      await withTimeout(supabaseSave(entry), 8000);
+    } catch (e) {
+      console.warn("Supabase save failed, saved locally only:", e);
+    }
   }
 }
 
