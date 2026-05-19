@@ -13,7 +13,7 @@ export function GameOver() {
   const { state, startEndless, resetGame } = useGame();
   const { addXP } = useXP();
   const { financeState, addTransaction, deleteTransaction } = useFinance();
-  const { user } = useAuth();
+  const { user, dbUser } = useAuth();
   const xpAdded = useRef(false);
   const scoreSaved = useRef(false);
   const moneyTransferred = useRef(false);
@@ -59,6 +59,7 @@ export function GameOver() {
       const months = Math.max(1, Math.ceil(state.saptamana / 4));
       const username = user?.name || "Anonim";
       saveLeaderboardEntry({
+        userId: dbUser?.id ?? crypto.randomUUID(),
         username,
         score: Math.round(state.bani),
         months,
@@ -70,7 +71,7 @@ export function GameOver() {
       capitalSaved.current = true;
       localStorage.setItem("cost_capital", JSON.stringify(Math.round(state.bani)));
     }
-  }, [state, addXP, addTransaction, deleteTransaction, financeState.tranzactii, user]);
+  }, [state, addXP, addTransaction, deleteTransaction, financeState.tranzactii, user, dbUser]);
 
   if (!state || !state.isGameOver) return null;
 
@@ -135,7 +136,7 @@ export function GameOver() {
                       <span className="text-xs font-semibold text-white/70">{d.titluEveniment}</span>
                       <span className="text-xs text-white/40">L{d.luna} S{d.saptamana}</span>
                     </div>
-                    <div className="text-xs text-white/50 mb-1">"{d.alegere}"</div>
+                    <div className="text-xs text-white/50 mb-1">\"{d.alegere}\"</div>
                     <div className="text-xs text-white/30 italic">{d.lectie}</div>
                   </div>
                 ))}
@@ -172,3 +173,4 @@ export function GameOver() {
     </div>
   );
 }
+

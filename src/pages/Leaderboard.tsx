@@ -2,18 +2,7 @@ import { useEffect, useState } from "react";
 import { OrbBackground } from "@/components/OrbBackground";
 import { Layout } from "@/components/Layout";
 import { Trophy, Medal, Star, User } from "lucide-react";
-import { loadLeaderboardEntries, getBannedUsers, type LeaderboardEntry } from "@/lib/leaderboard";
-
-const MOCK_SCORES: LeaderboardEntry[] = [
-  { id: "mock-1", username: "StudentCampion", score: 18540, months: 12, scenario: "Garsoniera", date: 0 },
-  { id: "mock-2", username: "IonMihalache", score: 14200, months: 12, scenario: "Chirie", date: 0 },
-  { id: "mock-3", username: "MariaPopescu", score: 12800, months: 12, scenario: "Navetist", date: 0 },
-  { id: "mock-4", username: "AlexIT", score: 11500, months: 11, scenario: "Garsoniera", date: 0 },
-  { id: "mock-5", username: "StudentEconom", score: 9800, months: 12, scenario: "Cămin", date: 0 },
-  { id: "mock-6", username: "FinanceKid", score: 8400, months: 10, scenario: "Chirie", date: 0 },
-  { id: "mock-7", username: "BudgetHero", score: 7200, months: 9, scenario: "Cămin", date: 0 },
-  { id: "mock-8", username: "NavetistPro", score: 6100, months: 12, scenario: "Navetist", date: 0 },
-];
+import { loadLeaderboardEntries, loadLocalScores, getBannedUsers, type LeaderboardEntry } from "@/lib/leaderboard";
 
 const RANK_ICONS = [
   { icon: Trophy, color: "text-yellow-400" },
@@ -23,8 +12,7 @@ const RANK_ICONS = [
 
 function formatDate(timestamp: number): string {
   if (!timestamp) return "";
-  const date = new Date(timestamp);
-  return date.toLocaleDateString("ro-RO", { day: "2-digit", month: "2-digit", year: "numeric" });
+  return new Date(timestamp).toLocaleDateString("ro-RO", { day: "2-digit", month: "2-digit", year: "numeric" });
 }
 
 interface ScoreRowProps {
@@ -38,16 +26,14 @@ function ScoreRow({ entry, rank, isUserScore, showRank = true }: ScoreRowProps) 
   const isTop3 = rank <= 3;
   const RankIcon = RANK_ICONS[rank - 1]?.icon;
 
+  const rowClass = isUserScore
+    ? "border-purple-500/50 bg-purple-500/10"
+    : isTop3
+      ? "border-yellow-500/20 bg-yellow-500/5"
+      : "border-white/8 bg-white/4";
+
   return (
-    <div
-      className={`flex items-center gap-3 p-3.5 rounded-2xl border transition-all ${
-        isUserScore
-          ? "border-purple-500/50 bg-purple-500/10"
-          : isTop3
-            ? "border-yellow-500/20 bg-yellow-500/5"
-            : "border-white/8 bg-white/4"
-      }`}
-    >
+    <div className={"flex items-center gap-3 p-3.5 rounded-2xl border transition-all " + rowClass}>
       {showRank && (
         <div className="w-7 shrink-0 text-center">
           {RankIcon ? (
@@ -59,19 +45,19 @@ function ScoreRow({ entry, rank, isUserScore, showRank = true }: ScoreRowProps) 
       )}
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2">
-          <span className={`font-bold text-sm ${isUserScore ? "text-purple-300" : "text-white"}`}>
+          <span className={"font-bold text-sm " + (isUserScore ? "text-purple-300" : "text-white")}>
             {entry.username}
           </span>
           {isUserScore && (
             <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-purple-500/30 text-purple-300 font-medium">
-              ★ Scorul tău
+              Scorul tau
             </span>
           )}
         </div>
         <div className="text-xs text-white/40">
-          {entry.months} luni · {entry.scenario}
+          {entry.months} luni . {entry.scenario}
           {entry.date > 0 && (
-            <span className="ml-2 text-white/30">· {formatDate(entry.date)}</span>
+            <span className="ml-2 text-white/30">. {formatDate(entry.date)}</span>
           )}
         </div>
       </div>
@@ -88,23 +74,35 @@ function ScoreRow({ entry, rank, isUserScore, showRank = true }: ScoreRowProps) 
 
 export default function Leaderboard() {
   const [userScores, setUserScores] = useState<LeaderboardEntry[]>([]);
+  const [sortedAll, setSortedAll] = useState<LeaderboardEntry[]>([]);
   const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
-    const banned = getBannedUsers();
-    const loaded = loadLeaderboardEntries().filter((e) => !banned.includes(e.username));
-    setUserScores(loaded);
+    const local = loadLocalScores();
+    setUserScores(local);
+    setSortedAll(local.sort((a, b) => b.score - a.score).slice(0, 10));
     setIsLoaded(true);
+
+    let cancelled = false;
+    (async () => {
+      try {
+        const [banned, loaded] = await Promise.all([getBannedUsers(), loadLeaderboardEntries()]);
+        if (!cancelled) {
+          const filtered = loaded.filter((e) => !banned.includes(e.username));
+          setUserScores(filtered);
+          setSortedAll(filtered.sort((a, b) => b.score - a.score).slice(0, 10));
+        }
+      } catch (e) {
+        console.warn("Leaderboard sync failed:", e);
+      }
+    })();
+    return () => { cancelled = true; };
   }, []);
 
-  const hasUserScores = userScores.length > 0;
-  const banned = getBannedUsers();
-  const filteredMock = MOCK_SCORES.filter((e) => !banned.includes(e.username));
-  const sortedMock = [...filteredMock].sort((a, b) => b.score - a.score).slice(0, 10);
+  const hasScores = sortedAll.length > 0;
   const sortedUser = [...userScores].sort((a, b) => b.score - a.score);
 
-  const allSorted = [...userScores, ...filteredMock].sort((a, b) => b.score - a.score).slice(0, 10);
-  const top10WithUserMarked = allSorted.map(entry => ({
+  const top10Marked = sortedAll.map(entry => ({
     ...entry,
     isUserScore: userScores.some(u => u.id === entry.id)
   }));
@@ -130,18 +128,18 @@ export default function Leaderboard() {
         <div className="text-center mb-8">
           <div className="text-4xl mb-3">🏆</div>
           <h1 className="text-3xl font-black text-white mb-2">Clasament</h1>
-          <p className="text-white/50 text-sm">Top jucători după economii finale.</p>
+          <p className="text-white/50 text-sm">Top jucatori dupa economii finale.</p>
         </div>
 
-        {!hasUserScores && sortedMock.length === 0 ? (
+        {!hasScores ? (
           <div className="text-center py-12">
             <User size={48} className="text-white/20 mx-auto mb-4" />
-            <p className="text-white/50 text-lg font-medium">Nu există scoruri încă</p>
-            <p className="text-white/30 text-sm mt-2">Joacă un joc pentru a apărea în clasament!</p>
+            <p className="text-white/50 text-lg font-medium">Nu exista scoruri inca</p>
+            <p className="text-white/30 text-sm mt-2">Joaca un joc pentru a aparea in clasament!</p>
           </div>
         ) : (
           <div className="space-y-4">
-            {hasUserScores && (
+            {userScores.length > 0 && (
               <div>
                 <h2 className="text-sm font-bold text-purple-300 mb-3 flex items-center gap-2">
                   <Star size={14} className="text-purple-400" />
@@ -149,35 +147,21 @@ export default function Leaderboard() {
                 </h2>
                 <div className="space-y-2">
                   {sortedUser.slice(0, 10).map((s, i) => (
-                    <ScoreRow
-                      key={s.id}
-                      entry={s}
-                      rank={i + 1}
-                      isUserScore={true}
-                      showRank={true}
-                    />
+                    <ScoreRow key={s.id} entry={s} rank={i + 1} isUserScore={true} showRank={true} />
                   ))}
                 </div>
               </div>
             )}
 
-            {hasUserScores && <div className="border-t border-white/10 my-4" />}
+            {userScores.length > 0 && <div className="border-t border-white/10 my-4" />}
 
             <div>
-              {hasUserScores ? (
-                <h2 className="text-sm font-bold text-white/60 mb-3">Top Global</h2>
-              ) : (
-                <h2 className="text-sm font-bold text-white/60 mb-3">Clasament</h2>
-              )}
+              <h2 className="text-sm font-bold text-white/60 mb-3">
+                {userScores.length > 0 ? "Top Global" : "Clasament"}
+              </h2>
               <div className="space-y-2">
-                {top10WithUserMarked.map((s, i) => (
-                  <ScoreRow
-                    key={s.id}
-                    entry={s}
-                    rank={i + 1}
-                    isUserScore={s.isUserScore}
-                    showRank={true}
-                  />
+                {top10Marked.map((s, i) => (
+                  <ScoreRow key={s.id} entry={s} rank={i + 1} isUserScore={s.isUserScore} showRank={true} />
                 ))}
               </div>
             </div>
@@ -186,8 +170,8 @@ export default function Leaderboard() {
 
         <div className="mt-6 p-4 rounded-2xl border border-white/10 bg-white/5 text-center">
           <p className="text-xs text-white/40">
-            Clasamentul se salvează local pe dispozitivul tău.
-            {hasUserScores && " Scorurile tale sunt evidențiate cu mov."}
+            Clasamentul se sincronizeaza online.
+            {userScores.length > 0 && " Scorurile tale sunt evidentiate cu mov."}
           </p>
         </div>
       </div>

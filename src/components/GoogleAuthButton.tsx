@@ -1,30 +1,9 @@
-import { useGoogleLogin } from "@react-oauth/google";
 import { LogOut, UserCircle } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
- 
+
 export function GoogleAuthButton() {
   const { user, login, logout } = useAuth();
- 
-  const handleGoogleLogin = useGoogleLogin({
-    onSuccess: async (tokenResponse) => {
-      try {
-        const res = await fetch("https://www.googleapis.com/oauth2/v3/userinfo", {
-          headers: { Authorization: `Bearer ${tokenResponse.access_token}` },
-        });
-        const payload = await res.json();
-        login({
-          sub: payload.sub,
-          name: payload.name,
-          email: payload.email,
-          picture: payload.picture,
-        });
-      } catch {
-        console.error("Failed to fetch user info");
-      }
-    },
-    onError: () => console.error("Google login failed"),
-  });
- 
+
   return user ? (
     <div className="flex items-center gap-3 bg-white/5 border border-white/10 rounded-full px-3 py-2 text-white text-xs">
       {user.picture ? (
@@ -48,7 +27,7 @@ export function GoogleAuthButton() {
   ) : (
     <button
       type="button"
-      onClick={() => handleGoogleLogin()}
+      onClick={login}
       className="group flex items-center gap-3 rounded-full border border-white/15 bg-white/5 px-5 py-2.5 text-sm font-medium text-white shadow-md backdrop-blur-sm transition-all duration-200 hover:bg-white/10 hover:border-white/30 hover:shadow-lg hover:scale-[1.02] active:scale-[0.98]"
     >
       <svg className="w-4 h-4 shrink-0" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">

@@ -1,6 +1,5 @@
 import { Switch, Route, Router as WouterRouter } from "wouter";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { GoogleOAuthProvider } from "@react-oauth/google";
 import { GameProvider } from "@/context/GameContext";
 import { XPProvider, useXP } from "@/context/XPContext";
 import { FinanceProvider } from "@/context/FinanceContext";
@@ -49,23 +48,21 @@ function Router() {
 
 export default function App() {
   return (
-    <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID ?? ""}>
-      <QueryClientProvider client={queryClient}>
-        <ThemeProvider>
-          <AuthProvider>
-            <XPProvider>
-              <PremiumSync />
-              <FinanceProvider>
-                <GameProvider>
-                  <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}> 
-                    <Router />
-                  </WouterRouter>
-                </GameProvider>
-              </FinanceProvider>
-            </XPProvider>
-          </AuthProvider>
-        </ThemeProvider>
-      </QueryClientProvider>
-    </GoogleOAuthProvider>
+    <QueryClientProvider client={queryClient}>
+      <ThemeProvider>
+        <AuthProvider>
+          <XPProvider>
+            <PremiumSync />
+            <FinanceProvider>
+              <GameProvider>
+                <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}> 
+                  <Router />
+                </WouterRouter>
+              </GameProvider>
+            </FinanceProvider>
+          </XPProvider>
+        </AuthProvider>
+      </ThemeProvider>
+    </QueryClientProvider>
   );
 }

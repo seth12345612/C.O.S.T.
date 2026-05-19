@@ -188,7 +188,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         {children}
       </main>
 
-      <EmailOtpVerifier />
+
 
       <footer className="border-t border-white/10 py-4 text-center text-xs text-white/30 relative z-10">
         <div className="max-w-6xl mx-auto px-4">

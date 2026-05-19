@@ -1,5 +1,5 @@
-import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
-import { send } from "@emailjs/browser";
+import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from "react";
+import { supabase, syncUserToDB, type DBUser } from "@/lib/supabase";
 
 export interface AuthUser {
   sub: string;
@@ -8,103 +8,116 @@ export interface AuthUser {
   picture?: string;
 }
 
-const ADMIN_EMAILS = ["alexandruaoglagioaie@gmail.com"];
-
 interface AuthContextType {
   user: AuthUser | null;
+  dbUser: DBUser | null;
   isVerified: boolean;
   isAdmin: boolean;
   isPremium: boolean;
   premiumTrialEndsAt: number | null;
-  otpSentAt: number | null;
-  otpExpiresAt: number | null;
-  isOtpSending: boolean;
-  otpError: string | null;
-  otpMessage: string | null;
-  login: (user: AuthUser) => void;
+  login: () => void;
   logout: () => void;
-  sendOtp: () => Promise<void>;
-  verifyOtp: (code: string) => boolean;
   activateDemoPremium: () => void;
   deactivatePremium: () => void;
   getPremiumTimeRemaining: () => string;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
-const STORAGE_KEY = "cost_auth_state";
+const PREMIUM_KEY = "cost_premium";
 
-interface StoredAuthState {
-  user: AuthUser;
-  isVerified: boolean;
-  isPremium?: boolean;
-  premiumTrialEndsAt?: number;
-}
-
-function loadAuthState(): { user: AuthUser | null; isVerified: boolean; isPremium: boolean; premiumTrialEndsAt: number | null } {
-  if (typeof window === "undefined") return { user: null, isVerified: false, isPremium: false, premiumTrialEndsAt: null };
+function loadPremium(): { isPremium: boolean; premiumTrialEndsAt: number | null } {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return { user: null, isVerified: false, isPremium: false, premiumTrialEndsAt: null };
-    const parsed = JSON.parse(raw) as StoredAuthState;
-    return { user: parsed.user, isVerified: parsed.isVerified, isPremium: parsed.isPremium ?? false, premiumTrialEndsAt: parsed.premiumTrialEndsAt ?? null };
-  } catch {
-    return { user: null, isVerified: false, isPremium: false, premiumTrialEndsAt: null };
-  }
+    const raw = localStorage.getItem(PREMIUM_KEY);
+    if (raw) return JSON.parse(raw);
+  } catch {}
+  return { isPremium: false, premiumTrialEndsAt: null };
 }
 
-function saveAuthState(user: AuthUser | null, isVerified: boolean, isPremium: boolean, premiumTrialEndsAt: number | null) {
-  if (typeof window === "undefined") return;
-  if (user) {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify({ user, isVerified, isPremium, premiumTrialEndsAt }));
-  } else {
-    localStorage.removeItem(STORAGE_KEY);
-  }
-}
-
-function createOtpCode() {
-  return Math.floor(100000 + Math.random() * 900000).toString();
+function savePremium(isPremium: boolean, premiumTrialEndsAt: number | null) {
+  localStorage.setItem(PREMIUM_KEY, JSON.stringify({ isPremium, premiumTrialEndsAt }));
 }
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const initialState = useMemo(loadAuthState, []);
-  const [user, setUser] = useState<AuthUser | null>(initialState.user);
-  const [isVerified, setIsVerified] = useState(initialState.isVerified);
-  const [isPremium, setIsPremium] = useState(initialState.isPremium);
-  const [premiumTrialEndsAt, setPremiumTrialEndsAt] = useState<number | null>(initialState.premiumTrialEndsAt);
-  const [otpCode, setOtpCode] = useState<string | null>(null);
-  const [otpSentAt, setOtpSentAt] = useState<number | null>(null);
-  const [otpExpiresAt, setOtpExpiresAt] = useState<number | null>(null);
-  const [isOtpSending, setIsOtpSending] = useState(false);
-  const [otpError, setOtpError] = useState<string | null>(null);
-  const [otpMessage, setOtpMessage] = useState<string | null>(null);
+  const [user, setUser] = useState<AuthUser | null>(null);
+  const [dbUser, setDbUser] = useState<DBUser | null>(null);
+  const [isVerified, setIsVerified] = useState(false);
+  const premiumInit = useCallback(loadPremium, []);
+  const [isPremium, setIsPremium] = useState(premiumInit().isPremium);
+  const [premiumTrialEndsAt, setPremiumTrialEndsAt] = useState<number | null>(premiumInit().premiumTrialEndsAt);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
-    saveAuthState(user, isVerified, isPremium, premiumTrialEndsAt);
-  }, [user, isVerified, isPremium, premiumTrialEndsAt]);
+    let cancelled = false;
+    const hash = window.location.hash;
 
-  const login = useCallback((newUser: AuthUser) => {
-    setUser(newUser);
-    setIsVerified(false);
-    setIsPremium(false);
-    setPremiumTrialEndsAt(null);
-    setOtpCode(null);
-    setOtpSentAt(null);
-    setOtpExpiresAt(null);
-    setOtpError(null);
-    setOtpMessage(null);
+    async function initAuth() {
+      if (hash.includes("access_token")) {
+        // Explicitly set session from URL hash
+        const params = new URLSearchParams(hash.slice(1));
+        const accessToken = params.get("access_token") ?? "";
+        const refreshToken = params.get("refresh_token") ?? "";
+        const { data, error } = await supabase.auth.setSession({
+          access_token: accessToken,
+          refresh_token: refreshToken,
+        });
+        if (error) { console.error("setSession error:", error); return; }
+        if (data.session?.user && !cancelled) {
+          await handleSession(data.session);
+          // Clean URL hash
+          window.history.replaceState({}, document.title, window.location.pathname);
+        }
+      } else {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session?.user && !cancelled) {
+          await handleSession(session);
+        }
+      }
+    }
+
+    async function handleSession(session: import("@supabase/supabase-js").Session) {
+      const authUser: AuthUser = {
+        sub: session.user.id,
+        name: session.user.user_metadata.full_name ?? session.user.email ?? "",
+        email: session.user.email ?? "",
+        picture: session.user.user_metadata.avatar_url,
+      };
+      setUser(authUser);
+      setIsVerified(true);
+      const dbUser = await syncUserToDB({ email: authUser.email, name: authUser.name, picture: authUser.picture });
+      if (dbUser) { setDbUser(dbUser); setIsAdmin(dbUser.is_admin); }
+    }
+
+    initAuth().catch((e) => console.error("Auth init error:", e));
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log("Auth event:", event, session?.user?.email);
+      if (event === "SIGNED_IN" && session?.user && !cancelled) {
+        await handleSession(session);
+      } else if (event === "SIGNED_OUT" || event === "USER_DELETED") {
+        if (!cancelled) {
+          setUser(null); setDbUser(null); setIsVerified(false); setIsAdmin(false);
+        }
+      }
+    });
+
+    return () => { cancelled = true; subscription.unsubscribe(); };
+  }, []);
+
+  useEffect(() => {
+    savePremium(isPremium, premiumTrialEndsAt);
+  }, [isPremium, premiumTrialEndsAt]);
+
+  const login = useCallback(() => {
+    supabase.auth.signInWithOAuth({ provider: "google", options: { redirectTo: window.location.origin } });
   }, []);
 
   const logout = useCallback(() => {
     setUser(null);
+    setDbUser(null);
     setIsVerified(false);
-    setIsPremium(false);
-    setPremiumTrialEndsAt(null);
-    setOtpCode(null);
-    setOtpSentAt(null);
-    setOtpExpiresAt(null);
-    setOtpError(null);
-    setOtpMessage(null);
-    saveAuthState(null, false, false, null);
+    setIsAdmin(false);
+    Object.keys(localStorage).forEach(k => { if (k.startsWith("sb-") || k.includes("supabase")) localStorage.removeItem(k); });
+    supabase.auth.signOut().catch(e => console.error("signOut error:", e));
   }, []);
 
   const activateDemoPremium = useCallback(() => {
@@ -128,86 +141,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return `${hours}h`;
   }, [premiumTrialEndsAt]);
 
-  const sendOtp = useCallback(async () => {
-    if (!user) return;
-
-    const serviceId = import.meta.env.VITE_EMAILJS_SERVICE_ID;
-    const templateId = import.meta.env.VITE_EMAILJS_TEMPLATE_ID;
-    const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
-    const templatePassId = import.meta.env.VITE_EMAILJS_TEMPLATE_PASS_ID;
-
-    if (!serviceId || !templateId || !publicKey || !templatePassId) {
-      setOtpError("Lipsesc setările EmailJS pentru trimiterea codului.");
-      return;
-    }
-
-    const code = createOtpCode();
-    const expiresAt = Date.now() + 30_000;
-    setOtpCode(code);
-    setOtpSentAt(Date.now());
-    setOtpExpiresAt(expiresAt);
-    setOtpError(null);
-    setOtpMessage("Se trimite codul de verificare...");
-    setIsOtpSending(true);
-
-    try {
-      await send(
-        serviceId,
-        templatePassId,
-        {
-          to_email: user.email,
-          to_name: user.name,
-          code,
-        },
-        publicKey
-      );
-      setOtpMessage("Codul a fost trimis. Verifică-ți emailul.");
-    } catch (error) {
-      console.error("OTP email error:", error);
-      setOtpError("Nu s-a putut trimite codul. Încearcă din nou.");
-      setOtpMessage(null);
-    } finally {
-      setIsOtpSending(false);
-    }
-  }, [user]);
-
-  const verifyOtp = useCallback((code: string) => {
-    if (!otpCode || !otpExpiresAt) {
-      setOtpError("Nu există cod activ. Trimite din nou codul.");
-      return false;
-    }
-    if (Date.now() > otpExpiresAt) {
-      setOtpError("Codul a expirat. Trimite unul nou.");
-      return false;
-    }
-    if (code !== otpCode) {
-      setOtpError("Cod incorect. Încearcă din nou.");
-      return false;
-    }
-
-    setIsVerified(true);
-    setOtpError(null);
-    setOtpMessage("Autentificare reușită.");
-    return true;
-  }, [otpCode, otpExpiresAt]);
-
   return (
     <AuthContext.Provider
       value={{
         user,
+        dbUser,
         isVerified,
-        isAdmin: user ? ADMIN_EMAILS.includes(user.email) : false,
+        isAdmin,
         isPremium,
         premiumTrialEndsAt,
-        otpSentAt,
-        otpExpiresAt,
-        isOtpSending,
-        otpError,
-        otpMessage,
         login,
         logout,
-        sendOtp,
-        verifyOtp,
         activateDemoPremium,
         deactivatePremium,
         getPremiumTimeRemaining,
@@ -223,3 +167,4 @@ export function useAuth() {
   if (!ctx) throw new Error("useAuth must be inside AuthProvider");
   return ctx;
 }
+
