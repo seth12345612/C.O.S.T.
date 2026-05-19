@@ -9,17 +9,11 @@ import { AuthProvider } from "@/context/AuthContext";
 import NotFound from "@/pages/not-found";
 import Home from "@/pages/Home";
 import GamePage from "@/pages/Game";
-<<<<<<< HEAD
 import Tutorial from "@/pages/Tutorial";
 import Contact from "@/pages/Contact";
 import Finance from "@/pages/Finance";
 import Leaderboard from "@/pages/Leaderboard";
 import Premium from "@/pages/Premium";
-=======
-import Contact from "@/pages/Contact";
-import Finance from "@/pages/Finance";
-import Leaderboard from "@/pages/Leaderboard";
->>>>>>> bca33c6a3a6b536a83ed88053ea89ffdd976de0f
 
 const queryClient = new QueryClient();
 
@@ -28,15 +22,10 @@ function Router() {
     <Switch>
       <Route path="/" component={Home} />
       <Route path="/game" component={GamePage} />
-<<<<<<< HEAD
       <Route path="/tutorial" component={Tutorial} />
       <Route path="/contact" component={Contact} />
       <Route path="/finance" component={Finance} />
       <Route path="/premium" component={Premium} />
-=======
-      <Route path="/contact" component={Contact} />
-      <Route path="/finance" component={Finance} />
->>>>>>> bca33c6a3a6b536a83ed88053ea89ffdd976de0f
       <Route path="/leaderboard" component={Leaderboard} />
       <Route component={NotFound} />
     </Switch>
