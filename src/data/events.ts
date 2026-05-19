@@ -30,9 +30,9 @@ const caminEvents: GameEvent[] = [
     titlu: "Petrecere în cameră",
     descriere: "Colegii organizează o petrecere chiar la tine în cameră.",
     optiuni: [
-      { text: "Mă alătur și contribui cu gustări", bani: -150, fericirePct: 15, lectie: "Socializarea costă, dar merită." },
+      { text: "Mă alătur și contribui cu gustări", bani: -80, fericirePct: 15, lectie: "Socializarea costă, dar merită." },
       { text: "Îi rog să facă liniște, am de învățat", bani: 0, fericirePct: -10, lectie: "Liniștea e rară și prețioasă." },
-      { text: "Mut petrecerea în sala comună", bani: -50, fericirePct: 8, lectie: "Compromisul social salvează relațiile." },
+      { text: "Mut petrecerea în sala comună", bani: -40, fericirePct: 8, lectie: "Compromisul social salvează relațiile." },
     ],
   },
   {
@@ -41,7 +41,7 @@ const caminEvents: GameEvent[] = [
     descriere: "Părinții ți-au trimis un pachet cu mâncare de casă.",
     optiuni: [
       { text: "O împart cu colegii — toată lumea mănâncă", bani: 0, fericirePct: 20, lectie: "Dărnicia îți face prieteni." },
-      { text: "O păstrez pentru mine, economisesc la mâncare", bani: 100, fericirePct: 5, lectie: "Uneori e ok să grijești de tine întâi." },
+      { text: "O păstrez pentru mine, economisesc la mâncare", bani: 120, fericirePct: 5, lectie: "Uneori e ok să grijești de tine întâi." },
     ],
     subScenariuModificari: {
       sustinator: {
@@ -74,7 +74,7 @@ const caminEvents: GameEvent[] = [
     titlu: "Pană de curent în sesiune",
     descriere: "S-a luat curentul în tot căminul chiar când trebuia să trimiți proiectul.",
     optiuni: [
-      { text: "Merg la o cafenea să terminăm proiectul", bani: -100, fericirePct: 5, lectie: "Mediul potrivit crește productivitatea." },
+      { text: "Merg la o cafenea să terminăm proiectul", bani: -40, fericirePct: 5, lectie: "Mediul potrivit crește productivitatea." },
       { text: "Aștept să revină curentul și sper că nu depășesc deadline-ul", bani: 0, fericirePct: -15, lectie: "Adaptabilitatea e cheia în situații de criză." },
     ],
   },
@@ -83,9 +83,9 @@ const caminEvents: GameEvent[] = [
     titlu: "Mașina de spălat stricată",
     descriere: "Spălătoria căminului e nefuncțională de o săptămână.",
     optiuni: [
-      { text: "Merg la o spălătorie publică din cartier", bani: -80, fericirePct: 5, lectie: "Serviciile externe costă mai mult." },
+      { text: "Merg la o spălătorie publică din cartier", bani: -35, fericirePct: 5, lectie: "Serviciile externe costă mai mult." },
       { text: "Spăl manual și uscăm pe balcon", bani: 0, fericirePct: -10, lectie: "Economia e uneori incomodă." },
-      { text: "Merg acasă la părinți să spăl", bani: -50, fericirePct: 10, lectie: "Familia e un fond de urgență prețios." },
+      { text: "Merg acasă la părinți să spăl", bani: 0, fericirePct: 10, lectie: "Familia e un fond de urgență prețios." },
     ],
   },
   {
@@ -93,7 +93,7 @@ const caminEvents: GameEvent[] = [
     titlu: "Concert în campus",
     descriere: "O trupă populară cântă în campusul universității.",
     optiuni: [
-      { text: "Cumpăr bilet și merg — e o amintire unică", bani: -120, fericirePct: 20, lectie: "Experiențele valorează mai mult decât lucrurile." },
+      { text: "Cumpăr bilet și merg — e o amintire unică", bani: -150, fericirePct: 20, lectie: "Experiențele valorează mai mult decât lucrurile." },
       { text: "Mă uit de la fereastră — gratuit", bani: 0, fericirePct: 5, lectie: "Nu trebuie să cheltuiești ca să te bucuri." },
     ],
   },
@@ -102,7 +102,7 @@ const caminEvents: GameEvent[] = [
     titlu: "Colegul sforăie",
     descriere: "Nu poți dormi din cauza colegului de cameră și ești epuizat.",
     optiuni: [
-      { text: "Cumpăr dopuri de urechi bune", bani: -80, fericirePct: 15, lectie: "Somnul e esențial pentru sănătate." },
+      { text: "Cumpăr dopuri de urechi bune", bani: -50, fericirePct: 15, lectie: "Somnul e esențial pentru sănătate." },
       { text: "Îl trezesc de fiecare dată", bani: 0, fericirePct: -20, lectie: "Conflictele nocturne sunt epuizante pentru ambii." },
       { text: "Dorm în sala de studiu câteva nopți", bani: 0, fericirePct: -10, lectie: "Soluțiile temporare au prețul lor." },
     ],
@@ -112,7 +112,7 @@ const caminEvents: GameEvent[] = [
     titlu: "Ziua de curățenie obligatorie",
     descriere: "Administratorul căminului organizează inspecție surpriză a camerelor.",
     optiuni: [
-      { text: "Cumpăr produse de curățenie și fac totul impecabil", bani: -100, fericirePct: 5, lectie: "Igiena și ordinea contează pentru starea ta." },
+      { text: "Cumpăr produse de curățenie și fac totul impecabil", bani: -60, fericirePct: 5, lectie: "Igiena și ordinea contează pentru starea ta." },
       { text: "Fac curat rapid cu ce am la îndemână", bani: 0, fericirePct: 0, lectie: "Improvizația e o abilitate valoroasă." },
     ],
   },
@@ -121,7 +121,7 @@ const caminEvents: GameEvent[] = [
     titlu: "Examen picat",
     descriere: "Ai picat un examen important și trebuie să îl dai din nou în sesiunea restanțelor.",
     optiuni: [
-      { text: "Plătesc meditații pentru a fi sigur că îl iau", bani: -400, fericirePct: 5, lectie: "Investiția în educație plătește pe termen lung." },
+      { text: "Plătesc meditații pentru a fi sigur că îl iau", bani: -150, fericirePct: 5, lectie: "Investiția în educație plătește pe termen lung." },
       { text: "Studiez singur intens", bani: 0, fericirePct: -10, lectie: "Autodisciplina e cea mai valoroasă abilitate." },
     ],
   },
@@ -130,7 +130,7 @@ const caminEvents: GameEvent[] = [
     titlu: "Ofertă job part-time",
     descriere: "Un coleg îți oferă un job de câteva ore pe zi, dar ar afecta cursurile.",
     optiuni: [
-      { text: "Accept — banii în plus ajută mult", bani: 400, fericirePct: -10, lectie: "Banii în plus vin cu sacrificarea timpului." },
+      { text: "Accept — banii în plus ajută mult", bani: 500, fericirePct: -10, lectie: "Banii în plus vin cu sacrificarea timpului." },
       { text: "Refuz — prioritizez studiile", bani: 0, fericirePct: 5, lectie: "Focusul pe termen lung e mai valoros." },
     ],
   },
@@ -139,8 +139,8 @@ const caminEvents: GameEvent[] = [
     titlu: "Internet prea lent",
     descriere: "Internetul căminului e atât de lent că nu poți participa la cursurile online.",
     optiuni: [
-      { text: "Cumpăr date extra și folosesc datele telefonului", bani: -120, fericirePct: 5, lectie: "Investiția în conectivitate e uneori necesară." },
-      { text: "Merg la biblioteca universitară", bani: -30, fericirePct: 0, lectie: "Alternativele gratuite există, dar necesită efort." },
+      { text: "Cumpăr date extra și folosesc datele telefonului", bani: -40, fericirePct: 5, lectie: "Investiția în conectivitate e uneori necesară." },
+      { text: "Merg la biblioteca universitară", bani: 0, fericirePct: 0, lectie: "Alternativele gratuite există, dar necesită efort." },
     ],
   },
   {
@@ -148,8 +148,8 @@ const caminEvents: GameEvent[] = [
     titlu: "Colectă pentru fondul căminului",
     descriere: "Se strâng bani pentru renovarea băilor comune — fiecare contribuie cât poate.",
     optiuni: [
-      { text: "Contribui cu suma recomandată", bani: -200, fericirePct: 8, lectie: "Investiția în spații comune îmbunătățește viața tuturor." },
-      { text: "Contribui cu jumătate din sumă", bani: -100, fericirePct: -3, lectie: "Compromisul financiar e uneori necesar." },
+      { text: "Contribui cu suma recomandată", bani: -100, fericirePct: 8, lectie: "Investiția în spații comune îmbunătățește viața tuturor." },
+      { text: "Contribui cu jumătate din sumă", bani: -50, fericirePct: -3, lectie: "Compromisul financiar e uneori necesar." },
       { text: "Nu contribui — nu am de unde", bani: 0, fericirePct: -8, lectie: "Refuzul poate crea tensiuni sociale." },
     ],
   },
@@ -158,7 +158,7 @@ const caminEvents: GameEvent[] = [
     titlu: "Bursa de performanță",
     descriere: "Ai obținut bursa de performanță! Bani în plus, dar și responsabilitate de a menține media.",
     optiuni: [
-      { text: "Acceptă bursa și planifică bugetul inteligent", bani: 500, fericirePct: 20, lectie: "Recompensele pentru efort merită sărbătorite.", bonusXP: 50 },
+      { text: "Acceptă bursa și planifică bugetul inteligent", bani: 800, fericirePct: 20, lectie: "Recompensele pentru efort merită sărbătorite.", bonusXP: 50 },
       { text: "Acceptă și cheltuiești pe ceva util", bani: 200, fericirePct: 15, lectie: "Echilibrul între recompensă și responsabilitate." },
     ],
   },
@@ -167,8 +167,8 @@ const caminEvents: GameEvent[] = [
     titlu: "Proiect de grup scump",
     descriere: "Proiectul de la facultate necesită materiale și printuri costisitoare.",
     optiuni: [
-      { text: "Împart costurile egal cu grupul", bani: -150, fericirePct: 5, lectie: "Munca în echipă reduce povara individuală." },
-      { text: "Caut alternative mai ieftine online", bani: -50, fericirePct: 0, lectie: "Creativitatea economisește bani." },
+      { text: "Împart costurile egal cu grupul", bani: -80, fericirePct: 5, lectie: "Munca în echipă reduce povara individuală." },
+      { text: "Caut alternative mai ieftine online", bani: -30, fericirePct: 0, lectie: "Creativitatea economisește bani." },
     ],
   },
   {
@@ -176,7 +176,7 @@ const caminEvents: GameEvent[] = [
     titlu: "Ziua onomasticii unui coleg",
     descriere: "Colegii organizează o cină pentru ziua unuia dintre voi.",
     optiuni: [
-      { text: "Contribui la cadou și particip la cină", bani: -150, fericirePct: 15, lectie: "Relațiile sociale sunt o investiție valoroasă." },
+      { text: "Contribui la cadou și particip la cină", bani: -80, fericirePct: 15, lectie: "Relațiile sociale sunt o investiție valoroasă." },
       { text: "Dau un mesaj de felicitare — nu am budget acum", bani: 0, fericirePct: -5, lectie: "Gesturile mici contează și ele." },
     ],
   },
@@ -185,8 +185,8 @@ const caminEvents: GameEvent[] = [
     titlu: "Prieteni în vizită neașteptată",
     descriere: "3 prieteni din alt oraș apar la ușa căminului. Vor să stea peste noapte.",
     optiuni: [
-      { text: "Găzduiesc pe toți — distracție garantată", bani: -200, fericirePct: 25, lectie: "Ospitalitatea creează amintiri și relații puternice." },
-      { text: "Le arăt un hotel ieftin în zonă", bani: -50, fericirePct: 5, lectie: "Poți fi prietenos fără să te ruinezi." },
+      { text: "Găzduiesc pe toți — distracție garantată", bani: -100, fericirePct: 25, lectie: "Ospitalitatea creează amintiri și relații puternice." },
+      { text: "Le arăt un hotel ieftin în zonă", bani: 0, fericirePct: 5, lectie: "Poți fi prietenos fără să te ruinezi." },
     ],
   },
   {
@@ -205,7 +205,7 @@ const caminEvents: GameEvent[] = [
     descriere: "Ai o săptămână plină cu examene, dar și ocazia de a sta cu prietenii până la 4 dimineața.",
     optiuni: [
       { text: "Prioritizez examenele — odihnă maximă", bani: 0, fericirePct: -5, lectie: "Sănătatea mentală și academică sunt prioritare." },
-      { text: "Stau cu prietenii câteva nopți", bani: -100, fericirePct: 10, lectie: "Echilibrul social e important, dar nu în examene." },
+      { text: "Stau cu prietenii câteva nopți", bani: -50, fericirePct: 10, lectie: "Echilibrul social e important, dar nu în examene." },
       { text: "Stabilesc un program strict: 3 ore somn, restul studiu", bani: 0, fericirePct: -15, lectie: "Privarea de somn afectează performanța cognitivă." },
     ],
   },
@@ -214,8 +214,8 @@ const caminEvents: GameEvent[] = [
     titlu: "Reduceri la cantina căminului",
     descriere: "Cantina oferă 30% reducere dacă cumperi 20 de bonuri de masă.",
     optiuni: [
-      { text: "Cumperi toate bonurile — economisești semnificativ", bani: -150, fericirePct: 5, lectie: "Investiția în masă economisește pe termen lung." },
-      { text: "Cumperi doar 10 — nu știi dacă mănânci în fiecare zi", bani: -75, fericirePct: 0, lectie: "Flexibilitatea are un cost, dar previne risipa." },
+      { text: "Cumperi toate bonurile — economisești semnificativ", bani: -250, fericirePct: 5, lectie: "Investiția în masă economisește pe termen lung." },
+      { text: "Cumperi doar 10 — nu știi dacă mănânci în fiecare zi", bani: -125, fericirePct: 0, lectie: "Flexibilitatea are un cost, dar previne risipa." },
     ],
   },
   {
@@ -223,7 +223,7 @@ const caminEvents: GameEvent[] = [
     titlu: "Prietenul tău vrea să se mute temporar la cămin",
     descriere: "Un prieten bun are probleme acasă și vrea să stea la cămin câteva săptămâni.",
     optiuni: [
-      { text: "Îl găzduiești — ești acolo pentru el", bani: -150, fericirePct: 20, lectie: "Prietenii adevărați se cunosc în momentele dificile." },
+      { text: "Îl găzduiești — ești acolo pentru el", bani: -100, fericirePct: 20, lectie: "Prietenii adevărați se cunosc în momentele dificile." },
       { text: "Îl ajuți să găsească un loc în altă cameră", bani: 0, fericirePct: 10, lectie: "Ajutorul poate veni în mai multe forme." },
     ],
   },
@@ -232,7 +232,7 @@ const caminEvents: GameEvent[] = [
     titlu: "Curs opțional premium online",
     descriere: "Un curs de certificare online oferă o reducere de 50% pentru studenți.",
     optiuni: [
-      { text: "Înscrie-te — certificarea poate fi valoroasă", bani: -200, fericirePct: 10, lectie: "Certificările aduc avantaje competitive pe piața muncii.", bonusXP: 30 },
+      { text: "Înscrie-te — certificarea poate fi valoroasă", bani: -250, fericirePct: 10, lectie: "Certificările aduc avantaje competitive pe piața muncii.", bonusXP: 30 },
       { text: "Caut alternative gratuite pe YouTube", bani: 0, fericirePct: 5, lectie: "Resurse gratuite există, dar necesită auto-disciplină." },
     ],
     isPremium: true,
@@ -254,7 +254,7 @@ const caminEvents: GameEvent[] = [
     descriere: "Un profesor caută studenți pentru un proiect de cercetare plătit.",
     optiuni: [
       { text: "Aplici imediat", bani: 600, fericirePct: 10, lectie: "Proiectele de cercetare oferă experiență și venit.", bonusXP: 50 },
-      { text: "Ești感兴趣 dar riști să nu ai timp", bani: 300, fericirePct: -5, lectie: "Multi-tasking-ul poate afecta calitatea ambelor." },
+      { text: "Ești interesat dar riști să nu ai timp", bani: 300, fericirePct: -5, lectie: "Multi-tasking-ul poate afecta calitatea ambelor." },
     ],
     isPremium: true,
   },
@@ -273,7 +273,7 @@ const caminEvents: GameEvent[] = [
     titlu: "Abonament gym la cămin",
     descriere: "Sala de sport a căminului are o ofertă specială: 50% reducere.",
     optiuni: [
-      { text: "Înscrie-te — sănătatea e o investiție", bani: -150, fericirePct: 15, lectie: "Sportul regulat îmbunătățește concentrarea și starea de spirit." },
+      { text: "Înscrie-te — sănătatea e o investiție", bani: -120, fericirePct: 15, lectie: "Sportul regulat îmbunătățește concentrarea și starea de spirit." },
       { text: "Faci sport în aer liber — gratuit", bani: 0, fericirePct: 5, lectie: "Alternativele gratuite există dacă ești creativ." },
     ],
     isPremium: true,
@@ -323,7 +323,7 @@ const chirieEvents: GameEvent[] = [
     titlu: "Frigider stricat",
     descriere: "Frigiderul din apartament s-a stricat. Mâncarea ta riscă să se strice.",
     optiuni: [
-      { text: "Cumpăr un frigider second-hand rapid", bani: -600, fericirePct: 5, lectie: "Investițiile urgente sunt uneori inevitabile." },
+      { text: "Cumpăr un frigider second-hand rapid", bani: -400, fericirePct: 5, lectie: "Investițiile urgente sunt uneori inevitabile." },
       { text: "Îi cer proprietarului să îl repare", bani: 0, fericirePct: -5, lectie: "Cunoașterea drepturilor de chiriaș te protejează." },
       { text: "Cumpăr doar alimente neperisabile temporar", bani: -50, fericirePct: -10, lectie: "Adaptarea la situații dificile e esențială." },
     ],
@@ -334,7 +334,7 @@ const chirieEvents: GameEvent[] = [
     descriere: "Colegul tău de apartament se mută brusc și chiria integrală revine ție.",
     optiuni: [
       { text: "Caut urgent un nou coleg de cameră", bani: -100, fericirePct: -5, lectie: "Planificarea financiară trebuie să includă scenarii de risc." },
-      { text: "Plătesc singur chiria integrală o lună", bani: -1200, fericirePct: -20, lectie: "Fondul de urgență e esențial." },
+      { text: "Plătesc singur chiria integrală o lună", bani: -1500, fericirePct: -20, lectie: "Fondul de urgență e esențial." },
     ],
   },
   {
@@ -367,8 +367,8 @@ const chirieEvents: GameEvent[] = [
     titlu: "Factura la electricitate uriașă",
     descriere: "Ai lăsat aparatele pornite prea mult și factura e mult mai mare decât de obicei.",
     optiuni: [
-      { text: "Plătesc factura și instalez prize inteligente", bani: -450, fericirePct: -5, lectie: "Eficiența energetică economisește bani pe termen lung." },
-      { text: "Plătesc facturat în rate dacă e posibil", bani: -200, fericirePct: -10, lectie: "Managementul fluxului de numerar e important." },
+      { text: "Plătesc factura și instalez prize inteligente", bani: -350, fericirePct: -5, lectie: "Eficiența energetică economisește bani pe termen lung." },
+      { text: "Plătesc factura în rate dacă e posibil", bani: -200, fericirePct: -10, lectie: "Managementul fluxului de numerar e important." },
     ],
   },
   {
@@ -378,7 +378,7 @@ const chirieEvents: GameEvent[] = [
     optiuni: [
       { text: "Discut civilizat cu vecinul", bani: 0, fericirePct: 5, lectie: "Comunicarea directă rezolvă multe probleme." },
       { text: "Sun la administrația blocului", bani: 0, fericirePct: -5, lectie: "Autoritățile sunt un ultim resort." },
-      { text: "Mă mut la un prieten câteva nopți", bani: -100, fericirePct: 5, lectie: "Prietenii sunt un fond emoțional de urgență." },
+      { text: "Mă mut la un prieten câteva nopți", bani: -50, fericirePct: 5, lectie: "Prietenii sunt un fond emoțional de urgență." },
     ],
   },
   {
@@ -386,7 +386,7 @@ const chirieEvents: GameEvent[] = [
     titlu: "Reducere la supermarket",
     descriere: "Supermarketul din cartier are promoții mari săptămâna aceasta.",
     optiuni: [
-      { text: "Cumpăr în cantități mai mari și economisesc", bani: 150, fericirePct: 5, lectie: "Cumpărăturile strategice reduc cheltuielile." },
+      { text: "Cumpăr în cantități mai mari și economisesc", bani: 100, fericirePct: 5, lectie: "Cumpărăturile strategice reduc cheltuielile." },
       { text: "Cumpăr doar strictul necesar", bani: 0, fericirePct: 0, lectie: "Disciplina financiară înseamnă și să reziste tentațiilor." },
     ],
   },
@@ -429,8 +429,8 @@ const chirieEvents: GameEvent[] = [
     titlu: "Abonament servicii streaming",
     descriere: "Ai abonamente la 4 platforme streaming și observi că nu le folosești pe toate.",
     optiuni: [
-      { text: "Renunț la 2 abonamente — economisesc lunar", bani: 80, fericirePct: -5, lectie: "Abonamentele mici se adună într-o cheltuiala mare." },
-      { text: "Păstrez toate — entertainment-ul e important", bani: 0, fericirePct: 5, lectie: "Valoarea percepută diferă de la persoana la persoana." },
+      { text: "Renunț la 2 abonamente — economisesc lunar", bani: 60, fericirePct: -5, lectie: "Abonamentele mici se adună într-o cheltuială mare." },
+      { text: "Păstrez toate — entertainment-ul e important", bani: 0, fericirePct: 5, lectie: "Valoarea percepută diferă de la persoană la persoană." },
       { text: "Shared plan cu prietenii — împărțim costul", bani: 40, fericirePct: 5, lectie: "Costurile împărțite reduc povara individuală." },
     ],
   },
@@ -449,7 +449,7 @@ const chirieEvents: GameEvent[] = [
     descriere: "Proprietarul oferă două variante: utilități incluse în chirie sau separate.",
     optiuni: [
       { text: "Utilități incluse — buget predictibil", bani: -150, fericirePct: 10, lectie: "Predictibilitatea financiară reduce stresul." },
-      { text: "Separare — risc de surprize", bani: 0, fericirePct: -5, lectie: "Economiile pot fi reali sau iluzorii." },
+      { text: "Separare — risc de surprize", bani: 0, fericirePct: -5, lectie: "Economiile pot fi reale sau iluzorii." },
     ],
   },
   {
@@ -457,9 +457,9 @@ const chirieEvents: GameEvent[] = [
     titlu: "Invitație la petrecere de nuntă",
     descriere: "Un coleg te invită la nunta lui. E un eveniment scump dar important.",
     optiuni: [
-      { text: "Mergi și cumperi cadou decent", bani: -300, fericirePct: 15, lectie: "Relațiile importante merită celebrate." },
+      { text: "Mergi și cumperi cadou decent", bani: -400, fericirePct: 15, lectie: "Relațiile importante merită celebrate." },
       { text: "Mergi doar la ceremonie — nu la petrecere", bani: -150, fericirePct: 5, lectie: "Compromisul între prezență și buget." },
-      { text: "Îi trimiți un cadou și scuze", bani: -50, fericirePct: 0, lectie: "Gestul contează chiar și cu resurse limitate." },
+      { text: "Îi trimiți un cadou și scuze", bani: -100, fericirePct: 0, lectie: "Gestul contează chiar și cu resurse limitate." },
     ],
   },
   {
@@ -476,7 +476,7 @@ const chirieEvents: GameEvent[] = [
     titlu: "Program de loialitate la supermarket",
     descriere: "Supermarketul oferă un card de loialitate cu reduceri progresive.",
     optiuni: [
-      { text: "Înscrie-te — economiile se adună", bani: 100, fericirePct: 5, lectie: "Programele de loialitate funcționează dacă ești constant." },
+      { text: "Înscrie-te — economiile se adună", bani: 80, fericirePct: 5, lectie: "Programele de loialitate funcționează dacă ești constant." },
       { text: "Nu te înscrii — e prea multă birocrație", bani: 0, fericirePct: 0, lectie: "Unele economii necesită efort suplimentar." },
     ],
   },
@@ -495,7 +495,7 @@ const chirieEvents: GameEvent[] = [
     titlu: "Certificare profesională",
     descriere: "O certificare recunoscută în domeniul tău are o ofertă de 40% reducere.",
     optiuni: [
-      { text: "Înscrie-te — certificarea crește șansele de angajare", bani: -400, fericirePct: 15, lectie: "Certificările profesioniste sunt investiții în viitor.", bonusXP: 50 },
+      { text: "Înscrie-te — certificarea crește șansele de angajare", bani: -500, fericirePct: 15, lectie: "Certificările profesioniste sunt investiții în viitor.", bonusXP: 50 },
       { text: "Aștepți o altă ofertă mai bună", bani: 0, fericirePct: 0, lectie: "Oportunitățile vin și trec. Evaluează prioritățile." },
     ],
     isPremium: true,
@@ -503,9 +503,9 @@ const chirieEvents: GameEvent[] = [
   {
     id: "h18",
     titlu: "Imobiliare: schimbă locuința",
-    descriere: "Prietenii tăi s-au mutat lângă centru și te invite să te alături.",
+    descriere: "Prietenii tăi s-au mutat lângă centru și te invită să te alături.",
     optiuni: [
-      { text: "Te muti lângă ei — viața socială se îmbunătățește", bani: -200, fericirePct: 25, lectie: "Mediul social influențează calitatea vieții.", bonusXP: 30 },
+      { text: "Te muți lângă ei — viața socială se îmbunătățește", bani: -200, fericirePct: 25, lectie: "Mediul social influențează calitatea vieții.", bonusXP: 30 },
       { text: "Rămâi unde ești — ai deja rutină", bani: 0, fericirePct: 5, lectie: "Stabilitatea are valoare când ai un echilibru." },
     ],
     isPremium: true,
@@ -558,8 +558,8 @@ const garsonieraEvents: GameEvent[] = [
     titlu: "Laptop stricat",
     descriere: "Laptopul tău de serviciu s-a stricat și ai nevoie urgent de unul nou.",
     optiuni: [
-      { text: "Cumpăr un laptop nou refurbished — bun și ieftin", bani: -1500, fericirePct: 5, lectie: "Produsele refurbished oferă raport calitate-preț excelent." },
-      { text: "Cumpăr nou cu garanție completă", bani: -3000, fericirePct: 10, lectie: "Calitatea costă, dar oferă siguranță." },
+      { text: "Cumpăr un laptop nou refurbished — bun și ieftin", bani: -1400, fericirePct: 5, lectie: "Produsele refurbished oferă raport calitate-preț excelent." },
+      { text: "Cumpăr nou cu garanție completă", bani: -2800, fericirePct: 10, lectie: "Calitatea costă, dar oferă siguranță." },
       { text: "Împrumut de la un coleg până găsesc soluție", bani: 0, fericirePct: -5, lectie: "Soluțiile temporare reduc presiunea imediată." },
     ],
   },
@@ -587,8 +587,8 @@ const garsonieraEvents: GameEvent[] = [
     titlu: "Cheltuieli medicale neprevăzute",
     descriere: "Suprasolicitarea și stresul au afectat sănătatea și ai nevoie de consultații.",
     optiuni: [
-      { text: "Merg la medic și urmez tratamentul complet", bani: -600, fericirePct: 10, lectie: "Sănătatea e cel mai valoros activ pe care îl ai." },
-      { text: "Iau un tratament generic din farmacie", bani: -150, fericirePct: -5, lectie: "Economisirea la sănătate poate costa mai mult pe termen lung." },
+      { text: "Merg la medic și urmez tratamentul complet", bani: -250, fericirePct: 10, lectie: "Sănătatea e cel mai valoros activ pe care îl ai." },
+      { text: "Iau un tratament generic din farmacie", bani: -100, fericirePct: -5, lectie: "Economisirea la sănătate poate costa mai mult pe termen lung." },
     ],
   },
   {
@@ -596,7 +596,7 @@ const garsonieraEvents: GameEvent[] = [
     titlu: "Investiție în skill-uri noi",
     descriere: "O platformă de cursuri online are reduceri la cursuri de specialitate.",
     optiuni: [
-      { text: "Cumpăr 2-3 cursuri relevante pentru carieră", bani: -400, fericirePct: 15, lectie: "Investiția în educație continuă are ROI ridicat.", bonusXP: 40 },
+      { text: "Cumpăr 2-3 cursuri relevante pentru carieră", bani: -350, fericirePct: 15, lectie: "Investiția în educație continuă are ROI ridicat.", bonusXP: 40 },
       { text: "Urmăresc cursuri gratuite pe YouTube", bani: 0, fericirePct: 5, lectie: "Conținutul gratuit de calitate există și e valorificat de cei disciplinați." },
     ],
   },
@@ -616,7 +616,7 @@ const garsonieraEvents: GameEvent[] = [
     optiuni: [
       { text: "Pun în economii / fond de urgență", bani: 500, fericirePct: 10, lectie: "Fondul de urgență te protejează de șocuri financiare.", bonusXP: 30 },
       { text: "Îmi cumpăr ceva de care am nevoie pentru job", bani: 100, fericirePct: 15, lectie: "Investițiile în productivitate se amortizează." },
-      { text: "Ies cu prietenii — merit o relaxare", bani: -200, fericirePct: 25, lectie: "Recompensele ocazionale mențin motivația." },
+      { text: "Ies cu prietenii — merit o relaxare", bani: -80, fericirePct: 25, lectie: "Recompensele ocazionale mențin motivația." },
     ],
   },
   {
@@ -625,7 +625,7 @@ const garsonieraEvents: GameEvent[] = [
     descriere: "După luni de muncă intensă, simți epuizarea. Ai nevoie de pauză.",
     optiuni: [
       { text: "Ieși în vacanță scurtă — reconectare", bani: -500, fericirePct: 30, lectie: "Pauza strategică previne epuizarea totală." },
-      { text: "Negociezi program mai flexibile", bani: 0, fericirePct: 15, lectie: "Boundaries sănătoase se negociază." },
+      { text: "Negociezi program mai flexibil", bani: 0, fericirePct: 15, lectie: "Boundaries sănătoase se negociază." },
       { text: "Continui — ai nevoie de bani", bani: 200, fericirePct: -25, lectie: "Ignorarea semnalelor corpului duce la probleme grave." },
     ],
     isPremium: true,
@@ -668,7 +668,7 @@ const garsonieraEvents: GameEvent[] = [
     titlu: "Sănătate mintală și productivitate",
     descriere: "Stresul cronic începe să afecteze performanța ta. E momentul să acționezi.",
     optiuni: [
-      { text: "Consultanță psihologică — investește în sănătate", bani: -400, fericirePct: 25, lectie: "Sănătatea mintală e la fel de importantă ca cea fizică.", bonusXP: 30 },
+      { text: "Consultanță psihologică — investește în sănătate", bani: -300, fericirePct: 25, lectie: "Sănătatea mintală e la fel de importantă ca cea fizică.", bonusXP: 30 },
       { text: "Faci sport și meditație — soluție ieftină", bani: -100, fericirePct: 15, lectie: "Tehnicile de wellness gratuit pot fi eficiente." },
       { text: "Ignori — problema va dispărea", bani: 0, fericirePct: -20, lectie: "Problemele de sănătate mintală nu dispar de la sine." },
     ],
@@ -682,7 +682,7 @@ const navetistEvents: GameEvent[] = [
     titlu: "Tren întârziat",
     descriere: "Trenul are 60 de minute întârziere și riscă să ratezi cursurile de dimineață.",
     optiuni: [
-      { text: "Iau un taxi/Uber pentru a ajunge la timp", bani: -250, fericirePct: 5, lectie: "Confortul și precizia costă mai mult." },
+      { text: "Iau un taxi/Uber pentru a ajunge la timp", bani: -50, fericirePct: 5, lectie: "Confortul și precizia costă mai mult." },
       { text: "Aștept trenul și anunț profesorul", bani: 0, fericirePct: -10, lectie: "Comunicarea proactivă salvează situații dificile." },
     ],
   },
@@ -691,7 +691,7 @@ const navetistEvents: GameEvent[] = [
     titlu: "Pachet de la bunici",
     descriere: "Bunicii ți-au pregătit o sacoșă plină cu mâncare bună.",
     optiuni: [
-      { text: "O mănânc toată săptămâna — economisesc la masă", bani: 150, fericirePct: 15, lectie: "Sprijinul familiei reduce cheltuielile." },
+      { text: "O mănânc toată săptămâna — economisesc la masă", bani: 120, fericirePct: 15, lectie: "Sprijinul familiei reduce cheltuielile." },
       { text: "Împart cu colegii de facultate", bani: 0, fericirePct: 20, lectie: "Generozitatea consolidează prietenii." },
     ],
   },
@@ -700,7 +700,7 @@ const navetistEvents: GameEvent[] = [
     titlu: "Abonament transport expirat",
     descriere: "Ai uitat să reînnoiești abonamentul de tren și ești prins fără bilet.",
     optiuni: [
-      { text: "Cumpăr bilet pe loc la preț întreg", bani: -80, fericirePct: -5, lectie: "Neglijența mică costă mai mult decât prevenirea." },
+      { text: "Cumpăr bilet pe loc la preț întreg", bani: -40, fericirePct: -5, lectie: "Neglijența mică costă mai mult decât prevenirea." },
       { text: "Plătesc amenda controlorului", bani: -200, fericirePct: -15, lectie: "Nerespectarea regulilor costă semnificativ mai mult." },
     ],
   },
@@ -709,8 +709,8 @@ const navetistEvents: GameEvent[] = [
     titlu: "Naveta costă tot mai mult",
     descriere: "Prețul biletelor s-a majorat cu 20% față de luna trecută.",
     optiuni: [
-      { text: "Caut o garsonieră în oraș — cheltuielile de navetă depășesc chiria", bani: -800, fericirePct: -5, lectie: "Analiza cost-beneficiu te ajută să iei decizii raționale." },
-      { text: "Îmi cumpăr abonament anual la preț redus", bani: -600, fericirePct: 5, lectie: "Plata anticipată economisește pe termen lung." },
+      { text: "Caut o garsonieră în oraș — cheltuielile de navetă depășesc chiria", bani: -600, fericirePct: -5, lectie: "Analiza cost-beneficiu te ajută să iei decizii raționale." },
+      { text: "Îmi cumpăr abonament anual la preț redus", bani: -400, fericirePct: 5, lectie: "Plata anticipată economisește pe termen lung." },
       { text: "Continui cu bilete zilnice", bani: -100, fericirePct: 0, lectie: "Uneori flexibilitatea costă mai mult." },
     ],
     subScenariuModificari: {
@@ -723,7 +723,7 @@ const navetistEvents: GameEvent[] = [
       },
       singur: {
         optiuni: [
-          { text: "Caut o garsonieră ieftină — naveta costă prea mult", bani: -800, fericirePct: -10, lectie: "Nu ai de ales când banii nu ajung." },
+          { text: "Caut o garsonieră ieftină — naveta costă prea mult", bani: -600, fericirePct: -10, lectie: "Nu ai de ales când banii nu ajung." },
           { text: "Continui să navetesc — nu am bani de chirie", bani: -100, fericirePct: -15, lectie: "Situația financiară limitează opțiunile." },
         ],
       },
@@ -735,7 +735,7 @@ const navetistEvents: GameEvent[] = [
     descriere: "Mama te roagă să o ajuți la curățenie generală sâmbătă.",
     optiuni: [
       { text: "Rămân și ajut — familia vine pe primul loc", bani: 0, fericirePct: 10, lectie: "Relațiile familiale au valoare în afara banilor." },
-      { text: "Plec în oraș la activități proprii", bani: -100, fericirePct: -5, lectie: "Independența personală uneori crează tensiuni familiale." },
+      { text: "Plec în oraș la activități proprii", bani: -50, fericirePct: -5, lectie: "Independența personală uneori creează tensiuni familiale." },
     ],
   },
   {
@@ -744,7 +744,7 @@ const navetistEvents: GameEvent[] = [
     descriere: "Mașina cu care faci naveta s-a stricat și trebuie reparată urgent.",
     optiuni: [
       { text: "Repar mașina — investiție necesară", bani: -1500, fericirePct: -10, lectie: "Întreținerea regulată previne reparații costisitoare." },
-      { text: "Folosesc transportul în comun temporar", bani: -200, fericirePct: -15, lectie: "Alternativele există, chiar dacă sunt mai incomode." },
+      { text: "Folosesc transportul în comun temporar", bani: -120, fericirePct: -15, lectie: "Alternativele există, chiar dacă sunt mai incomode." },
     ],
   },
   {
@@ -752,8 +752,8 @@ const navetistEvents: GameEvent[] = [
     titlu: "Prieteni din facultate invitați în weekend",
     descriere: "Prietenii din grupul tău vor să vă organizeze un weekend la tine acasă.",
     optiuni: [
-      { text: "Îi invit și organizez totul — merită", bani: -300, fericirePct: 25, lectie: "Experiențele sociale au valoare enormă pentru wellbeing." },
-      { text: "Sugerez o alternativă mai ieftină — grătar în natură", bani: -100, fericirePct: 20, lectie: "Creativitatea reduce costurile și poate crea amintiri mai frumoase." },
+      { text: "Îi invit și organizez totul — merită", bani: -200, fericirePct: 25, lectie: "Experiențele sociale au valoare enormă pentru wellbeing." },
+      { text: "Sugerez o alternativă mai ieftină — grătar în natură", bani: -80, fericirePct: 20, lectie: "Creativitatea reduce costurile și poate crea amintiri mai frumoase." },
     ],
   },
   {
@@ -768,9 +768,9 @@ const navetistEvents: GameEvent[] = [
   {
     id: "n9",
     titlu: "Accident la navetă",
-    descriere: "Ai lipsit de la cursuri din cauza unui accident la metrou. Trebuie să recuperzi.",
+    descriere: "Ai lipsit de la cursuri din cauza unui accident la metrou. Trebuie să recuperezi.",
     optiuni: [
-      { text: "Meditații pentru a recupera materia", bani: -300, fericirePct: -5, lectie: "Recuperarea rapidă previne acumularea de restanțe.", bonusXP: 20 },
+      { text: "Meditații pentru a recupera materia", bani: -150, fericirePct: -5, lectie: "Recuperarea rapidă previne acumularea de restanțe.", bonusXP: 20 },
       { text: "Studiu intensiv individual", bani: 0, fericirePct: -10, lectie: "Autodidacția e posibilă dar solicitantă." },
     ],
   },
@@ -802,9 +802,9 @@ const iarnaEvents: GameEvent[] = [
     titlu: "Cadouri de Crăciun",
     descriere: "Lista de cadouri crește exponențial. Toată lumea se așteaptă la ceva.",
     optiuni: [
-      { text: "Stabilesc un buget fix și îl respect", bani: -400, fericirePct: 15, lectie: "Bugetele pentru sărbători trebuie planificate anticipat." },
-      { text: "Fac cadouri DIY — mai personal și mai ieftin", bani: -150, fericirePct: 10, lectie: "Creativitatea poate înlocui cheltuielile mari." },
-      { text: "Propun în familie să ne dăm cadouri simbolice", bani: -100, fericirePct: 5, lectie: "Comunicarea deschisă despre bani reduce presiunea." },
+      { text: "Stabilesc un buget fix și îl respect", bani: -300, fericirePct: 15, lectie: "Bugetele pentru sărbători trebuie planificate anticipat." },
+      { text: "Fac cadouri DIY — mai personal și mai ieftin", bani: -100, fericirePct: 10, lectie: "Creativitatea poate înlocui cheltuielile mari." },
+      { text: "Propun în familie să ne dăm cadouri simbolice", bani: -80, fericirePct: 5, lectie: "Comunicarea deschisă despre bani reduce presiunea." },
     ],
     sezon: "iarna",
   },
@@ -813,7 +813,7 @@ const iarnaEvents: GameEvent[] = [
     titlu: "Factura la gaz uriașă",
     descriere: "Iarna asta e deosebit de grea și factura la încălzire a explodat.",
     optiuni: [
-      { text: "Plătesc și instalez termostatul inteligent", bani: -800, fericirePct: -5, lectie: "Eficiența energetică e o investiție pe termen lung." },
+      { text: "Plătesc și instalez termostatul inteligent", bani: -600, fericirePct: -5, lectie: "Eficiența energetică e o investiție pe termen lung." },
       { text: "Reduc temperatura și port mai multe straturi", bani: -400, fericirePct: -10, lectie: "Adaptarea la condiții dificile economisește bani." },
     ],
     sezon: "iarna",
@@ -833,7 +833,7 @@ const iarnaEvents: GameEvent[] = [
     titlu: "Gripă în sesiune",
     descriere: "Te-ai îmbolnăvit fix în sesiunea de iarnă.",
     optiuni: [
-      { text: "Merg la medic și iau tratament corect", bani: -200, fericirePct: 10, lectie: "Tratamentul corect e mai ieftin decât complicațiile." },
+      { text: "Merg la medic și iau tratament corect", bani: -150, fericirePct: 10, lectie: "Tratamentul corect e mai ieftin decât complicațiile." },
       { text: "Stau în pat și sper că trece singur", bani: 0, fericirePct: -20, lectie: "Ignorarea simptomelor poate agrava situația." },
     ],
     sezon: "iarna",
@@ -843,9 +843,9 @@ const iarnaEvents: GameEvent[] = [
     titlu: "Cămin vs Crăciun acasă",
     descriere: "E Crăciunul și trebuie să decizi: rămâi la cămin sau pleci acasă?",
     optiuni: [
-      { text: "Pleci acasă — familia e prioritare", bani: -300, fericirePct: 30, lectie: "Crăciunul cu familia e o tradiție care contează." },
+      { text: "Pleci acasă — familia e prioritară", bani: -150, fericirePct: 30, lectie: "Crăciunul cu familia e o tradiție care contează." },
       { text: "Rămâi la cămin — economisești bani", bani: 200, fericirePct: -15, lectie: "Economiile din a nu călători pot fi semnificative." },
-      { text: "Convingi familia să vină la tine", bani: -500, fericirePct: 20, lectie: "Căminul tău poate deveni locul de întâlnire." },
+      { text: "Convingi familia să vină la tine", bani: -300, fericirePct: 20, lectie: "Căminul tău poate deveni locul de întâlnire." },
     ],
     sezon: "iarna",
     isPremium: true,
@@ -855,8 +855,8 @@ const iarnaEvents: GameEvent[] = [
     titlu: "Vacanță de iarnă: munte sau acasă",
     descriere: "Ai 2 săptămâni de vacanță. Unde le petreci?",
     optiuni: [
-      { text: "Faci schi la munte cu prietenii", bani: -600, fericirePct: 25, lectie: "Vacanțele active creează amintiri și consolidatează prietenii.", bonusXP: 30 },
-      { text: "Mergi acasă și petreci timp cu familia", bani: -200, fericirePct: 20, lectie: "Calitatea timpului cu familia nu are preț." },
+      { text: "Faci schi la munte cu prietenii", bani: -500, fericirePct: 25, lectie: "Vacanțele active creează amintiri și consolidează prietenii.", bonusXP: 30 },
+      { text: "Mergi acasă și petreci timp cu familia", bani: -150, fericirePct: 20, lectie: "Calitatea timpului cu familia nu are preț." },
       { text: "Stai la cămin și economisești", bani: 100, fericirePct: -10, lectie: "Economiile pe termen lung pot merita sacrificiul." },
     ],
     sezon: "iarna",
@@ -867,9 +867,9 @@ const iarnaEvents: GameEvent[] = [
     titlu: "Reduceri de iarnă la tehnologie",
     descriere: "Laptopul tău e vechi. E sezonul de reduceri — faci upgrade?",
     optiuni: [
-      { text: "Cumperi un laptop refurbished — bun și ieftin", bani: -1200, fericirePct: 15, lectie: "Refurbished oferă raport calitate-preț excelent.", bonusXP: 30 },
+      { text: "Cumperi un laptop refurbished — bun și ieftin", bani: -1400, fericirePct: 15, lectie: "Refurbished oferă raport calitate-preț excelent.", bonusXP: 30 },
       { text: "Aștepți o ofertă și mai bună", bani: 0, fericirePct: -5, lectie: "Uneori așteptarea duce la lipsa oportunității." },
-      { text: "Repari laptopul actual", bani: -400, fericirePct: 5, lectie: "Repararea e mai ieftină dar nu rezolvă problemele de performanță." },
+      { text: "Repari laptopul actual", bani: -300, fericirePct: 5, lectie: "Repararea e mai ieftină dar nu rezolvă problemele de performanță." },
     ],
     sezon: "iarna",
     isPremium: true,
@@ -880,7 +880,7 @@ const iarnaEvents: GameEvent[] = [
     descriere: "O organizație de caritate organizează un eveniment de ajutor pentru comunitate.",
     optiuni: [
       { text: "Participi ca voluntar — donezi timp", bani: 0, fericirePct: 20, lectie: "Voluntariatul aduce satisfacție și experiență.", bonusXP: 40 },
-      { text: "Donezi bani — ești în dificultate și tu", bani: -100, fericirePct: 10, lectie: "Chiar și puțin ajută când vine de la inimă." },
+      { text: "Donezi bani — ești în dificultate și tu", bani: -50, fericirePct: 10, lectie: "Chiar și puțin ajută când vine de la inimă." },
     ],
     sezon: "iarna",
     isPremium: true,
@@ -893,7 +893,7 @@ const varaEvents: GameEvent[] = [
     titlu: "Festival muzical",
     descriere: "Cel mai mare festival de vară e în weekend și toți prietenii merg.",
     optiuni: [
-      { text: "Cumpăr bilet — e o experiență unică", bani: -400, fericirePct: 30, lectie: "Experiențele creează amintiri, lucrurile nu." },
+      { text: "Cumpăr bilet — e o experiență unică", bani: -600, fericirePct: 30, lectie: "Experiențele creează amintiri, lucrurile nu." },
       { text: "Urmăresc live stream-ul de acasă — gratuit", bani: 0, fericirePct: 10, lectie: "Alternativele digitale există pentru cei cu bugete limitate." },
     ],
     sezon: "vara",
@@ -903,7 +903,7 @@ const varaEvents: GameEvent[] = [
     titlu: "Job sezonier la mare",
     descriere: "Un hotel de la mare oferă locuri de muncă sezoniere bine plătite.",
     optiuni: [
-      { text: "Accept job-ul — câștig bine și stau la mare", bani: 1200, fericirePct: 20, lectie: "Job-urile sezoniere combină câștigul cu experiența." },
+      { text: "Accept job-ul — câștig bine și stau la mare", bani: 1500, fericirePct: 20, lectie: "Job-urile sezoniere combină câștigul cu experiența." },
       { text: "Rămân în oraș și mă relaxez", bani: 0, fericirePct: 15, lectie: "Odihna după un an greu are valoare." },
     ],
     sezon: "vara",
@@ -913,8 +913,8 @@ const varaEvents: GameEvent[] = [
     titlu: "Cheltuieli excesive pe căldură",
     descriere: "Aparatul de aer condiționat a funcționat non-stop și factura e uriașă.",
     optiuni: [
-      { text: "Plătesc și programez AC-ul mai eficient", bani: -500, fericirePct: -10, lectie: "Eficiența energetică se învață și se practică." },
-      { text: "Plătesc și încerc ventilatoare ca alternativă", bani: -250, fericirePct: -5, lectie: "Alternativele mai puțin confortabile economisesc bani." },
+      { text: "Plătesc și programez AC-ul mai eficient", bani: -350, fericirePct: -10, lectie: "Eficiența energetică se învață și se practică." },
+      { text: "Plătesc și încerc ventilatoare ca alternativă", bani: -200, fericirePct: -5, lectie: "Alternativele mai puțin confortabile economisesc bani." },
     ],
     sezon: "vara",
   },
@@ -923,7 +923,7 @@ const varaEvents: GameEvent[] = [
     titlu: "Vacanță de vară: ce faci?",
     descriere: "Ai 3 luni de vară. Cum le planifici?",
     optiuni: [
-      { text: "Job full-time la mare — câștig maxim", bani: 2000, fericirePct: 15, lectie: "Vara de muncă poate finanța toamna fără griji.", bonusXP: 40 },
+      { text: "Job full-time la mare — câștig maxim", bani: 1800, fericirePct: 15, lectie: "Vara de muncă poate finanța toamna fără griji.", bonusXP: 40 },
       { text: "Internship plătit — experiență + bani", bani: 1200, fericirePct: 20, lectie: "Internship-ul adaugă CV-ului tău.", bonusXP: 50 },
       { text: "Voluntariat și călătorii ieftine", bani: -200, fericirePct: 30, lectie: "Experiențele și amintirile au altă valoare decât banii.", bonusXP: 35 },
     ],
@@ -935,8 +935,8 @@ const varaEvents: GameEvent[] = [
     titlu: "Concert internațional",
     descriere: "Un artist internațional vine în turneu în România.",
     optiuni: [
-      { text: "Cumperi bilet VIP — experiență de neuitat", bani: -600, fericirePct: 30, lectie: "Concertele VIP oferă experiențe de neuitat.", bonusXP: 30 },
-      { text: "Cumperi bilet normal", bani: -250, fericirePct: 25, lectie: "Chiar și biletele normale oferă experiența completă." },
+      { text: "Cumperi bilet VIP — experiență de neuitat", bani: -700, fericirePct: 30, lectie: "Concertele VIP oferă experiențe de neuitat.", bonusXP: 30 },
+      { text: "Cumperi bilet normal", bani: -200, fericirePct: 25, lectie: "Chiar și biletele normale oferă experiența completă." },
       { text: "Aștepți stream-ul oficial", bani: 0, fericirePct: 10, lectie: "Streaming-ul oficial e o alternativă decentă." },
     ],
     sezon: "vara",
@@ -947,7 +947,7 @@ const varaEvents: GameEvent[] = [
     titlu: "Curs de vară universitar",
     descriere: "Facultatea oferă cursuri de vară pentru puncte extra.",
     optiuni: [
-      { text: "Înscrie-te —累加学分有价值", bani: -300, fericirePct: 10, lectie: "Cursurile de vară accelerează finalizarea studiilor.", bonusXP: 45 },
+      { text: "Înscrie-te — acumulezi credite valoroase", bani: -300, fericirePct: 10, lectie: "Cursurile de vară accelerează finalizarea studiilor.", bonusXP: 45 },
       { text: "Te odihnești — ai meritat", bani: 0, fericirePct: 20, lectie: "Pauza e esențială pentru sănătatea mintală." },
     ],
     sezon: "vara",
@@ -961,7 +961,7 @@ const vacantaEvents: GameEvent[] = [
     titlu: "Zbor ieftin găsit",
     descriere: "Ai găsit bilete de avion la jumătate de preț dacă rezervi acum.",
     optiuni: [
-      { text: "Rezerv imediat — e o ofertă rară", bani: -600, fericirePct: 25, lectie: "Planificarea anticipată a vacanțelor economisește bani." },
+      { text: "Rezerv imediat — e o ofertă rară", bani: -400, fericirePct: 25, lectie: "Planificarea anticipată a vacanțelor economisește bani." },
       { text: "Mai aștept să văd dacă prețul scade mai mult", bani: 0, fericirePct: -5, lectie: "Așteptarea poate face să pierzi ofertele bune." },
     ],
     sezon: "vacanta",
@@ -971,7 +971,7 @@ const vacantaEvents: GameEvent[] = [
     titlu: "Bagaj pierdut",
     descriere: "Aeroportul ți-a pierdut bagajul. Ești la destinație fără haine.",
     optiuni: [
-      { text: "Cumpăr strictul necesar și raportez incidentul", bani: -300, fericirePct: -10, lectie: "Asigurarea de călătorie previne astfel de costuri." },
+      { text: "Cumpăr strictul necesar și raportez incidentul", bani: -200, fericirePct: -10, lectie: "Asigurarea de călătorie previne astfel de costuri." },
       { text: "Aștept bagajul și îmi împrumut de la prieteni", bani: 0, fericirePct: -15, lectie: "Rețeaua de suport reduce impactul situațiilor neprevăzute." },
     ],
     sezon: "vacanta",
@@ -981,9 +981,9 @@ const vacantaEvents: GameEvent[] = [
     titlu: "Restaurant scump la destinație",
     descriere: "Restaurantele din zona turistică sunt mult mai scumpe decât te-ai așteptat.",
     optiuni: [
-      { text: "Mănânc la restaurante locale, nu turistice", bani: -150, fericirePct: 10, lectie: "Explorarea zonelor neturistice economisește și îmbogățește experiența." },
-      { text: "Gătesc la cazare când e posibil", bani: -80, fericirePct: 5, lectie: "Gătitul propriu reduce semnificativ cheltuielile de vacanță." },
-      { text: "Mă bucur de experiență fără să mă uit la prețuri", bani: -500, fericirePct: 20, lectie: "Vacanțele fără buget strict pot genera surprize neplăcute." },
+      { text: "Mănânc la restaurante locale, nu turistice", bani: -60, fericirePct: 10, lectie: "Explorarea zonelor neturistice economisește și îmbogățește experiența." },
+      { text: "Gătesc la cazare când e posibil", bani: -40, fericirePct: 5, lectie: "Gătitul propriu reduce semnificativ cheltuielile de vacanță." },
+      { text: "Mă bucur de experiență fără să mă uit la prețuri", bani: -200, fericirePct: 20, lectie: "Vacanțele fără buget strict pot genera surprize neplăcute." },
     ],
     sezon: "vacanta",
   },
@@ -992,8 +992,8 @@ const vacantaEvents: GameEvent[] = [
     titlu: "Activitate de lux la vacanță",
     descriere: "Ai ocazia să faci scufundări / parapantă / elicopter la destinație.",
     optiuni: [
-      { text: "Încerci — experiențe unice în viață", bani: -800, fericirePct: 35, lectie: "Unele experiențe merită fiecare ban.", bonusXP: 35 },
-      { text: "Cauți alternative mai ieftine", bani: -300, fericirePct: 20, lectie: "Există activități mai accesibile dar la fel de memorabile." },
+      { text: "Încerci — experiențe unice în viață", bani: -600, fericirePct: 35, lectie: "Unele experiențe merită fiecare ban.", bonusXP: 35 },
+      { text: "Cauți alternative mai ieftine", bani: -200, fericirePct: 20, lectie: "Există activități mai accesibile dar la fel de memorabile." },
       { text: "Admiri de la distanță — nu e pentru tine", bani: 0, fericirePct: -5, lectie: "Nu toate experiențele sunt pentru toată lumea." },
     ],
     sezon: "vacanta",
@@ -1001,10 +1001,10 @@ const vacantaEvents: GameEvent[] = [
   },
   {
     id: "vac5",
-    titlu: "Croazieră ieftină被发现",
+    titlu: "Croazieră ieftină descoperită",
     descriere: "Ai găsit o croazieră ieftină de 3 zile. E oportunitatea vieții tale?",
     optiuni: [
-      { text: "Rezervi — oportunitatea e rară", bani: -800, fericirePct: 30, lectie: "Croazierele oferă experiențe diverse într-un singur loc.", bonusXP: 40 },
+      { text: "Rezervi — oportunitatea e rară", bani: -1200, fericirePct: 30, lectie: "Croazierele oferă experiențe diverse într-un singur loc.", bonusXP: 40 },
       { text: "E prea scump pentru tine — cauți altceva", bani: 0, fericirePct: 5, lectie: "Alte destinații pot oferi la fel de mult." },
     ],
     sezon: "vacanta",
@@ -1029,7 +1029,7 @@ const recuperareEvents: GameEvent[] = [
     titlu: "Accept job de livrare",
     descriere: "Ofertă de a lucra ca livrator pentru un restaurant local. Program flexibil, dar muncă fizică.",
     optiuni: [
-      { text: "Accept jobul", bani: 300, fericirePct: -5, lectie: "Munca fizică și programul灵活性 pot fi epuizante, dar aduc venit imediat. Este o soluție de criză, nu una de lungă durată." },
+      { text: "Accept jobul", bani: 300, fericirePct: -5, lectie: "Munca fizică și programul flexibil pot fi epuizante, dar aduc venit imediat. Este o soluție de criză, nu una de lungă durată." },
       { text: "Negociez pentru program redus", bani: 150, fericirePct: 0, lectie: "Compromisul între venit și timp este o decizie personală. Fii realist cu ce poți duce." },
     ],
   },
@@ -1047,7 +1047,7 @@ const recuperareEvents: GameEvent[] = [
     titlu: "Fac meditații",
     descriere: "Un coleg are nevoie de ajutor la un examen. Poți lua meditații pentru bani extra.",
     optiuni: [
-      { text: "Accept — câștig bun", bani: 400, fericirePct: -5, lectie: "Meditațiile sunt o sursă de venit care valorifică cunoștințele tale. Dar nu uita să studiezi și tu!", bonusXP: 10 },
+      { text: "Accept — câștig bun", bani: 150, fericirePct: -5, lectie: "Meditațiile sunt o sursă de venit care valorifică cunoștințele tale. Dar nu uita să studiezi și tu!", bonusXP: 10 },
       { text: "Refuz — nu am timp", bani: 0, fericirePct: 5, lectie: "Uneori e mai bine să îți concentrezi energia pe propriile examene decât să adaugi mai mult stres." },
     ],
   },
@@ -1083,7 +1083,7 @@ const recuperareEvents: GameEvent[] = [
     titlu: "Help la mutări",
     descriere: "O firmă de mutări caută oameni pentru ajutor fizic ocazional.",
     optiuni: [
-      { text: "Accept câteva mutări", bani: 350, fericirePct: -12, lectie: "Munca fizică intensivă aduce bani快速 dar te epuizează. E potrivită pentru venituri ocazionale, nu constante." },
+      { text: "Accept câteva mutări", bani: 350, fericirePct: -12, lectie: "Munca fizică intensivă aduce bani rapid dar te epuizează. E potrivită pentru venituri ocazionale, nu constante." },
     ],
   },
   {
@@ -1105,9 +1105,9 @@ const recuperareEvents: GameEvent[] = [
   {
     id: "rec10",
     titlu: "Reduc cheltuielile la maxim",
-    descriere: "Analyzezi bugetul și cauți unde poți tăia din cheltuieli.",
+    descriere: "Analizezi bugetul și cauți unde poți tăia din cheltuieli.",
     optiuni: [
-      { text: "Renunț la toate abonamentele", bani: 100, fericirePct: -8, lectie: "Abonamentele mici se adună. Renunțarea temporară la streaming și alte servicii poate economisi mult." },
+      { text: "Renunț la toate abonamentele", bani: 50, fericirePct: -8, lectie: "Abonamentele mici se adună. Renunțarea temporară la streaming și alte servicii poate economisi mult." },
       { text: "Cumpăr doar mâncare de bază", bani: 80, fericirePct: -10, lectie: "Mâncarea de bază e mai ieftină dar monotonia poate afecta starea de spirit și sănătatea." },
     ],
   },
@@ -1121,6 +1121,16 @@ export const GAME_EVENTS: Record<string, GameEvent[]> = {
   iarna: [...iarnaEvents, ...caminEvents.slice(0, 5)],
   vara: [...varaEvents, ...chirieEvents.slice(0, 5)],
   vacanta: [...vacantaEvents, ...garsonieraEvents.slice(0, 5)],
+  supermarket: navetistEvents.slice(0, 6),
+  bursa_sociala: caminEvents.slice(0, 4),
+  rude: navetistEvents.slice(2, 8),
+  meditatii: chirieEvents.slice(0, 6),
+  schimbari: [...caminEvents.slice(0, 3), ...navetistEvents.slice(1, 5)],
+  antreprenor: [...garsonieraEvents, ...chirieEvents.slice(0, 3)],
+  privat: [...chirieEvents.slice(0, 5), ...caminEvents.slice(1, 4)],
+  erasmus: [...vacantaEvents, ...garsonieraEvents.slice(0, 3)],
+  masina: [...navetistEvents.slice(0, 5), ...caminEvents.slice(2, 6)],
+  parinte: [...caminEvents.slice(0, 5), ...chirieEvents.slice(1, 4)],
   recuperare: recuperareEvents,
 };
 

@@ -1,4 +1,4 @@
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 import { motion } from "framer-motion";
 import { Clock, Star, Lock, Zap, TrendingUp, Users, Gamepad2, Crown, X, Calendar } from "lucide-react";
 import { OrbBackground } from "@/components/OrbBackground";
@@ -92,6 +92,7 @@ export default function Home() {
   const limitedEvents = getActiveLimitedEvents();
   const [showPremiumModal, setShowPremiumModal] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState<LimitedEvent | null>(null);
+  const [, navigate] = useLocation();
   const isPremiumActive = isPremium && premiumTrialEndsAt && premiumTrialEndsAt > Date.now();
 
   const scenariiList = Object.values(SCENARII);
@@ -238,8 +239,9 @@ export default function Home() {
                   initial="hidden"
                   animate="visible"
                   whileHover={unlocked && inSeason ? { scale: 1.03, y: -4 } : {}}
+                  onClick={() => { if (unlocked && inSeason) navigate(`/game?scenario=${sc.id}`); }}
                   className={`relative rounded-2xl border overflow-hidden transition-all ${
-                    unlocked
+                    unlocked && inSeason
                       ? "border-white/15 bg-white/5 cursor-pointer hover:border-white/30"
                       : "border-white/8 bg-white/3 cursor-not-allowed"
                   } ${!inSeason ? "opacity-50" : ""}`}
@@ -263,25 +265,20 @@ export default function Home() {
                       <span className="text-xs text-white/40">{sc.cheltuieliFixe.length} cheltuieli fixe</span>
                       <span className="text-xs text-white/40">·</span>
                       <span className="text-xs text-white/40">{sc.subScenarii.length} sub-scenarii</span>
+                      {!unlocked && (
+                        <>
+                          <span className="text-xs text-white/40">·</span>
+                          <span className="text-xs text-yellow-400 flex items-center gap-1">
+                            <Lock size={10} />
+                            {xpNeeded} XP
+                          </span>
+                        </>
+                      )}
                     </div>
                     {!inSeason && (
                       <div className="mt-2 text-xs text-orange-300 flex items-center gap-1">
                         <Clock size={10} />
                         Revine în sezonul {getSeasonName(sc.seasonTag)}
-                      </div>
-                    )}
-                    {unlocked && inSeason ? (
-                      <Link
-                        href={`/game?scenario=${sc.id}`}
-                        className="mt-3 w-full block text-center py-1.5 rounded-xl text-xs font-bold transition-all"
-                        style={{ background: `${sc.accentColor}30`, color: sc.accentColor, border: `1px solid ${sc.accentColor}40` }}
-                      >
-                        Joacă
-                      </Link>
-                    ) : (
-                      <div className="mt-3 w-full text-center py-1.5 rounded-xl bg-white/5 text-xs font-medium text-white/30 border border-white/10 flex items-center justify-center gap-1">
-                        <Lock size={10} />
-                        Necesită {xpNeeded} XP
                       </div>
                     )}
                   </div>
@@ -305,12 +302,6 @@ export default function Home() {
               const inSeason = isInSeason(sc.seasonTag);
               const isPremiumLocked = !unlocked && !isPremiumActive;
 
-              const handleClick = () => {
-                if (isPremiumLocked) {
-                  setShowPremiumModal(true);
-                }
-              };
-
               return (
                 <motion.div
                   key={sc.id}
@@ -319,7 +310,13 @@ export default function Home() {
                   initial="hidden"
                   animate="visible"
                   whileHover={unlocked || isPremiumActive ? { scale: 1.03, y: -4 } : {}}
-                  onClick={handleClick}
+                  onClick={() => {
+                    if (isPremiumLocked) {
+                      setShowPremiumModal(true);
+                    } else if (unlocked || isPremiumActive) {
+                      navigate(`/game?scenario=${sc.id}`);
+                    }
+                  }}
                   className={`relative rounded-2xl border overflow-hidden transition-all ${
                     unlocked || isPremiumActive
                       ? "border-yellow-500/30 bg-yellow-500/5 cursor-pointer hover:border-yellow-500/50"
@@ -349,29 +346,20 @@ export default function Home() {
                       <span className="text-xs text-yellow-300/60">{sc.cheltuieliFixe.length} cheltuieli fixe</span>
                       <span className="text-xs text-yellow-300/60">·</span>
                       <span className="text-xs text-yellow-300/60">{sc.subScenarii.length} sub-scenarii</span>
+                      {isPremiumLocked && (
+                        <>
+                          <span className="text-xs text-yellow-300/60">·</span>
+                          <span className="text-xs text-yellow-400 flex items-center gap-1">
+                            <Lock size={10} />
+                            {xpNeeded} XP / PRO
+                          </span>
+                        </>
+                      )}
                     </div>
                     {!inSeason && (
                       <div className="mt-2 text-xs text-orange-300 flex items-center gap-1">
                         <Clock size={10} />
                         Revine în sezonul {getSeasonName(sc.seasonTag)}
-                      </div>
-                    )}
-                    {(unlocked || isPremiumActive) && inSeason ? (
-                      <Link
-                        href={`/game?scenario=${sc.id}`}
-                        className="mt-3 w-full block text-center py-1.5 rounded-xl text-xs font-bold transition-all bg-gradient-to-r from-yellow-500/20 to-orange-500/20 text-yellow-300 border border-yellow-500/30"
-                      >
-                        PRO · Joacă
-                      </Link>
-                    ) : isPremiumLocked ? (
-                      <div className="mt-3 w-full text-center py-1.5 rounded-xl bg-gradient-to-r from-yellow-500/20 to-orange-500/20 text-xs font-bold text-yellow-300 border border-yellow-500/30 flex items-center justify-center gap-1">
-                        <Lock size={10} />
-                        Necesită {xpNeeded} XP sau PRO
-                      </div>
-                    ) : (
-                      <div className="mt-3 w-full text-center py-1.5 rounded-xl bg-white/5 text-xs font-medium text-white/30 border border-white/10 flex items-center justify-center gap-1">
-                        <Lock size={10} />
-                        Sezon inactiv
                       </div>
                     )}
                   </div>

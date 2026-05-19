@@ -12,11 +12,12 @@ import { DIFICULTATI } from "@/data/scenarios";
 export function GameOver() {
   const { state, startEndless, resetGame } = useGame();
   const { addXP } = useXP();
-  const { addTransaction } = useFinance();
+  const { financeState, addTransaction, deleteTransaction } = useFinance();
   const { user } = useAuth();
   const xpAdded = useRef(false);
   const scoreSaved = useRef(false);
   const moneyTransferred = useRef(false);
+  const capitalSaved = useRef(false);
 
   const isWin = state && state.saptamana >= 48 && state.bani >= 0 && state.fericire > 0;
 
@@ -24,6 +25,7 @@ export function GameOver() {
     if (!state?.isGameOver) {
       xpAdded.current = false;
       scoreSaved.current = false;
+      capitalSaved.current = false;
       return;
     }
 
@@ -38,9 +40,14 @@ export function GameOver() {
 
     if (isWin && !moneyTransferred.current) {
       moneyTransferred.current = true;
+      financeState.tranzactii.forEach((t) => {
+        if (t.tip === "venit" && (t.descriere.startsWith("Capital rămas") || t.descriere.startsWith("Câștig din scenariu"))) {
+          deleteTransaction(t.id);
+        }
+      });
       addTransaction({
         tip: "venit",
-        descriere: `Câștig din scenariu ${getScenarioLabel(state.scenariuId, state.subScenariuId)}`,
+        descriere: `Capital rămas: ${getScenarioLabel(state.scenariuId, state.subScenariuId)}`,
         suma: Math.round(state.bani),
         categorie: "Altele",
         data: new Date().toISOString().split("T")[0],
@@ -58,7 +65,12 @@ export function GameOver() {
         scenario: getScenarioLabel(state.scenariuId, state.subScenariuId),
       });
     }
-  }, [state, addXP, addTransaction, user]);
+
+    if (!capitalSaved.current) {
+      capitalSaved.current = true;
+      localStorage.setItem("cost_capital", JSON.stringify(Math.round(state.bani)));
+    }
+  }, [state, addXP, addTransaction, deleteTransaction, financeState.tranzactii, user]);
 
   if (!state || !state.isGameOver) return null;
 

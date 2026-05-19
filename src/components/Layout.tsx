@@ -6,11 +6,10 @@ import { useAuth } from "@/context/AuthContext";
 import { ThemePicker } from "@/components/ThemePicker";
 import { GoogleAuthButton } from "@/components/GoogleAuthButton";
 import { EmailOtpVerifier } from "@/components/EmailOtpVerifier";
-import { Home, Gamepad2, PhoneCall, Wallet, Trophy, Menu, X, Crown } from "lucide-react";
+import { Home, PhoneCall, Wallet, Trophy, Menu, X, Crown } from "lucide-react";
 
 const NAV = [
   { href: "/", label: "Acasă", icon: Home },
-  { href: "/game", label: "Joacă", icon: Gamepad2 },
   { href: "/finance", label: "Finanțe", icon: Wallet },
   { href: "/leaderboard", label: "Clasament", icon: Trophy },
   { href: "/contact", label: "Contact", icon: PhoneCall },

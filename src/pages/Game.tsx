@@ -1,52 +1,74 @@
 import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronRight, Coins, Smile, Calendar, ArrowLeft, Filter } from "lucide-react";
+import { ChevronRight, Coins, Smile, Calendar, ArrowLeft, Filter, Plus, X } from "lucide-react";
 import { OrbBackground } from "@/components/OrbBackground";
 import { Layout } from "@/components/Layout";
 import { EventModal } from "@/components/EventModal";
 import { GameOver } from "@/components/GameOver";
 import { useGame } from "@/context/GameContext";
 import { useXP } from "@/context/XPContext";
+import { useFinance } from "@/context/FinanceContext";
 import { SCENARII, DIFICULTATI, type DifficultyKey } from "@/data/scenarios";
 import { LIMITED_EVENTS } from "@/data/limitedEvents";
 import { Link } from "wouter";
 import type { DecizieIstorica } from "@/context/GameContext";
 
-type HistoryFilter = "tutto" | "luna" | "saptamana";
-
-interface IncomeType {
+interface SursaVenit {
   id: string;
-  label: string;
-  amount: number;
-  emoji: string;
+  nume: string;
+  suma: number;
 }
 
-const VENITURI: IncomeType[] = [
-  { id: "salariu_part_time", label: "Salariu part-time", amount: 800, emoji: "💼" },
-  { id: "bursa_stat", label: "Bursă de stat", amount: 450, emoji: "🎓" },
-  { id: "bursa_merit", label: "Bursă de merit", amount: 800, emoji: "⭐" },
-  { id: "ajutor_parinti", label: "Ajutor de la părinți", amount: 1000, emoji: "👨‍👩‍👧" },
-  { id: "freelance", label: "Job ocazional / freelance", amount: 500, emoji: "🎨" },
-  { id: "fara_venit", label: "Fără venituri constante", amount: 0, emoji: "🚫" },
-  { id: "combinat", label: "Combinat (salariu + bursă)", amount: 1000, emoji: "💰" },
-];
+const STORAGE_KEY = "cost_income_sources";
+
+type HistoryFilter = "tutto" | "luna" | "saptamana";
 
 function SetupScreen() {
   const [, navigate] = useLocation();
-  const { initGame } = useGame();
+  const { initGame, resetGame } = useGame();
   const { isUnlocked, xpRequiredFor } = useXP();
-  const [selectedVenit, setSelectedVenit] = useState<string>("ajutor_parinti");
-  const [selectedScenariu, setSelectedScenariu] = useState("camin");
-  const [selectedSub, setSelectedSub] = useState("coleg");
+  const { addTransaction } = useFinance();
+  const [selectedScenariu, setSelectedScenariu] = useState<string>("camin");
+  const [selectedSub, setSelectedSub] = useState<string>("coleg");
   const [selectedDiff, setSelectedDiff] = useState<DifficultyKey>("mediu");
   const [eventId, setEventId] = useState<string | null>(null);
+  const [surseVenit, setSurseVenit] = useState<SursaVenit[]>(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) return JSON.parse(saved);
+    } catch {}
+    return [{ id: crypto.randomUUID(), nume: "", suma: 0 }];
+  });
 
   useEffect(() => {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(surseVenit));
+  }, [surseVenit]);
+
+  function addSursa() {
+    setSurseVenit((prev) => [...prev, { id: crypto.randomUUID(), nume: "", suma: 0 }]);
+  }
+
+  function removeSursa(id: string) {
+    setSurseVenit((prev) => prev.filter((s) => s.id !== id));
+  }
+
+  function updateSursa(id: string, field: "nume" | "suma", value: string | number) {
+    setSurseVenit((prev) => prev.map((s) => (s.id === id ? { ...s, [field]: value } : s)));
+  }
+
+  const venitTotal = surseVenit.reduce((sum, s) => sum + (s.suma || 0), 0);
+  const capitalSalvat = Number(localStorage.getItem("cost_capital") ?? 0);
+
+  useEffect(() => {
+    resetGame();
     const params = new URLSearchParams(window.location.search);
     const sc = params.get("scenario");
     const ev = params.get("event");
-    if (sc && SCENARII[sc]) setSelectedScenariu(sc);
+    if (sc && SCENARII[sc]) {
+      setSelectedScenariu(sc);
+      setSelectedSub(SCENARII[sc].subScenarii[0].id);
+    }
     if (ev) setEventId(ev);
   }, []);
 
@@ -58,10 +80,25 @@ function SetupScreen() {
   const scenario = SCENARII[selectedScenariu];
   const limitedEvent = eventId ? LIMITED_EVENTS.find((e) => e.id === eventId) : null;
 
+  const FINANCE_ADDED_KEY = "cost_initial_finance_added";
+
   function start() {
-    const selectedIncome = VENITURI.find((v) => v.id === selectedVenit);
     const bonus = limitedEvent ? { xp: limitedEvent.bonusXP, bani: limitedEvent.bonusBani, fericire: limitedEvent.bonusFericire } : undefined;
-    initGame(selectedScenariu, selectedSub, selectedDiff, selectedIncome?.amount ?? 0, bonus);
+    if (!localStorage.getItem(FINANCE_ADDED_KEY)) {
+      surseVenit.forEach((s) => {
+        if (s.suma > 0) {
+          addTransaction({
+            tip: "venit",
+            descriere: s.nume,
+            suma: s.suma,
+            categorie: "Venit",
+            data: new Date().toISOString().split("T")[0],
+          });
+        }
+      });
+      localStorage.setItem(FINANCE_ADDED_KEY, "1");
+    }
+    initGame(selectedScenariu, selectedSub, selectedDiff, venitTotal, bonus);
   }
 
   const allScenarii = Object.values(SCENARII);
@@ -98,34 +135,53 @@ function SetupScreen() {
         </div>
       )}
 
-      {/* Income selection */}
+      {/* Income selection - custom sources */}
       <div className="mb-6">
-        <h2 className="text-sm font-bold text-white/60 uppercase tracking-wider mb-3">Venituri</h2>
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-          {VENITURI.map((venit) => (
-            <button
-              key={venit.id}
-              onClick={() => setSelectedVenit(venit.id)}
-              className={`relative p-3 rounded-2xl border text-left transition-all overflow-hidden ${
-                selectedVenit === venit.id
-                  ? "border-green-500/60 bg-green-600/20"
-                  : "border-white/10 bg-white/5 hover:border-white/20 hover:bg-white/8"
-              }`}
-            >
-              <div className="relative">
-                <span className="text-xl block mb-1">{venit.emoji}</span>
-                <span className="text-xs font-semibold text-white block leading-tight">{venit.label}</span>
-                <span className={`text-xs font-bold ${venit.amount > 0 ? "text-green-400" : "text-white/40"}`}>
-                  +{venit.amount} RON/lună
-                </span>
+        <h2 className="text-sm font-bold text-white/60 uppercase tracking-wider mb-3">Veniturile tale</h2>
+        <div className="space-y-2">
+          {surseVenit.map((sursa) => (
+            <div key={sursa.id} className="flex items-center gap-2">
+              <input
+                type="text"
+                placeholder="Nume venit (ex: Salariu)"
+                value={sursa.nume}
+                onChange={(e) => updateSursa(sursa.id, "nume", e.target.value)}
+                className="flex-1 px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-white text-sm placeholder-white/30 focus:outline-none focus:border-green-500/40"
+              />
+              <div className="relative w-32">
+                <input
+                  type="number"
+                  placeholder="Suma"
+                  value={sursa.suma || ""}
+                  onChange={(e) => updateSursa(sursa.id, "suma", Number(e.target.value))}
+                  className="w-full pl-3 pr-8 py-2 rounded-xl bg-white/5 border border-white/10 text-white text-sm placeholder-white/30 focus:outline-none focus:border-green-500/40"
+                />
+                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-white/40">RON</span>
               </div>
-            </button>
+              {surseVenit.length > 1 && (
+                <button onClick={() => removeSursa(sursa.id)} className="p-2 text-red-400 hover:text-red-300 transition-colors">
+                  <X size={16} />
+                </button>
+              )}
+            </div>
           ))}
         </div>
+        <button
+          onClick={addSursa}
+          className="mt-2 flex items-center gap-1.5 text-xs font-semibold text-green-400 hover:text-green-300 transition-colors"
+        >
+          <Plus size={14} /> Adaugă sursă de venit
+        </button>
         <div className="mt-3 p-3 rounded-xl border border-green-500/20 bg-green-500/10">
           <span className="text-sm font-semibold text-green-300">Venit lunar total: </span>
-          <span className="text-sm font-black text-green-400">{VENITURI.find((v) => v.id === selectedVenit)?.amount ?? 0} RON</span>
+          <span className="text-sm font-black text-green-400">{venitTotal} RON</span>
         </div>
+        {capitalSalvat > 0 && (
+          <div className="mt-2 p-3 rounded-xl border border-yellow-500/20 bg-yellow-500/10">
+            <span className="text-sm font-semibold text-yellow-300">Capital economisit: </span>
+            <span className="text-sm font-black text-yellow-400">+{capitalSalvat} RON</span>
+          </div>
+        )}
       </div>
 
       {/* Scenario selection */}
@@ -290,7 +346,8 @@ function HistoryPanel({ decizii, filter, setFilter }: {
 }
 
 function GameScreen() {
-  const { state, nextWeek } = useGame();
+  const { state, nextWeek, resetGame } = useGame();
+  const [, navigate] = useLocation();
   const [historyFilter, setHistoryFilter] = useState<HistoryFilter>("tutto");
   const [showHistory, setShowHistory] = useState(false);
 
@@ -310,9 +367,8 @@ function GameScreen() {
   return (
     <div className="max-w-6xl mx-auto px-4 py-6">
       <div className="flex items-center justify-between mb-6">
-        <Link href="/game" onClick={() => {}} className="inline-flex items-center gap-1.5 text-white/50 hover:text-white text-sm transition-colors">
-          <ArrowLeft size={14} /> Schimbă scenariul
-        </Link>
+        <button onClick={() => { resetGame(); window.location.href = "/game"; }} className="inline-flex items-center gap-1.5 text-white/50 hover:text-white text-sm transition-colors">
+          <ArrowLeft size={14} /> Schimbă scenariul</button>
         <div className="text-xs text-white/40">{diff.nume} · {scenario.emoji} {scenario.nume}</div>
       </div>
 
@@ -436,14 +492,32 @@ function GameScreen() {
 }
 
 export default function GamePage() {
-  const { state } = useGame();
+  const { state, resetGame, initGame } = useGame();
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const sc = params.get("scenario");
+    const ev = params.get("event");
+    if (sc && state && state.scenariuId !== sc) {
+      resetGame();
+    } else if (sc && ev && (!state || state.scenariuId !== sc)) {
+      resetGame();
+    } else if (!sc && !ev) {
+      resetGame();
+    }
+  }, []);
+
   const scenariuId = state?.scenariuId ?? "camin";
   const scenario = SCENARII[scenariuId];
+  const currentScenario = window.location.search.includes("scenario=") 
+    ? new URLSearchParams(window.location.search).get("scenario") || scenariuId 
+    : scenariuId;
+  const hasUrlScenario = !!new URLSearchParams(window.location.search).get("scenario");
 
   return (
     <Layout>
       <OrbBackground bgClass={state ? scenario?.bgClass : undefined} />
-      {state ? <GameScreen /> : <SetupScreen />}
+      {state ? <GameScreen /> : <SetupScreen key={currentScenario} />}
       <EventModal />
       <GameOver />
     </Layout>

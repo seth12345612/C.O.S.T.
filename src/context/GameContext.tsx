@@ -21,6 +21,7 @@ export interface GameState {
   dificultateKey: DifficultyKey;
   bani: number;
   fericire: number;
+  venitLunar: number;
   saptamana: number;
   luna: number;
   saptamanaInLuna: number;
@@ -44,7 +45,10 @@ interface GameContextType {
   chooseOption: (optionIndex: number) => void;
   startEndless: () => void;
   resetGame: () => void;
+  savedCapital: () => number;
 }
+
+const CAPITAL_KEY = "cost_capital";
 
 const GameContext = createContext<GameContextType | null>(null);
 
@@ -68,8 +72,10 @@ export function GameProvider({ children }: { children: ReactNode }) {
     const subScenariu = scenario.subScenarii.find((s) => s.id === subScenariuId) ?? scenario.subScenarii[0];
 
     const cheltuieliExtra = subScenariu.cheltuieliExtra.reduce((sum, c) => sum + c.suma, 0);
-    const venitLunarBase = venitLunar ?? 0;
-    const startBani = startCfg.bani + subScenariu.venitBonus + venitLunarBase - cheltuieliExtra;
+    const venit = venitLunar ?? 0;
+    const savedCapital = Number(localStorage.getItem(CAPITAL_KEY) ?? 0);
+    localStorage.removeItem(CAPITAL_KEY);
+    const startBani = savedCapital + venit - cheltuieliExtra;
 
     const rawEvents = (GAME_EVENTS[scenariuId] ?? []).filter((e) => !e.isPremium || isPremiumRef.current);
     const shuffled = shuffleArray(rawEvents);
@@ -86,6 +92,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
       dificultateKey,
       bani: finalBani,
       fericire: Math.min(100, finalFericire),
+      venitLunar: venit,
       saptamana: 0,
       luna: 1,
       saptamanaInLuna: 0,
@@ -133,14 +140,13 @@ export function GameProvider({ children }: { children: ReactNode }) {
       let originalScenarioId = prev.originalScenarioId;
 
       if (newSaptamana % 4 === 0 && !isRecoveryMode) {
-        const scenario = SCENARII[prev.scenariuId];
-        const subScenariu = scenario.subScenarii.find((s) => s.id === prev.subScenariuId) ?? scenario.subScenarii[0];
-
-        let venit = scenario.venitLunar + subScenariu.venitBonus;
+        let venit = prev.venitLunar;
         if (prev.dificultateKey === "usor") venit *= 1.0;
         if (prev.dificultateKey === "mediu") venit *= 0.9;
         if (prev.dificultateKey === "greu") venit *= 0.8;
 
+        const scenario = SCENARII[prev.scenariuId];
+        const subScenariu = scenario.subScenarii.find((s) => s.id === prev.subScenariuId) ?? scenario.subScenarii[0];
         const cheltuieliFixe = scenario.cheltuieliFixe.reduce((s, c) => s + c.suma, 0);
         const cheltuieliExtra = subScenariu.cheltuieliExtra.filter((c) => c.suma > 0).reduce((s, c) => s + c.suma, 0);
         newBani += venit - cheltuieliFixe - cheltuieliExtra;
@@ -279,8 +285,12 @@ export function GameProvider({ children }: { children: ReactNode }) {
 
   const resetGame = useCallback(() => setState(null), []);
 
+  const savedCapital = useCallback(() => {
+    return Number(localStorage.getItem(CAPITAL_KEY) ?? 0);
+  }, []);
+
   return (
-    <GameContext.Provider value={{ state, initGame, nextWeek, chooseOption, startEndless, resetGame }}>
+    <GameContext.Provider value={{ state, initGame, nextWeek, chooseOption, startEndless, resetGame, savedCapital }}>
       {children}
     </GameContext.Provider>
   );
