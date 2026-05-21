@@ -12,6 +12,7 @@ export function DarkModeToggle() {
 
   useEffect(() => {
     localStorage.setItem(KEY, String(isDark));
+    document.documentElement.classList.toggle("dark", isDark);
     document.documentElement.setAttribute("data-theme", isDark ? "dark" : "light");
   }, [isDark]);
 

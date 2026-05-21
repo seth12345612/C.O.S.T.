@@ -20,7 +20,7 @@ function incarcaDeblocate(): string[] {
   } catch { return []; }
 }
 
-export function AchievementProvider({ copii, statsInitiale }: { copii: ReactNode; statsInitiale?: Partial<AchievementStats> }) {
+export function AchievementProvider({ children: copii, statsInitiale }: { children: ReactNode; statsInitiale?: Partial<AchievementStats> }) {
   const [deblocate, setDeblocate] = useState<string[]>(incarcaDeblocate);
   const [notificari, setNotificari] = useState<Achievement[]>([]);
   const [stats, setStats] = useState<AchievementStats>({
