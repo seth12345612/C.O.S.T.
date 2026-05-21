@@ -6,6 +6,7 @@ import { useAuth } from "@/context/AuthContext";
 import { ThemePicker } from "@/components/ThemePicker";
 import { GoogleAuthButton } from "@/components/GoogleAuthButton";
 import { EmailOtpVerifier } from "@/components/EmailOtpVerifier";
+import { DarkModeToggle } from "@/components/DarkModeToggle";
 import { SoundEffects } from "@/lib/sounds";
 import { Home, PhoneCall, Wallet, Trophy, Menu, X, Crown, Shield, ShieldCheck, Info, Award, Volume2, VolumeX } from "lucide-react";
 
@@ -126,6 +127,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
             >
               {SoundEffects.enabled ? <Volume2 size={18} /> : <VolumeX size={18} />}
             </button>
+            <DarkModeToggle />
             <GoogleAuthButton />
             <ThemePicker />
 
