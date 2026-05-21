@@ -1,8 +1,12 @@
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { MessageCircle, X, Send, Loader2, Sparkles } from "lucide-react";
-import { supabase } from "@/lib/supabase";
 import { useGame } from "@/context/GameContext";
+
+const FUNC_URL = "https://twdvhkwrlwhadbmortqk.supabase.co/functions/v1/mentor";
+const ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR3ZHZoa3dybHdoYWRibW9ydHFrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkyMDM4OTAsImV4cCI6MjA5NDc3OTg5MH0.mvQkXjYR3YDChjbuGmmm006QOTjw6rQz6UdAKZYG-lQ";
+
+const TIMEOUT_MS = 15000;
 
 interface Message {
   id: string;
@@ -30,49 +34,61 @@ export function MentorChat() {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, isTyping]);
 
-  const handleQuestion = async (question: string) => {
-    const userMsg: Message = { id: Date.now().toString(), role: "user", content: question };
-    setMessages((prev) => [...prev, userMsg]);
-    setIsTyping(true);
+  const askMentor = async (question: string, history: Message[]) => {
+    const context = state ? {
+      scenariu: state.scenariuId,
+      dificultate: state.dificultateKey,
+      bani: state.bani,
+      fericire: state.fericire,
+      saptamana: state.saptamana,
+    } : undefined;
+
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
 
     try {
-      const context = state ? {
-        scenariu: state.scenariuId,
-        dificultate: state.dificultateKey,
-        bani: state.bani,
-        fericire: state.fericire,
-        saptamana: state.saptamana,
-      } : undefined;
-
-      const { data, error } = await supabase.functions.invoke("mentor", {
-        body: {
-          messages: [...messages, userMsg].map((m) => ({ role: m.role, content: m.content })),
+      const res = await fetch(FUNC_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${ANON_KEY}` },
+        body: JSON.stringify({
+          messages: [...history, { role: "user", content: question }],
           context,
-        },
+        }),
+        signal: controller.signal,
       });
+      clearTimeout(timer);
 
-      if (error) throw error;
+      if (!res.ok) {
+        const text = await res.text();
+        throw new Error(`HTTP ${res.status}: ${text}`);
+      }
 
-      const aiMsg: Message = {
-        id: (Date.now() + 1).toString(),
-        role: "assistant",
-        content: data.reply ?? "Scuze, nu pot răspunde acum.",
-      };
-      setMessages((prev) => [...prev, aiMsg]);
-    } catch {
-      const fallback: Message = {
-        id: (Date.now() + 1).toString(),
-        role: "assistant",
-        content: "Îmi pare rău, am întâmpinat o eroare. Te rog încearcă din nou mai târziu.",
-      };
-      setMessages((prev) => [...prev, fallback]);
-    } finally {
-      setIsTyping(false);
+      const data = await res.json();
+      return data.reply ?? "Scuze, nu pot răspunde acum.";
+    } catch (err) {
+      clearTimeout(timer);
+      if (err instanceof DOMException && err.name === "AbortError") {
+        return "Îmi pare rău, cererea a durat prea mult. Încearcă din nou!";
+      }
+      return "Îmi pare rău, am întâmpinat o eroare. Verifică conexiunea și încearcă din nou.";
     }
   };
 
+  const handleQuestion = async (question: string) => {
+    const userMsg: Message = { id: crypto.randomUUID(), role: "user", content: question };
+    setMessages((prev) => [...prev, userMsg]);
+    setIsTyping(true);
+
+    const currentMessages = messages;
+    const reply = await askMentor(question, currentMessages);
+
+    const aiMsg: Message = { id: crypto.randomUUID(), role: "assistant", content: reply };
+    setMessages((prev) => [...prev, aiMsg]);
+    setIsTyping(false);
+  };
+
   const handleSend = () => {
-    if (!input.trim()) return;
+    if (!input.trim() || isTyping) return;
     handleQuestion(input);
     setInput("");
   };
@@ -125,7 +141,8 @@ export function MentorChat() {
                       <button
                         key={q}
                         onClick={() => handleQuestion(q)}
-                        className="p-3 rounded-xl border border-white/10 bg-white/5 text-left text-sm text-white/70 hover:bg-white/10 hover:border-white/20 transition-all"
+                        disabled={isTyping}
+                        className="p-3 rounded-xl border border-white/10 bg-white/5 text-left text-sm text-white/70 hover:bg-white/10 hover:border-white/20 transition-all disabled:opacity-50"
                       >
                         {q}
                       </button>
