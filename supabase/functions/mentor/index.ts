@@ -1,5 +1,5 @@
-const GEMINI_API_KEY = Deno.env.get("GEMINI_API_KEY");
-const GEMINI_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent";
+const HF_TOKEN = Deno.env.get("HF_API_TOKEN");
+const HF_URL = "https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.3";
 
 const CORS_HEADERS = {
   "Access-Control-Allow-Origin": "*",
@@ -9,15 +9,13 @@ const CORS_HEADERS = {
 };
 
 interface MentorRequest {
-  messages: { role: "user" | "assistant" | "system"; content: string }[];
+  messages: { role: "user" | "assistant"; content: string }[];
   context?: {
     scenariu?: string;
     dificultate?: string;
     bani?: number;
     fericire?: number;
     saptamana?: number;
-    venitLunar?: number;
-    costuriLunare?: number;
   };
 }
 
@@ -29,65 +27,71 @@ function json(body: unknown, status = 200) {
 }
 
 Deno.serve(async (req) => {
-  if (req.method === "OPTIONS") {
-    return new Response(null, { status: 204, headers: CORS_HEADERS });
-  }
-  if (req.method !== "POST") {
-    return json({ error: "Method not allowed" }, 405);
-  }
-
-  if (!GEMINI_API_KEY) {
-    return json({ error: "GEMINI_API_KEY not configured" }, 500);
-  }
+  if (req.method === "OPTIONS") return new Response(null, { status: 204, headers: CORS_HEADERS });
+  if (req.method !== "POST") return json({ error: "Method not allowed" }, 405);
+  if (!HF_TOKEN) return json({ error: "HF_API_TOKEN not configured" }, 500);
 
   try {
     const { messages, context }: MentorRequest = await req.json();
-
     if (!messages || !Array.isArray(messages) || messages.length === 0) {
       return json({ error: "No messages provided" }, 400);
     }
 
-    const contextInfo = context
-      ? `Contextul jucătorului:\n- Scenariu: ${context.scenariu ?? "N/A"}\n- Dificultate: ${context.dificultate ?? "N/A"}\n- Bani: ${context.bani ?? "N/A"} RON\n- Fericire: ${context.fericire ?? "N/A"}%\n- Săptămâna: ${context.saptamana ?? "N/A"} / 48`
-      : "Jucătorul nu este momentan într-un joc activ.";
+    const contextStr = context
+      ? `Context: scenariu=${context.scenariu ?? "?"}, dificultate=${context.dificultate ?? "?"}, bani=${context.bani ?? "?"} RON, fericire=${context.fericire ?? "?"}%, saptamana=${context.saptamana ?? "?"}/48. `
+      : "";
 
-    const systemInstruction = `Ești Mentorul C.O.S.T., un asistent financiar prietenos pentru studenți români. Oferi sfaturi financiare practice în română. Maxim 100 cuvinte. ${contextInfo}`;
+    const systemMsg = `<s>[INST] <<SYS>>Ești Mentorul C.O.S.T., asistent financiar pentru studenți români. Răspunde util, concis (max 100 cuvinte), în română. ${contextStr}<</SYS>>`;
 
-    const geminiContents = messages.map((m) => ({
-      role: m.role === "assistant" ? "model" : "user",
-      parts: [{ text: m.content }],
-    }));
+    const history = messages.map((m) =>
+      m.role === "user" ? `[INST] ${m.content} [/INST]` : m.content
+    ).join("\n");
 
-    const geminiRes = await fetch(`${GEMINI_URL}?key=${GEMINI_API_KEY}`, {
+    const prompt = `${systemMsg}\n${history}\n[/INST]`;
+
+    const hfRes = await fetch(HF_URL, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: { Authorization: `Bearer ${HF_TOKEN}`, "Content-Type": "application/json" },
       body: JSON.stringify({
-        system_instruction: { parts: [{ text: systemInstruction }] },
-        contents: geminiContents,
-        generationConfig: { temperature: 0.7, maxOutputTokens: 500, topP: 0.9 },
-        safetySettings: [
-          { category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_NONE" },
-          { category: "HARM_CATEGORY_HATE_SPEECH", threshold: "BLOCK_NONE" },
-          { category: "HARM_CATEGORY_SEXUALLY_EXPLICIT", threshold: "BLOCK_NONE" },
-        ],
+        inputs: prompt,
+        parameters: { max_new_tokens: 300, temperature: 0.7, top_p: 0.9, do_sample: true },
       }),
     });
 
-    if (!geminiRes.ok) {
-      const text = await geminiRes.text();
-      throw new Error(`Gemini returned ${geminiRes.status}: ${text.slice(0, 500)}`);
+    if (!hfRes.ok) {
+      const text = await hfRes.text();
+      if (hfRes.status === 503) {
+        // Model is loading, retry with a simpler prompt
+        const retryRes = await fetch(HF_URL, {
+          method: "POST",
+          headers: { Authorization: `Bearer ${HF_TOKEN}`, "Content-Type": "application/json" },
+          body: JSON.stringify({
+            inputs: prompt,
+            parameters: { max_new_tokens: 150, temperature: 0.7, wait_for_model: true },
+          }),
+        });
+        if (!retryRes.ok) {
+          const retryText = await retryRes.text();
+          throw new Error(`HuggingFace error: ${retryRes.status} - ${retryText.slice(0, 300)}`);
+        }
+        const retryData = await retryRes.json();
+        const reply = Array.isArray(retryData) ? retryData[0]?.generated_text : retryData?.generated_text;
+        return json({ reply: extractReply(reply ?? "", prompt) });
+      }
+      throw new Error(`HuggingFace error: ${hfRes.status} - ${text.slice(0, 300)}`);
     }
 
-    const data = await geminiRes.json();
-    const reply = data.candidates?.[0]?.content?.parts?.[0]?.text;
-
-    if (!reply) {
-      throw new Error("Empty response from Gemini");
-    }
-
-    return json({ reply, usage: data.usageMetadata ?? {} });
+    const data = await hfRes.json();
+    const reply = Array.isArray(data) ? data[0]?.generated_text : data?.generated_text;
+    return json({ reply: extractReply(reply ?? "", prompt) });
   } catch (err) {
     const message = err instanceof Error ? err.message : "Unknown error";
     return json({ error: message }, 500);
   }
 });
+
+function extractReply(text: string, prompt: string): string {
+  const after = text.slice(prompt.length).trim();
+  if (after) return after.replace(/<\/?s>/g, "").replace(/\[\/INST\]/g, "").trim();
+  return "Îmi pare rău, nu pot răspunde acum. Încearcă din nou!";
+}

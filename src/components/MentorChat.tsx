@@ -6,7 +6,21 @@ import { useGame } from "@/context/GameContext";
 const FUNC_URL = "https://twdvhkwrlwhadbmortqk.supabase.co/functions/v1/mentor";
 const ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR3ZHZoa3dybHdoYWRibW9ydHFrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkyMDM4OTAsImV4cCI6MjA5NDc3OTg5MH0.mvQkXjYR3YDChjbuGmmm006QOTjw6rQz6UdAKZYG-lQ";
 
-const TIMEOUT_MS = 15000;
+const TIMEOUT_MS = 12000;
+
+const FALLBACK_RESPONSES: Record<string, string> = {
+  "Cum să economisesc mai mult?":
+    "Încearcă regula 50/30/20: 50% pentru nevoi, 30% pentru dorințe, 20% pentru economii. Redu cheltuielile mici (cafeaua zilnică = 450 RON/lună) și setează un transfer automat lunar către economii.",
+  "Cum să-mi planific bugetul?":
+    "1) Calculează venitul net lunar. 2) Listează cheltuielile fixe (chirie, utilități, transport). 3) Stabilește limite pe categorii. 4) Lasă un buffer de 10% pentru urgențe. 5) Urmărește săptămânal progresul.",
+  "Ce să fac dacă sunt pe minus?":
+    "1) Oprește cheltuielile neesențiale (abonamente, ieșiri). 2) Identifică surse de venit (part-time, freelancing, vânzări). 3) Prioritizează mâncarea și utilitățile. 4) Cere ajutor familiei sau verifică programe de suport pentru studenți.",
+  "Merită să fac un împrumut?":
+    "Împrumuturile pot fi utile pentru investiții (studii, locuință), dar evită-le pentru consum (telefoane, vacanțe). Dacă ai nevoie, compară dobânzile și alege cea mai mică. Regula de bază: rata lunară să nu depășească 30% din venit.",
+  "Cum să câștig bani în plus?":
+    "Ca student poți face: meditații, livrări, freelancing (traduceri, design), social media management, vânzarea hainelor nefolosite, sau job part-time în HORECA. Platforme: Upwork, Fiverr, OLX. Chiar și 500 RON/lună în plus fac diferența.",
+};
+
 
 interface Message {
   id: string;
@@ -34,7 +48,7 @@ export function MentorChat() {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, isTyping]);
 
-  const askMentor = async (question: string, history: Message[]) => {
+  const askMentor = async (question: string, _history: Message[]) => {
     const context = state ? {
       scenariu: state.scenariuId,
       dificultate: state.dificultateKey,
@@ -51,7 +65,7 @@ export function MentorChat() {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${ANON_KEY}` },
         body: JSON.stringify({
-          messages: [...history, { role: "user", content: question }],
+          messages: [{ role: "user", content: question }],
           context,
         }),
         signal: controller.signal,
@@ -60,24 +74,36 @@ export function MentorChat() {
 
       if (!res.ok) {
         const text = await res.text();
-        console.error("Mentor API error:", res.status, text);
-        throw new Error(`HTTP ${res.status}: ${text.slice(0, 200)}`);
+        console.warn("Mentor API error, using fallback:", res.status, text.slice(0, 100));
+        return fallbackReply(question);
       }
 
       const data = await res.json();
       if (data.error) {
-        console.error("Mentor API error:", data.error);
-        throw new Error(data.error);
+        console.warn("Mentor API error, using fallback:", data.error);
+        return fallbackReply(question);
       }
-      return data.reply ?? "Scuze, nu pot răspunde acum.";
+      return data.reply ?? fallbackReply(question);
     } catch (err) {
       clearTimeout(timer);
-      console.error("MentorChat error:", err);
-      if (err instanceof DOMException && err.name === "AbortError") {
-        return "Îmi pare rău, cererea a durat prea mult. Încearcă din nou!";
-      }
-      return "Îmi pare rău, am întâmpinat o eroare. Verifică conexiunea și încearcă din nou.";
+      console.warn("Mentor fetch failed, using fallback:", err);
+      return fallbackReply(question);
     }
+  };
+
+  const fallbackReply = (question: string): string => {
+    const key = Object.keys(FALLBACK_RESPONSES).find((k) =>
+      question.toLowerCase().includes(k.toLowerCase().slice(0, 20))
+    );
+    if (key) return FALLBACK_RESPONSES[key];
+    const lower = question.toLowerCase();
+    if (lower.includes("invest") || lower.includes("actiuni") || lower.includes("bursă"))
+      return "Ca începător, începe cu fonduri mutuale sau ETF-uri — risc mai mic decât acțiunile individuale. Regula: nu investi bani de care ai nevoie în următorii 3 ani. Învață mai întâi noțiunile de bază (dobândă compusă, risc, diversificare).";
+    if (lower.includes("card") || lower.includes("credit"))
+      return "Cardul de credit e util pentru urgențe și istoric de credit, dar plătește întotdeauna integral factura lunar — dobânda la carduri e de ~25-30% pe an, una dintre cele mai mari. Evita ratele fără dobândă dacă nu ai un plan clar.";
+    if (lower.includes("chirie") || lower.includes("locuință"))
+      return "Pentru chirie, regula e să nu depășească 30% din venit. În multe orașe, a face echipă cu un coleg de apartament reduce costurile cu 40-50%. Verifică și programele de cămine sau locuințe sociale pentru studenți.";
+    return "E o întrebare bună! Ca student, cea mai importantă abilitate financiară e să ții un buget lunar. Notează fiecare cheltuială o săptămână, și vei fi surprins de cât poți economisi. Ai o întrebare mai specifică?";
   };
 
   const handleQuestion = async (question: string) => {
@@ -127,7 +153,7 @@ export function MentorChat() {
                 </div>
                 <div>
                   <h3 className="text-sm font-bold text-white">Mentorul C.O.S.T.</h3>
-                  <p className="text-xs text-white/50">Alimentat de Gemini AI</p>
+                  <p className="text-xs text-white/50">Alimentat de AI</p>
                 </div>
               </div>
               <button
