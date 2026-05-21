@@ -60,13 +60,19 @@ export function MentorChat() {
 
       if (!res.ok) {
         const text = await res.text();
-        throw new Error(`HTTP ${res.status}: ${text}`);
+        console.error("Mentor API error:", res.status, text);
+        throw new Error(`HTTP ${res.status}: ${text.slice(0, 200)}`);
       }
 
       const data = await res.json();
+      if (data.error) {
+        console.error("Mentor API error:", data.error);
+        throw new Error(data.error);
+      }
       return data.reply ?? "Scuze, nu pot răspunde acum.";
     } catch (err) {
       clearTimeout(timer);
+      console.error("MentorChat error:", err);
       if (err instanceof DOMException && err.name === "AbortError") {
         return "Îmi pare rău, cererea a durat prea mult. Încearcă din nou!";
       }

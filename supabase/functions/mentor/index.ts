@@ -1,7 +1,12 @@
-import "https://deno.land/std@0.224.0/dotenv/load.ts";
-
-const GEMINI_API_KEY = Deno.env.get("GEMINI_API_KEY") ?? "";
+const GEMINI_API_KEY = Deno.env.get("GEMINI_API_KEY");
 const GEMINI_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent";
+
+const CORS_HEADERS = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Methods": "POST, OPTIONS",
+  "Access-Control-Allow-Headers": "Content-Type, Authorization, apikey",
+  "Access-Control-Max-Age": "86400",
+};
 
 interface MentorRequest {
   messages: { role: "user" | "assistant" | "system"; content: string }[];
@@ -16,32 +21,50 @@ interface MentorRequest {
   };
 }
 
+function json(body: unknown, status = 200) {
+  return new Response(JSON.stringify(body), {
+    status,
+    headers: { ...CORS_HEADERS, "Content-Type": "application/json" },
+  });
+}
+
 Deno.serve(async (req) => {
+  if (req.method === "OPTIONS") {
+    return new Response(null, { status: 204, headers: CORS_HEADERS });
+  }
   if (req.method !== "POST") {
-    return new Response(JSON.stringify({ error: "Method not allowed" }), { status: 405 });
+    return json({ error: "Method not allowed" }, 405);
+  }
+
+  if (!GEMINI_API_KEY) {
+    return json({ error: "GEMINI_API_KEY not configured" }, 500);
   }
 
   try {
     const { messages, context }: MentorRequest = await req.json();
 
-    const systemPrompt = buildSystemPrompt(context);
-    const allMessages = [{ role: "user" as const, content: systemPrompt }, ...messages];
+    if (!messages || !Array.isArray(messages) || messages.length === 0) {
+      return json({ error: "No messages provided" }, 400);
+    }
 
-    const geminiContents = allMessages.map((m) => ({
+    const contextInfo = context
+      ? `Contextul jucătorului:\n- Scenariu: ${context.scenariu ?? "N/A"}\n- Dificultate: ${context.dificultate ?? "N/A"}\n- Bani: ${context.bani ?? "N/A"} RON\n- Fericire: ${context.fericire ?? "N/A"}%\n- Săptămâna: ${context.saptamana ?? "N/A"} / 48`
+      : "Jucătorul nu este momentan într-un joc activ.";
+
+    const systemInstruction = `Ești Mentorul C.O.S.T., un asistent financiar prietenos pentru studenți români. Oferi sfaturi financiare practice în română. Maxim 100 cuvinte. ${contextInfo}`;
+
+    const geminiContents = messages.map((m) => ({
       role: m.role === "assistant" ? "model" : "user",
       parts: [{ text: m.content }],
     }));
 
-    const res = await fetch(`${GEMINI_URL}?key=${GEMINI_API_KEY}`, {
+    const geminiRes = await fetch(`${GEMINI_URL}?key=${GEMINI_API_KEY}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
+        system_instruction: { parts: [{ text: systemInstruction }] },
         contents: geminiContents,
-        generationConfig: {
-          temperature: 0.7,
-          maxOutputTokens: 500,
-          topP: 0.9,
-        },
+        generationConfig: { temperature: 0.7, maxOutputTokens: 500, topP: 0.9 },
         safetySettings: [
           { category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_NONE" },
           { category: "HARM_CATEGORY_HATE_SPEECH", threshold: "BLOCK_NONE" },
@@ -50,53 +73,21 @@ Deno.serve(async (req) => {
       }),
     });
 
-    if (!res.ok) {
-      const text = await res.text();
-      throw new Error(`Gemini API error: ${res.status} - ${text}`);
+    if (!geminiRes.ok) {
+      const text = await geminiRes.text();
+      throw new Error(`Gemini returned ${geminiRes.status}: ${text.slice(0, 500)}`);
     }
 
-    const data = await res.json();
-    const reply = data.candidates?.[0]?.content?.parts?.[0]?.text ?? "Scuze, nu pot răspunde acum. Încearcă din nou!";
+    const data = await geminiRes.json();
+    const reply = data.candidates?.[0]?.content?.parts?.[0]?.text;
 
-    return new Response(JSON.stringify({
-      reply,
-      usage: data.usageMetadata ?? {},
-    }), {
-      headers: { "Content-Type": "application/json" },
-    });
+    if (!reply) {
+      throw new Error("Empty response from Gemini");
+    }
+
+    return json({ reply, usage: data.usageMetadata ?? {} });
   } catch (err) {
-    const message = err instanceof Error ? err.message : "Internal error";
-    return new Response(JSON.stringify({ error: message }), { status: 500 });
+    const message = err instanceof Error ? err.message : "Unknown error";
+    return json({ error: message }, 500);
   }
 });
-
-function buildSystemPrompt(context?: MentorRequest["context"]): string {
-  const contextInfo = context
-    ? `Contextul jucătorului:
-- Scenariu: ${context.scenariu ?? "N/A"}
-- Dificultate: ${context.dificultate ?? "N/A"}
-- Bani: ${context.bani ?? "N/A"} RON
-- Fericire: ${context.fericire ?? "N/A"}%
-- Săptămâna: ${context.saptamana ?? "N/A"} / 48
-- Venit lunar: ${context.venitLunar ?? "N/A"} RON
-- Costuri lunare: ${context.costuriLunare ?? "N/A"} RON`
-    : "Jucătorul nu este momentan într-un joc activ.";
-
-  return `Ești Mentorul C.O.S.T., un asistent financiar prietenos pentru studenți români.
-
-Rolul tău:
-- Oferi sfaturi financiare practice și adaptate pentru studenți
-- Răspunzi în limba română
-- Folosești un ton prietenos, dar serios și profesional
-- Dai exemple concrete și cifre relevante pentru studenți
-- Încurajezi economisirea și gestionarea responsabilă a banilor
-- Maxim 100 cuvinte per răspuns
-
-${contextInfo}
-
-Reguli:
-- Nu inventa informații false despre taxe sau legi
-- Dacă nu știi ceva, recomandă consultarea unui specialist
-- Nu promova investiții riscante
-- Concentrează-te pe educație financiară de bază: bugetare, economisire, cheltuieli responsabile`;
-}
