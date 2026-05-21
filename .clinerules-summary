@@ -1,0 +1,35 @@
+# Project Summary
+
+## Architecture
+- **Vite + React + TypeScript** SPA
+- **Supabase** for auth (OAuth via supabase-js) + DB (via direct REST fetch)
+- **wouter** for routing, **framer-motion** for animations
+
+## Key fixes implemented
+1. **Login**: Added `redirectTo: window.location.origin` to `signInWithOAuth`
+2. **Logout**: Synchronous state reset first, then fire-and-forget `supabase.auth.signOut()`
+3. **Auth flow**: Explicit hash parsing in AuthContext, `INITIAL_SESSION` event handled
+4. **Leaderboard**: localStorage fallback, removed mock scores, added timeouts, direct REST fetch
+5. **Supabase DB ops**: All switched from client to direct REST `fetch()` calls (faster, no overhead)
+6. **`createClient`**: Kept for auth only (signIn, signOut, getSession, onAuthStateChange); global guard against duplicate instances
+7. **CORS**: No issue - Supabase REST API allows all origins
+
+## Deployment (Render)
+- **SPA routing fix**: Added `public/_redirects` file
+- **Foreign key error**: Leaderboard save skips Supabase when user not logged in
+- **Google OAuth**: Need to add Render URL to "Additional Redirect URLs" in Supabase Auth settings
+
+## Project structure
+- `src/types/index.ts` — all centralized interfaces
+- `src/data/` — scenarios, events, limited events (re-export types from @/types)
+- `src/lib/` — supabase client + REST, leaderboard
+- `src/context/` — Auth, Game, Finance, XP, Theme
+- `src/pages/` — Game, Leaderboard, Admin, Profile, Tutorial
+- `src/components/` — EventModal, LimitedEventModal, GameOver, Layout, OrbBackground
+- `src/services/` — empty, intended for service layer
+- `src/__tests__/` — empty, intended for tests
+
+## Design references
+- UI based on Shadcn design system
+- File naming: `kebab-case.ts`, `PascalCase.tsx`
+- Romanian is used for game content and in-code identifiers (scenariu, bani, fericire, saptamana, luna, tranzactii, etc.)
