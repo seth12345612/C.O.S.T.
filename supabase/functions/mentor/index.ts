@@ -1,5 +1,5 @@
-const HF_TOKEN = Deno.env.get("HF_API_TOKEN");
-const HF_URL = "https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.3";
+const GEMINI_API_KEY = Deno.env.get("GEMINI_API_KEY");
+const GEMINI_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent";
 
 const CORS_HEADERS = {
   "Access-Control-Allow-Origin": "*",
@@ -8,8 +8,13 @@ const CORS_HEADERS = {
   "Access-Control-Max-Age": "86400",
 };
 
-interface MentorRequest {
-  messages: { role: "user" | "assistant"; content: string }[];
+interface Message {
+  role: "user" | "assistant";
+  content: string;
+}
+
+interface RequestBody {
+  messages: Message[];
   context?: {
     scenariu?: string;
     dificultate?: string;
@@ -19,7 +24,7 @@ interface MentorRequest {
   };
 }
 
-function json(body: unknown, status = 200) {
+function respond(body: unknown, status = 200) {
   return new Response(JSON.stringify(body), {
     status,
     headers: { ...CORS_HEADERS, "Content-Type": "application/json" },
@@ -27,71 +32,61 @@ function json(body: unknown, status = 200) {
 }
 
 Deno.serve(async (req) => {
-  if (req.method === "OPTIONS") return new Response(null, { status: 204, headers: CORS_HEADERS });
-  if (req.method !== "POST") return json({ error: "Method not allowed" }, 405);
-  if (!HF_TOKEN) return json({ error: "HF_API_TOKEN not configured" }, 500);
+  if (req.method === "OPTIONS") {
+    return new Response(null, { status: 204, headers: CORS_HEADERS });
+  }
+  if (req.method !== "POST") return respond({ error: "Method not allowed" }, 405);
+  if (!GEMINI_API_KEY) return respond({ error: "GEMINI_API_KEY not set" }, 500);
 
   try {
-    const { messages, context }: MentorRequest = await req.json();
-    if (!messages || !Array.isArray(messages) || messages.length === 0) {
-      return json({ error: "No messages provided" }, 400);
-    }
+    const { messages, context }: RequestBody = await req.json();
+    if (!messages?.length) return respond({ error: "No messages" }, 400);
 
-    const contextStr = context
-      ? `Context: scenariu=${context.scenariu ?? "?"}, dificultate=${context.dificultate ?? "?"}, bani=${context.bani ?? "?"} RON, fericire=${context.fericire ?? "?"}%, saptamana=${context.saptamana ?? "?"}/48. `
+    const contextBlock = context
+      ? `\n\nContext jucător: scenariu=${context.scenariu ?? "?"}, dificultate=${context.dificultate ?? "?"}, bani=${context.bani ?? "?"} RON, fericire=${context.fericire ?? "?"}%, săptămâna ${context.saptamana ?? "?"}/48.`
       : "";
 
-    const systemMsg = `<s>[INST] <<SYS>>Ești Mentorul C.O.S.T., asistent financiar pentru studenți români. Răspunde util, concis (max 100 cuvinte), în română. ${contextStr}<</SYS>>`;
+    const systemText =
+      `Ești Mentorul C.O.S.T., un asistent AI specializat în educație financiară pentru studenți români. ` +
+      `Răspunde util, concis (max 150 cuvinte), în limba română. ` +
+      `Nu da sfaturi de investiții speculative sau recomandări financiare personalizate — oferă doar educație financiară generală.` +
+      contextBlock;
 
-    const history = messages.map((m) =>
-      m.role === "user" ? `[INST] ${m.content} [/INST]` : m.content
-    ).join("\n");
+    const contents = messages.map((m) => ({
+      role: m.role === "assistant" ? "model" : "user",
+      parts: [{ text: m.content }],
+    }));
 
-    const prompt = `${systemMsg}\n${history}\n[/INST]`;
-
-    const hfRes = await fetch(HF_URL, {
+    const geminiRes = await fetch(`${GEMINI_URL}?key=${GEMINI_API_KEY}`, {
       method: "POST",
-      headers: { Authorization: `Bearer ${HF_TOKEN}`, "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        inputs: prompt,
-        parameters: { max_new_tokens: 300, temperature: 0.7, top_p: 0.9, do_sample: true },
+        system_instruction: { parts: [{ text: systemText }] },
+        contents,
+        generationConfig: { temperature: 0.8, maxOutputTokens: 900, topP: 0.95 },
+        safetySettings: [
+          { category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_NONE" },
+          { category: "HARM_CATEGORY_HATE_SPEECH", threshold: "BLOCK_NONE" },
+          { category: "HARM_CATEGORY_SEXUALLY_EXPLICIT", threshold: "BLOCK_NONE" },
+        ],
       }),
     });
 
-    if (!hfRes.ok) {
-      const text = await hfRes.text();
-      if (hfRes.status === 503) {
-        // Model is loading, retry with a simpler prompt
-        const retryRes = await fetch(HF_URL, {
-          method: "POST",
-          headers: { Authorization: `Bearer ${HF_TOKEN}`, "Content-Type": "application/json" },
-          body: JSON.stringify({
-            inputs: prompt,
-            parameters: { max_new_tokens: 150, temperature: 0.7, wait_for_model: true },
-          }),
-        });
-        if (!retryRes.ok) {
-          const retryText = await retryRes.text();
-          throw new Error(`HuggingFace error: ${retryRes.status} - ${retryText.slice(0, 300)}`);
-        }
-        const retryData = await retryRes.json();
-        const reply = Array.isArray(retryData) ? retryData[0]?.generated_text : retryData?.generated_text;
-        return json({ reply: extractReply(reply ?? "", prompt) });
-      }
-      throw new Error(`HuggingFace error: ${hfRes.status} - ${text.slice(0, 300)}`);
+    if (!geminiRes.ok) {
+      const text = await geminiRes.text();
+      return respond({ error: `Gemini ${geminiRes.status}: ${text.slice(0, 300)}` }, 502);
     }
 
-    const data = await hfRes.json();
-    const reply = Array.isArray(data) ? data[0]?.generated_text : data?.generated_text;
-    return json({ reply: extractReply(reply ?? "", prompt) });
+    const data = await geminiRes.json();
+    const reply = data.candidates?.[0]?.content?.parts?.[0]?.text;
+
+    if (!reply) {
+      return respond({ error: "Empty response from Gemini" }, 502);
+    }
+
+    return respond({ reply });
   } catch (err) {
-    const message = err instanceof Error ? err.message : "Unknown error";
-    return json({ error: message }, 500);
+    const msg = err instanceof Error ? err.message : "Unknown error";
+    return respond({ error: msg }, 500);
   }
 });
-
-function extractReply(text: string, prompt: string): string {
-  const after = text.slice(prompt.length).trim();
-  if (after) return after.replace(/<\/?s>/g, "").replace(/\[\/INST\]/g, "").trim();
-  return "Îmi pare rău, nu pot răspunde acum. Încearcă din nou!";
-}
