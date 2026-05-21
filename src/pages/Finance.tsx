@@ -3,9 +3,10 @@ import { motion } from "framer-motion";
 import { OrbBackground } from "@/components/OrbBackground";
 import { Layout } from "@/components/Layout";
 import { MentorChat } from "@/components/MentorChat";
+import { FinancialReport } from "@/components/FinancialReport";
 import { useFinance } from "@/context/FinanceContext";
-import { Plus, Trash2, TrendingUp, TrendingDown, PiggyBank, Target } from "lucide-react";
-import type { TransactionType } from "@/context/FinanceContext";
+import { Plus, Trash2, TrendingUp, TrendingDown, PiggyBank, Target, BarChart3, Download } from "lucide-react";
+import type { TransactionType } from "@/types";
 
 const CATEGORII = ["Mâncare", "Transport", "Divertisment", "Îmbrăcăminte", "Sănătate", "Educație", "Utilități", "Altele"];
 
@@ -24,6 +25,7 @@ export default function Finance() {
   const [showLargeExpenseWarning, setShowLargeExpenseWarning] = useState(false);
   const [pendingTransaction, setPendingTransaction] = useState<typeof form | null>(null);
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
+  const [showReport, setShowReport] = useState(false);
 
   function submitTransaction(e: React.FormEvent) {
     e.preventDefault();
@@ -68,13 +70,22 @@ export default function Finance() {
             <h1 className="text-3xl font-black text-white mb-1">Finanțele mele</h1>
             <p className="text-white/50 text-sm">Urmărește veniturile, cheltuielile și economiile tale reale.</p>
           </div>
-          <button
-            onClick={() => setShowForm((v) => !v)}
-            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-sm font-bold transition-all"
-          >
-            <Plus size={16} />
-            <span className="hidden sm:block">Adaugă</span>
-          </button>
+          <div className="flex gap-2">
+            <button
+              onClick={() => setShowReport((v) => !v)}
+              className="flex items-center gap-2 px-4 py-2 rounded-xl border border-white/15 hover:bg-white/10 text-white/80 hover:text-white text-sm font-medium transition-all"
+            >
+              <BarChart3 size={16} />
+              <span className="hidden sm:block">Raport</span>
+            </button>
+            <button
+              onClick={() => setShowForm((v) => !v)}
+              className="flex items-center gap-2 px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-sm font-bold transition-all"
+            >
+              <Plus size={16} />
+              <span className="hidden sm:block">Adaugă</span>
+            </button>
+          </div>
         </div>
 
         {/* Summary cards */}
@@ -240,6 +251,12 @@ export default function Finance() {
               </div>
             </motion.div>
           </motion.div>
+        )}
+
+        {showReport && (
+          <div className="mb-6">
+            <FinancialReport onClose={() => setShowReport(false)} />
+          </div>
         )}
 
         {/* Tabs */}

@@ -250,3 +250,55 @@ export interface CompletedChoice {
   lectie: string;
   timestamp: number;
 }
+
+// Achievements
+export interface Achievement {
+  id: string;
+  titlu: string;
+  descriere: string;
+  icon: string;
+  categorie: "joc" | "social" | "progresie" | "ascuns";
+  conditie: (stats: AchievementStats) => boolean;
+  xpReward: number;
+}
+
+export interface AchievementStats {
+  totalJocuri: number;
+  totalVictorii: number;
+  scenariiDeblocate: number;
+  scenariiJucate: string[];
+  nivelCurent: number;
+  baniTotaliCastigati: number;
+  evenimenteCompletate: number;
+  tutorialCompletat: boolean;
+  premiumActiv: boolean;
+  utilizatorConectat: boolean;
+  limitedEventsCompletate: number;
+  achievementIds: string[];
+}
+
+export interface BadgeData {
+  id: string;
+  titlu: string;
+  descriere: string;
+  icon: string;
+  deblocatLa: number | null;
+}
+
+// Raport financiar
+export interface FinancialReport {
+  totalVenituri: number;
+  totalCheltuieli: number;
+  balanta: number;
+  cheltuieliPeCategorii: Record<string, number>;
+  venituriPeCategorii: Record<string, number>;
+  cashFlow: { saptamana: number; valoare: number }[];
+  sfaturi: string[];
+  scorSanatateFinanciara: number;
+}
+
+// PWA
+export interface BeforeInstallPromptEvent extends Event {
+  prompt: () => Promise<void>;
+  userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
+}

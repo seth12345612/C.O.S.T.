@@ -1,6 +1,8 @@
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { MessageCircle, X, Send, Loader2 } from "lucide-react";
+import { MessageCircle, X, Send, Loader2, Sparkles } from "lucide-react";
+import { supabase } from "@/lib/supabase";
+import { useGame } from "@/context/GameContext";
 
 interface Message {
   id: string;
@@ -12,16 +14,9 @@ const PREDEFINED_QUESTIONS = [
   "Cum să economisesc mai mult?",
   "Cum să-mi planific bugetul?",
   "Ce să fac dacă sunt pe minus?",
+  "Merită să fac un împrumut?",
+  "Cum să câștig bani în plus?",
 ];
-
-const AI_RESPONSES: Record<string, string> = {
-  "Cum să economisesc mai mult?":
-    "💡 Sfat rapid pentru economii:\n\n1. **Regula 50/30/20** - Alocă 50% pentru nevoi, 30% pentru dorințe și 20% pentru economii.\n\n2. **Economisește automat** - Setează un transfer lunar automat către un cont de economii.\n\n3. **Reduce cheltuielile mici** - Cafeaua zilnică de 15 RON = 450 RON/lună!\n\n4. **Compară prețurile** - Folosește aplicații de comparare pentru facturi și abonamente.\n\n5. **Stabilește un obiectiv** - Fiecare econmie are un scop (ex: o vacanță, un laptop).",
-  "Cum să-mi planific bugetul?":
-    "📊 Ghid pentru bugetul lunar:\n\n**Pasul 1: Calculează venitul net** (salariu - taxe - contribuții)\n\n**Pasul 2: Listează cheltuielile fixe**\n• Chirie/utilități\n• Transport\n• Abonamente\n• Mâncare\n\n**Pasul 3: Stabilește limite**\n• Pentru fiecare categorie, pune o sumă maximă\n• Lasă și un buffer de 10% pentru urgențe\n\n**Pasul 4: Urmărește și ajustează**\n• Verifică săptămânal progresul\n• ajustează pentru luna următoare",
-  "Ce să fac dacă sunt pe minus?":
-    "⚠️ Situație dificilă? Iată pașii:\n\n**1. Oprește cheltuielile**\n• Anulează abonamentele neesențiale\n• Renunță temporar la ieșiri\n• Gătește acasă în loc de restaurant\n\n**2. Identifică surse de venit**\n• Job part-time\n• Vânzări de lucruri nefolosite\n• Freelance/proiecte ocazionale\n\n**3. Prioritizează cheltuielile**\n• Urgente: mâncare, utilități, transport\n• Amânabile: abonamente, divertisment\n\n**4. Solicită ajutor**\n• Vorbește cu familia\n• Verifică programele de suport pentru studenți\n\nNu e rușin să ceri ajutor temporar!",
-};
 
 export function MentorChat() {
   const [isOpen, setIsOpen] = useState(false);
@@ -29,22 +24,51 @@ export function MentorChat() {
   const [input, setInput] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const { state } = useGame();
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, isTyping]);
 
-  const handleQuestion = (question: string) => {
+  const handleQuestion = async (question: string) => {
     const userMsg: Message = { id: Date.now().toString(), role: "user", content: question };
     setMessages((prev) => [...prev, userMsg]);
     setIsTyping(true);
 
-    setTimeout(() => {
-      const response = AI_RESPONSES[question] ?? "Scrie-mi mai multe detalii!";
-      const aiMsg: Message = { id: (Date.now() + 1).toString(), role: "assistant", content: response };
+    try {
+      const context = state ? {
+        scenariu: state.scenariuId,
+        dificultate: state.dificultateKey,
+        bani: state.bani,
+        fericire: state.fericire,
+        saptamana: state.saptamana,
+      } : undefined;
+
+      const { data, error } = await supabase.functions.invoke("mentor", {
+        body: {
+          messages: [...messages, userMsg].map((m) => ({ role: m.role, content: m.content })),
+          context,
+        },
+      });
+
+      if (error) throw error;
+
+      const aiMsg: Message = {
+        id: (Date.now() + 1).toString(),
+        role: "assistant",
+        content: data.reply ?? "Scuze, nu pot răspunde acum.",
+      };
       setMessages((prev) => [...prev, aiMsg]);
+    } catch {
+      const fallback: Message = {
+        id: (Date.now() + 1).toString(),
+        role: "assistant",
+        content: "Îmi pare rău, am întâmpinat o eroare. Te rog încearcă din nou mai târziu.",
+      };
+      setMessages((prev) => [...prev, fallback]);
+    } finally {
       setIsTyping(false);
-    }, 1500);
+    }
   };
 
   const handleSend = () => {
@@ -77,11 +101,11 @@ export function MentorChat() {
             <div className="flex items-center justify-between p-4 border-b border-white/10 bg-gradient-to-r from-purple-600/20 to-fuchsia-600/20">
               <div className="flex items-center gap-2">
                 <div className="w-8 h-8 rounded-full bg-gradient-to-r from-purple-500 to-fuchsia-500 flex items-center justify-center">
-                  <span className="text-sm">🎓</span>
+                  <Sparkles size={16} className="text-white" />
                 </div>
                 <div>
                   <h3 className="text-sm font-bold text-white">Mentorul C.O.S.T.</h3>
-                  <p className="text-xs text-white/50">Asistent financiar AI</p>
+                  <p className="text-xs text-white/50">Alimentat de Gemini AI</p>
                 </div>
               </div>
               <button
@@ -95,7 +119,7 @@ export function MentorChat() {
             <div className="flex-1 overflow-y-auto p-4 space-y-3">
               {messages.length === 0 ? (
                 <div className="text-center py-8">
-                  <p className="text-white/40 text-sm mb-4">Bună! Cum te pot ajuta azi?</p>
+                  <p className="text-white/40 text-sm mb-4">Bună! Cu ce te pot ajuta cu finanțele tale?</p>
                   <div className="flex flex-col gap-2">
                     {PREDEFINED_QUESTIONS.map((q) => (
                       <button
@@ -144,7 +168,7 @@ export function MentorChat() {
                 />
                 <button
                   onClick={handleSend}
-                  disabled={!input.trim()}
+                  disabled={!input.trim() || isTyping}
                   className="p-2 rounded-xl bg-purple-600 hover:bg-purple-500 disabled:opacity-50 disabled:cursor-not-allowed text-white transition-colors"
                 >
                   <Send size={18} />

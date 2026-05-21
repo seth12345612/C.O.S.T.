@@ -5,6 +5,8 @@ import { XPProvider, useXP } from "@/context/XPContext";
 import { FinanceProvider } from "@/context/FinanceContext";
 import { ThemeProvider } from "@/context/ThemeContext";
 import { AuthProvider, useAuth } from "@/context/AuthContext";
+import { AchievementProvider } from "@/context/AchievementContext";
+import { AchievementNotification } from "@/components/AchievementNotification";
 import NotFound from "@/pages/not-found";
 import Home from "@/pages/Home";
 import GamePage from "@/pages/Game";
@@ -14,6 +16,8 @@ import Finance from "@/pages/Finance";
 import Leaderboard from "@/pages/Leaderboard";
 import Premium from "@/pages/Premium";
 import Admin from "@/pages/Admin";
+import Despre from "@/pages/Despre";
+import Achievements from "@/pages/Achievements";
 import { useEffect } from "react";
 
 const queryClient = new QueryClient();
@@ -41,6 +45,8 @@ function Router() {
       <Route path="/premium" component={Premium} />
       <Route path="/leaderboard" component={Leaderboard} />
       <Route path="/admin" component={Admin} />
+      <Route path="/despre" component={Despre} />
+      <Route path="/achievements" component={Achievements} />
       <Route component={NotFound} />
     </Switch>
   );
@@ -52,14 +58,17 @@ export default function App() {
       <ThemeProvider>
         <AuthProvider>
           <XPProvider>
-            <PremiumSync />
-            <FinanceProvider>
-              <GameProvider>
-                <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}> 
-                  <Router />
-                </WouterRouter>
-              </GameProvider>
-            </FinanceProvider>
+            <AchievementProvider>
+              <PremiumSync />
+              <AchievementNotification />
+              <FinanceProvider>
+                <GameProvider>
+                  <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}> 
+                    <Router />
+                  </WouterRouter>
+                </GameProvider>
+              </FinanceProvider>
+            </AchievementProvider>
           </XPProvider>
         </AuthProvider>
       </ThemeProvider>

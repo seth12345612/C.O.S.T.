@@ -6,12 +6,15 @@ import { useAuth } from "@/context/AuthContext";
 import { ThemePicker } from "@/components/ThemePicker";
 import { GoogleAuthButton } from "@/components/GoogleAuthButton";
 import { EmailOtpVerifier } from "@/components/EmailOtpVerifier";
-import { Home, PhoneCall, Wallet, Trophy, Menu, X, Crown, Shield, ShieldCheck } from "lucide-react";
+import { SoundEffects } from "@/lib/sounds";
+import { Home, PhoneCall, Wallet, Trophy, Menu, X, Crown, Shield, ShieldCheck, Info, Award, Volume2, VolumeX } from "lucide-react";
 
 const NAV = [
   { href: "/", label: "Acasă", icon: Home },
   { href: "/finance", label: "Finanțe", icon: Wallet },
   { href: "/leaderboard", label: "Clasament", icon: Trophy },
+  { href: "/achievements", label: "Achievements", icon: Award },
+  { href: "/despre", label: "Despre", icon: Info },
   { href: "/contact", label: "Contact", icon: PhoneCall },
 ];
 
@@ -116,6 +119,13 @@ export function Layout({ children }: { children: React.ReactNode }) {
               )}
             </div>
 
+            <button
+              onClick={() => SoundEffects.setEnabled(!SoundEffects.enabled)}
+              className="p-2 rounded-lg text-white/40 hover:text-white hover:bg-white/5 transition-colors"
+              title={SoundEffects.enabled ? "Sunete activate" : "Sunete dezactivate"}
+            >
+              {SoundEffects.enabled ? <Volume2 size={18} /> : <VolumeX size={18} />}
+            </button>
             <GoogleAuthButton />
             <ThemePicker />
 

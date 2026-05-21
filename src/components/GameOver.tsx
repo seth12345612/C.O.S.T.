@@ -4,6 +4,8 @@ import { useGame } from "@/context/GameContext";
 import { useXP } from "@/context/XPContext";
 import { useFinance } from "@/context/FinanceContext";
 import { useAuth } from "@/context/AuthContext";
+import { useAchievements } from "@/context/AchievementContext";
+import { SoundEffects } from "@/lib/sounds";
 import { Trophy, RotateCcw, TrendingUp, Coins, Smile } from "lucide-react";
 import { useEffect, useRef } from "react";
 import { saveLeaderboardEntry, getScenarioLabel } from "@/lib/leaderboard";
@@ -14,6 +16,7 @@ export function GameOver() {
   const { addXP } = useXP();
   const { financeState, addTransaction, deleteTransaction } = useFinance();
   const { user, dbUser } = useAuth();
+  const { actualizeazaStats, stats } = useAchievements();
   const xpAdded = useRef(false);
   const scoreSaved = useRef(false);
   const moneyTransferred = useRef(false);
@@ -28,6 +31,19 @@ export function GameOver() {
       capitalSaved.current = false;
       return;
     }
+
+    if (!xpAdded.current) {
+      if (isWin) SoundEffects.success();
+      else SoundEffects.gameOver();
+    }
+
+    actualizeazaStats({
+      totalJocuri: stats.totalJocuri + 1,
+      scenariiJucate: [...new Set([...stats.scenariiJucate, state.scenariuId])],
+      baniTotaliCastigati: stats.baniTotaliCastigati + Math.max(0, Math.round(state.bani)),
+      evenimenteCompletate: stats.evenimenteCompletate + state.istoricDecizii.length,
+      totalVictorii: isWin ? stats.totalVictorii + 1 : stats.totalVictorii,
+    });
 
     if (!xpAdded.current) {
       xpAdded.current = true;
