@@ -1,5 +1,7 @@
-import { createContext, useContext, useState, useCallback, useEffect, type ReactNode } from "react";
-import type { TransactionType, Transaction, Budget, FinanceState } from "@/types";
+import { createContext, useContext, useState, useCallback, useEffect, useRef, type ReactNode } from "react";
+import type { Transaction, Budget, FinanceState } from "@/types";
+import { useAuth } from "@/context/AuthContext";
+import { loadProfile, saveProfile } from "@/lib/syncProfile";
 
 const DEFAULT_BUDGETE: Budget[] = [
   { categorie: "Mâncare", limita: 600 },
@@ -12,12 +14,16 @@ const DEFAULT_BUDGETE: Budget[] = [
   { categorie: "Altele", limita: 300 },
 ];
 
+const DEFAULT_FINANCE: FinanceState = {
+  tranzactii: [], budgete: DEFAULT_BUDGETE, obiectivEconomii: 5000, economiiCurente: 0,
+};
+
 function load(): FinanceState {
   try {
     const raw = localStorage.getItem("cost_finance");
     if (raw) return JSON.parse(raw);
   } catch {}
-  return { tranzactii: [], budgete: DEFAULT_BUDGETE, obiectivEconomii: 5000, economiiCurente: 0 };
+  return DEFAULT_FINANCE;
 }
 
 function save(state: FinanceState) {
@@ -40,8 +46,29 @@ const FinanceContext = createContext<FinanceContextType | null>(null);
 
 export function FinanceProvider({ children }: { children: ReactNode }) {
   const [financeState, setFinanceState] = useState<FinanceState>(load);
+  const { user } = useAuth();
+  const dbSynced = useRef(false);
+  const saveTimer = useRef<ReturnType<typeof setTimeout>>();
 
-  useEffect(() => { save(financeState); }, [financeState]);
+  useEffect(() => {
+    if (!user?.email || dbSynced.current) return;
+    dbSynced.current = true;
+    loadProfile(user.email, user.sub).then((profile) => {
+      if (profile?.finance && typeof profile.finance === "object" && "tranzactii" in profile.finance) {
+        setFinanceState(profile.finance as FinanceState);
+      }
+    });
+  }, [user?.email, user?.sub]);
+
+  useEffect(() => {
+    save(financeState);
+    if (!user?.email) return;
+    clearTimeout(saveTimer.current);
+    saveTimer.current = setTimeout(() => {
+      saveProfile(user.email!, user.sub, { finance: financeState });
+    }, 1000);
+    return () => clearTimeout(saveTimer.current);
+  }, [financeState, user?.email, user?.sub]);
 
   const addTransaction = useCallback((t: Omit<Transaction, "id">) => {
     setFinanceState((prev) => {
@@ -54,23 +81,16 @@ export function FinanceProvider({ children }: { children: ReactNode }) {
 
   const deleteTransaction = useCallback((id: string) => {
     setFinanceState((prev) => {
-      const transactionToDelete = prev.tranzactii.find((t) => t.id === id);
+      const t = prev.tranzactii.find((x) => x.id === id);
       let economiiCurente = prev.economiiCurente;
-      if (transactionToDelete?.tip === "economie") {
-        economiiCurente = Math.max(0, prev.economiiCurente - transactionToDelete.suma);
-      }
-      return {
-        ...prev,
-        tranzactii: prev.tranzactii.filter((t) => t.id !== id),
-        economiiCurente,
-      };
+      if (t?.tip === "economie") economiiCurente = Math.max(0, prev.economiiCurente - t.suma);
+      return { ...prev, tranzactii: prev.tranzactii.filter((x) => x.id !== id), economiiCurente };
     });
   }, []);
 
   const updateBudget = useCallback((categorie: string, limita: number) => {
     setFinanceState((prev) => ({
-      ...prev,
-      budgete: prev.budgete.map((b) => b.categorie === categorie ? { ...b, limita } : b),
+      ...prev, budgete: prev.budgete.map((b) => b.categorie === categorie ? { ...b, limita } : b),
     }));
   }, []);
 
@@ -78,12 +98,8 @@ export function FinanceProvider({ children }: { children: ReactNode }) {
     setFinanceState((prev) => ({ ...prev, obiectivEconomii: suma }));
   }, []);
 
-  const totalVenituri = financeState.tranzactii
-    .filter((t) => t.tip === "venit")
-    .reduce((s, t) => s + t.suma, 0);
-  const totalCheltuieli = financeState.tranzactii
-    .filter((t) => t.tip === "cheltuiala")
-    .reduce((s, t) => s + t.suma, 0);
+  const totalVenituri = financeState.tranzactii.filter((t) => t.tip === "venit").reduce((s, t) => s + t.suma, 0);
+  const totalCheltuieli = financeState.tranzactii.filter((t) => t.tip === "cheltuiala").reduce((s, t) => s + t.suma, 0);
   const sold = totalVenituri - totalCheltuieli;
   const cheltuieliPerCategorie: Record<string, number> = {};
   for (const t of financeState.tranzactii.filter((t) => t.tip === "cheltuiala")) {

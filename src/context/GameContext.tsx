@@ -1,8 +1,9 @@
-import { createContext, useContext, useState, useCallback, useRef, type ReactNode } from "react";
+import { createContext, useContext, useState, useCallback, useRef, useEffect, type ReactNode } from "react";
 import type { DifficultyKey, GameEvent, DecizieIstorica, GameState } from "@/types";
 import { SCENARII, DIFICULTATI, START_CONFIG } from "@/data/scenarios";
 import { GAME_EVENTS, shuffleArray } from "@/data/events";
 import { useAuth } from "./AuthContext";
+import { loadProfile, saveProfile } from "@/lib/syncProfile";
 
 interface GameContextType {
   state: GameState | null;
@@ -21,9 +22,30 @@ const GameContext = createContext<GameContextType | null>(null);
 export function GameProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<GameState | null>(null);
   const eventQueueRef = useRef<GameEvent[]>([]);
-  const { isPremium } = useAuth();
+  const { isPremium, user } = useAuth();
   const isPremiumRef = useRef(isPremium);
   isPremiumRef.current = isPremium;
+  const dbLoaded = useRef(false);
+  const saveTimer = useRef<ReturnType<typeof setTimeout>>();
+
+  useEffect(() => {
+    if (!user?.email || dbLoaded.current) return;
+    dbLoaded.current = true;
+    loadProfile(user.email, user.sub).then((profile) => {
+      if (profile?.current_game && typeof profile.current_game === "object") {
+        setState(profile.current_game as GameState);
+      }
+    });
+  }, [user?.email, user?.sub]);
+
+  useEffect(() => {
+    if (!user?.email || !state) return;
+    clearTimeout(saveTimer.current);
+    saveTimer.current = setTimeout(() => {
+      saveProfile(user.email!, user.sub, { current_game: state });
+    }, 1500);
+    return () => clearTimeout(saveTimer.current);
+  }, [state, user?.email, user?.sub]);
 
   const initGame = useCallback((
     scenariuId: string,
@@ -130,14 +152,9 @@ export function GameProvider({ children }: { children: ReactNode }) {
           const go = checkGameOver(newBani, newFericire, newSaptamana, prev.isEndless, isRecoveryMode, newRecoveryWeeks);
           return {
             ...prev,
-            saptamana: newSaptamana,
-            luna: newLuna,
-            saptamanaInLuna: newSaptamanaInLuna,
-            bani: newBani,
-            fericire: Math.max(0, Math.min(100, newFericire)),
-            isGameOver: go.over,
-            gameOverTitle: go.title,
-            gameOverReason: go.reason,
+            saptamana: newSaptamana, luna: newLuna, saptamanaInLuna: newSaptamanaInLuna,
+            bani: newBani, fericire: Math.max(0, Math.min(100, newFericire)),
+            isGameOver: go.over, gameOverTitle: go.title, gameOverReason: go.reason,
           };
         }
       }
@@ -160,18 +177,12 @@ export function GameProvider({ children }: { children: ReactNode }) {
       return {
         ...prev,
         scenariuId: newScenariuId,
-        saptamana: newSaptamana,
-        luna: newLuna,
-        saptamanaInLuna: newSaptamanaInLuna,
-        bani: newBani,
-        fericire: Math.max(0, Math.min(100, newFericire)),
+        saptamana: newSaptamana, luna: newLuna, saptamanaInLuna: newSaptamanaInLuna,
+        bani: newBani, fericire: Math.max(0, Math.min(100, newFericire)),
         isGameOver: go.over || (newSaptamana >= 48 && !prev.isEndless),
-        gameOverTitle: go.title,
-        gameOverReason: go.reason,
+        gameOverTitle: go.title, gameOverReason: go.reason,
         evenimentCurent: nextEvent,
-        isRecoveryMode,
-        recoveryWeeksRemaining: newRecoveryWeeks,
-        originalScenarioId,
+        isRecoveryMode, recoveryWeeksRemaining: newRecoveryWeeks, originalScenarioId,
       };
     });
   }, [checkGameOver, getNextEvent]);
@@ -198,14 +209,9 @@ export function GameProvider({ children }: { children: ReactNode }) {
 
       const decizie: DecizieIstorica = {
         id: `${prev.evenimentCurent.id}-${Date.now()}`,
-        luna: prev.luna,
-        saptamana: prev.saptamanaInLuna,
-        titluEveniment: prev.evenimentCurent.titlu,
-        alegere: opt.text,
-        lectie: opt.lectie,
-        baniDelta,
-        fericireDelta,
-        timestamp: Date.now(),
+        luna: prev.luna, saptamana: prev.saptamanaInLuna,
+        titluEveniment: prev.evenimentCurent.titlu, alegere: opt.text,
+        lectie: opt.lectie, baniDelta, fericireDelta, timestamp: Date.now(),
       };
 
       const go = checkGameOver(newBani, newFericire, prev.saptamana, prev.isEndless, prev.isRecoveryMode, prev.recoveryWeeksRemaining);
@@ -226,16 +232,12 @@ export function GameProvider({ children }: { children: ReactNode }) {
       return {
         ...prev,
         scenariuId: newScenariuId,
-        bani: newBani,
-        fericire: newFericire,
+        bani: newBani, fericire: newFericire,
         istoricDecizii: [...prev.istoricDecizii, decizie],
         evenimentCurent: null,
-        isGameOver: go.over,
-        gameOverTitle: go.over ? go.title : prev.gameOverTitle,
+        isGameOver: go.over, gameOverTitle: go.over ? go.title : prev.gameOverTitle,
         gameOverReason: go.over ? go.reason : prev.gameOverReason,
-        isRecoveryMode,
-        recoveryWeeksRemaining,
-        originalScenarioId,
+        isRecoveryMode, recoveryWeeksRemaining, originalScenarioId,
       };
     });
   }, [checkGameOver]);
@@ -249,7 +251,12 @@ export function GameProvider({ children }: { children: ReactNode }) {
     });
   }, []);
 
-  const resetGame = useCallback(() => setState(null), []);
+  const resetGame = useCallback(() => {
+    setState(null);
+    if (user?.email) {
+      saveProfile(user.email, user.sub, { current_game: null });
+    }
+  }, [user?.email, user?.sub]);
 
   const savedCapital = useCallback(() => {
     return Number(localStorage.getItem(CAPITAL_KEY) ?? 0);

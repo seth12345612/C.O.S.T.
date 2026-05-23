@@ -1,6 +1,8 @@
-import { createContext, useContext, useState, useCallback, useEffect, type ReactNode } from "react";
+import { createContext, useContext, useState, useCallback, useEffect, useRef, type ReactNode } from "react";
 import type { XPState } from "@/types";
 import { SCENARII } from "@/data/scenarios";
+import { useAuth } from "@/context/AuthContext";
+import { loadProfile, saveProfile } from "@/lib/syncProfile";
 
 const XP_PER_LEVEL = 200;
 
@@ -12,27 +14,25 @@ const ALL_SCENARIOS_ORDER = [
 function getXPUnlock(): Record<string, number> {
   const unlock: Record<string, number> = {};
   for (const [id, scenario] of Object.entries(SCENARII)) {
-    if (!scenario.isInternal) {
-      unlock[id] = scenario.xpRequired;
-    }
+    if (!scenario.isInternal) unlock[id] = scenario.xpRequired;
   }
   return unlock;
 }
 
 const XP_UNLOCK = getXPUnlock();
 
-function loadXP(): XPState {
+const DEFAULT_XP: XPState = { xp: 0, level: 1, scenariiDeblocate: ["camin", "navetist"] };
+
+function loadLocal(): XPState {
   try {
     const raw = localStorage.getItem("cost_xp");
     if (raw) return JSON.parse(raw);
   } catch {}
-  return { xp: 0, level: 1, scenariiDeblocate: ["camin", "navetist"] };
+  return DEFAULT_XP;
 }
 
-function saveXP(state: XPState) {
-  try {
-    localStorage.setItem("cost_xp", JSON.stringify(state));
-  } catch {}
+function saveLocal(state: XPState) {
+  try { localStorage.setItem("cost_xp", JSON.stringify(state)); } catch {}
 }
 
 function computeLevel(xp: number): number {
@@ -57,10 +57,31 @@ interface XPContextType {
 const XPContext = createContext<XPContextType | null>(null);
 
 export function XPProvider({ children }: { children: ReactNode }) {
-  const [xpState, setXPState] = useState<XPState>(loadXP);
+  const [xpState, setXPState] = useState<XPState>(loadLocal);
   const [premiumOverride, setPremiumOverride] = useState(false);
+  const { user } = useAuth();
+  const dbSynced = useRef(false);
+  const saveTimer = useRef<ReturnType<typeof setTimeout>>();
 
-  useEffect(() => { saveXP(xpState); }, [xpState]);
+  useEffect(() => {
+    if (!user?.email || dbSynced.current) return;
+    dbSynced.current = true;
+    loadProfile(user.email, user.sub).then((profile) => {
+      if (profile?.xp && typeof profile.xp === "object" && "xp" in profile.xp) {
+        setXPState(profile.xp as XPState);
+      }
+    });
+  }, [user?.email, user?.sub]);
+
+  useEffect(() => {
+    saveLocal(xpState);
+    if (!user?.email) return;
+    clearTimeout(saveTimer.current);
+    saveTimer.current = setTimeout(() => {
+      saveProfile(user.email!, user.sub, { xp: xpState });
+    }, 1000);
+    return () => clearTimeout(saveTimer.current);
+  }, [xpState, user?.email, user?.sub]);
 
   const addXP = useCallback((amount: number) => {
     setXPState((prev) => {
@@ -73,12 +94,12 @@ export function XPProvider({ children }: { children: ReactNode }) {
 
   const xpForNextLevel = XP_PER_LEVEL;
   const xpProgress = (xpState.xp % XP_PER_LEVEL) / XP_PER_LEVEL;
-  
+
   const isUnlocked = useCallback((id: string) => {
     if (premiumOverride) return true;
     return xpState.scenariiDeblocate.includes(id);
   }, [xpState, premiumOverride]);
-  
+
   const xpRequiredFor = useCallback((id: string) => XP_UNLOCK[id] ?? 0, []);
 
   return (
