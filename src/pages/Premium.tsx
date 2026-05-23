@@ -1,9 +1,13 @@
-import { Link } from "wouter";
+import { Link, useSearchParams } from "wouter";
 import { motion } from "framer-motion";
-import { Sparkles, Crown, MessageCircle, Unlock, Calendar, Mail, Check, Zap } from "lucide-react";
+import { Sparkles, Crown, MessageCircle, Unlock, Calendar, Mail, Check, Zap, Loader2, CreditCard } from "lucide-react";
 import { OrbBackground } from "@/components/OrbBackground";
 import { Layout } from "@/components/Layout";
 import { useAuth } from "@/context/AuthContext";
+import { useState, useEffect } from "react";
+
+const CHECKOUT_FUNC = "https://twdvhkwrlwhadbmortqk.supabase.co/functions/v1/create-checkout";
+const ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR3ZHZoa3dybHdoYWRibW9ydHFrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkyMDM4OTAsImV4cCI6MjA5NDc3OTg5MH0.mvQkXjYR3YDChjbuGmmm006QOTjw6rQz6UdAKZYG-lQ";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 24 },
@@ -20,7 +24,7 @@ const BENEFITS = [
   {
     icon: MessageCircle,
     title: "Chat AI Nelimitat",
-    desc: "Acces nelimitat la Mentorul AI — utilizatorii free au doar 5 mesaje/zi.",
+    desc: "Acces nelimitat la Mentorul AI — utilizatorii free au doar 10 întrebări/zi.",
     color: "from-purple-400 to-pink-500",
   },
   {
@@ -38,8 +42,40 @@ const BENEFITS = [
 ];
 
 export default function Premium() {
-  const { isPremium, activateDemoPremium, deactivatePremium, getPremiumTimeRemaining, premiumTrialEndsAt } = useAuth();
+  const { isPremium, activateDemoPremium, activateFullPremium, deactivatePremium, getPremiumTimeRemaining, premiumTrialEndsAt, user } = useAuth();
   const isActive = isPremium && premiumTrialEndsAt && premiumTrialEndsAt > Date.now();
+  const [checkoutLoading, setCheckoutLoading] = useState(false);
+  const [checkoutError, setCheckoutError] = useState("");
+  const [searchParams] = useSearchParams();
+
+  useEffect(() => {
+    if (searchParams.get("canceled")) {
+      setCheckoutError("Plata a fost anulată. Poți încerca din nou oricând.");
+    }
+  }, [searchParams]);
+
+  const handleBuyPremium = async () => {
+    setCheckoutLoading(true);
+    setCheckoutError("");
+    try {
+      const res = await fetch(CHECKOUT_FUNC, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${ANON_KEY}` },
+        body: JSON.stringify({
+          email: user?.email ?? "",
+          name: user?.name ?? "",
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok || data.error) throw new Error(data.error || `HTTP ${res.status}`);
+      if (data.url) window.location.href = data.url;
+      else throw new Error("No checkout URL returned");
+    } catch (err) {
+      setCheckoutError(err instanceof Error ? err.message : "Eroare la inițierea plății");
+    } finally {
+      setCheckoutLoading(false);
+    }
+  };
 
   return (
     <Layout>
@@ -151,18 +187,34 @@ export default function Premium() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 1.1 }}
-          className="text-center"
+          className="p-6 rounded-2xl border border-white/10 bg-white/5 text-center"
         >
-          <p className="text-white/50 text-sm mb-4">
-            Interesat de Premium? Contactează-ne și află mai multe detalii!
+          <h2 className="text-xl font-bold text-white mb-2">Cumpără Premium</h2>
+          <p className="text-3xl font-black text-white mb-1">
+            9 <span className="text-lg font-normal text-white/50">RON / lună</span>
           </p>
-          <Link
-            href="/contact"
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-gradient-to-r from-purple-600 to-fuchsia-600 hover:from-purple-500 hover:to-fuchsia-500 text-white font-bold transition-all hover:-translate-y-0.5"
+          <p className="text-sm text-white/40 mb-6">Plată unică lunară — acces complet la toate funcțiile</p>
+
+          {checkoutError && (
+            <p className="text-sm text-red-400 mb-4">{checkoutError}</p>
+          )}
+
+          <button
+            onClick={handleBuyPremium}
+            disabled={checkoutLoading}
+            className="inline-flex items-center gap-2 px-8 py-3 rounded-2xl bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-400 hover:to-emerald-500 text-white font-bold text-sm transition-all hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            <Mail size={18} />
-            Contactează-ne
-          </Link>
+            {checkoutLoading ? (
+              <Loader2 size={18} className="animate-spin" />
+            ) : (
+              <CreditCard size={18} />
+            )}
+            {checkoutLoading ? "Se procesează..." : "Plătește cu Cardul"}
+          </button>
+
+          <p className="text-xs text-white/30 mt-4">
+            Plăți securizate prin Stripe. Nu stocăm datele cardului tău.
+          </p>
         </motion.section>
       </div>
     </Layout>

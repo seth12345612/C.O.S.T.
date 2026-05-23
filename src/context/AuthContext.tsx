@@ -13,6 +13,7 @@ interface AuthContextType {
   loginManual: (nume: string, prenume: string, email: string) => void;
   logout: () => void;
   activateDemoPremium: () => void;
+  activateFullPremium: (durationMs: number) => void;
   deactivatePremium: () => void;
   getPremiumTimeRemaining: () => string;
 }
@@ -147,6 +148,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setPremiumTrialEndsAt(endsAt);
   }, []);
 
+  const activateFullPremium = useCallback((durationMs: number) => {
+    const endsAt = Date.now() + durationMs;
+    setIsPremium(true);
+    setPremiumTrialEndsAt(endsAt);
+  }, []);
+
   const deactivatePremium = useCallback(() => {
     setIsPremium(false);
     setPremiumTrialEndsAt(null);
@@ -175,6 +182,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         loginManual,
         logout,
         activateDemoPremium,
+        activateFullPremium,
         deactivatePremium,
         getPremiumTimeRemaining,
       }}
