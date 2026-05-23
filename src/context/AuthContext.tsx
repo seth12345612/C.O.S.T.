@@ -10,6 +10,7 @@ interface AuthContextType {
   isPremium: boolean;
   premiumTrialEndsAt: number | null;
   login: () => void;
+  loginManual: (nume: string, prenume: string, email: string) => void;
   logout: () => void;
   activateDemoPremium: () => void;
   deactivatePremium: () => void;
@@ -18,6 +19,7 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | null>(null);
 const PREMIUM_KEY = "cost_premium";
+const MANUAL_USER_KEY = "cost_manual_user";
 
 function loadPremium(): { isPremium: boolean; premiumTrialEndsAt: number | null } {
   try {
@@ -40,13 +42,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [premiumTrialEndsAt, setPremiumTrialEndsAt] = useState<number | null>(premiumInit().premiumTrialEndsAt);
   const [isAdmin, setIsAdmin] = useState(false);
 
+  const restoreManualUser = useCallback(() => {
+    try {
+      const raw = localStorage.getItem(MANUAL_USER_KEY);
+      if (raw) {
+        const u: AuthUser = JSON.parse(raw);
+        setUser(u);
+        setIsVerified(true);
+      }
+    } catch {}
+  }, []);
+
   useEffect(() => {
     let cancelled = false;
     const hash = window.location.hash;
 
     async function initAuth() {
       if (hash.includes("access_token")) {
-        // Explicitly set session from URL hash
         const params = new URLSearchParams(hash.slice(1));
         const accessToken = params.get("access_token") ?? "";
         const refreshToken = params.get("refresh_token") ?? "";
@@ -57,13 +69,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         if (error) { console.error("setSession error:", error); return; }
         if (data.session?.user && !cancelled) {
           await handleSession(data.session);
-          // Clean URL hash
           window.history.replaceState({}, document.title, window.location.pathname);
         }
       } else {
         const { data: { session } } = await supabase.auth.getSession();
         if (session?.user && !cancelled) {
           await handleSession(session);
+        } else {
+          restoreManualUser();
         }
       }
     }
@@ -84,7 +97,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     initAuth().catch((e) => console.error("Auth init error:", e));
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log("Auth event:", event, session?.user?.email);
       if (event === "SIGNED_IN" && session?.user && !cancelled) {
         await handleSession(session);
       } else if (event === "SIGNED_OUT" || event === "USER_DELETED") {
@@ -95,7 +107,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     });
 
     return () => { cancelled = true; subscription.unsubscribe(); };
-  }, []);
+  }, [restoreManualUser]);
 
   useEffect(() => {
     savePremium(isPremium, premiumTrialEndsAt);
@@ -105,11 +117,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     supabase.auth.signInWithOAuth({ provider: "google", options: { redirectTo: window.location.origin } });
   }, []);
 
+  const loginManual = useCallback((nume: string, prenume: string, email: string) => {
+    const authUser: AuthUser = {
+      sub: crypto.randomUUID(),
+      name: `${prenume} ${nume}`,
+      email,
+    };
+    localStorage.setItem(MANUAL_USER_KEY, JSON.stringify(authUser));
+    setUser(authUser);
+    setIsVerified(true);
+    syncUserToDB({ email: authUser.email, name: authUser.name }).then((db) => {
+      if (db) { setDbUser(db); setIsAdmin(db.is_admin); }
+    });
+  }, []);
+
   const logout = useCallback(() => {
     setUser(null);
     setDbUser(null);
     setIsVerified(false);
     setIsAdmin(false);
+    localStorage.removeItem(MANUAL_USER_KEY);
     Object.keys(localStorage).forEach(k => { if (k.startsWith("sb-") || k.includes("supabase")) localStorage.removeItem(k); });
     supabase.auth.signOut().catch(e => console.error("signOut error:", e));
   }, []);
@@ -145,6 +172,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         isPremium,
         premiumTrialEndsAt,
         login,
+        loginManual,
         logout,
         activateDemoPremium,
         deactivatePremium,
@@ -161,4 +189,3 @@ export function useAuth() {
   if (!ctx) throw new Error("useAuth must be inside AuthProvider");
   return ctx;
 }
-

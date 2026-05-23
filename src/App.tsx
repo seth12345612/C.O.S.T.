@@ -18,6 +18,7 @@ import Premium from "@/pages/Premium";
 import Admin from "@/pages/Admin";
 import Despre from "@/pages/Despre";
 import Achievements from "@/pages/Achievements";
+import Login from "@/pages/Login";
 import { useEffect } from "react";
 
 const queryClient = new QueryClient();
@@ -47,6 +48,7 @@ function Router() {
       <Route path="/admin" component={Admin} />
       <Route path="/despre" component={Despre} />
       <Route path="/achievements" component={Achievements} />
+      <Route path="/login" component={Login} />
       <Route component={NotFound} />
     </Switch>
   );

@@ -4,10 +4,9 @@ import { useXP } from "@/context/XPContext";
 import { useTheme } from "@/context/ThemeContext";
 import { useAuth } from "@/context/AuthContext";
 import { ThemePicker } from "@/components/ThemePicker";
-import { GoogleAuthButton } from "@/components/GoogleAuthButton";
 import { DarkModeToggle } from "@/components/DarkModeToggle";
 import { SoundEffects } from "@/lib/sounds";
-import { Home, PhoneCall, Wallet, Trophy, Menu, X, Crown, Shield, ShieldCheck, Info, Award, Volume2, VolumeX } from "lucide-react";
+import { Home, PhoneCall, Wallet, Trophy, Menu, X, Crown, Shield, ShieldCheck, Info, Award, Volume2, VolumeX, LogIn, UserCircle } from "lucide-react";
 
 const NAV = [
   { href: "/", label: "Acasă", icon: Home },
@@ -115,7 +114,26 @@ export function Layout({ children }: { children: React.ReactNode }) {
               {SoundEffects.enabled ? <Volume2 size={15} /> : <VolumeX size={15} />}
             </button>
             <DarkModeToggle />
-            <GoogleAuthButton compact />
+            {user ? (
+              <div className="flex items-center gap-1.5">
+                {user.picture ? (
+                  <img src={user.picture} alt={user.name} className="w-6 h-6 rounded-full" />
+                ) : (
+                  <div className="w-6 h-6 rounded-full bg-white/10 flex items-center justify-center">
+                    <UserCircle size={14} className="text-white/60" />
+                  </div>
+                )}
+                <span className="hidden sm:block text-xs text-white/60 max-w-[80px] truncate">{user.name}</span>
+              </div>
+            ) : (
+              <Link
+                href="/login"
+                className="p-1.5 rounded-lg text-white/40 hover:text-white hover:bg-white/5 transition-colors"
+                title="Conectare"
+              >
+                <LogIn size={15} />
+              </Link>
+            )}
             <ThemePicker />
 
             <button
