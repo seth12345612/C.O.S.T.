@@ -20,7 +20,7 @@ const NAV = [
 export function Layout({ children }: { children: React.ReactNode }) {
   const { xpState } = useXP();
   const { themeState, currentPreset } = useTheme();
-  const { isPremium, premiumTrialEndsAt, isAdmin } = useAuth();
+  const { isPremium, premiumTrialEndsAt, isAdmin, user } = useAuth();
   const [location] = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
 

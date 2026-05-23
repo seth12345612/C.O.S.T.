@@ -7,6 +7,7 @@ import { ThemeProvider } from "@/context/ThemeContext";
 import { AuthProvider, useAuth } from "@/context/AuthContext";
 import { AchievementProvider } from "@/context/AchievementContext";
 import { AchievementNotification } from "@/components/AchievementNotification";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
 import NotFound from "@/pages/not-found";
 import Home from "@/pages/Home";
 import GamePage from "@/pages/Game";
@@ -56,6 +57,7 @@ function Router() {
 
 export default function App() {
   return (
+    <ErrorBoundary>
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
         <AuthProvider>
@@ -75,5 +77,6 @@ export default function App() {
         </AuthProvider>
       </ThemeProvider>
     </QueryClientProvider>
+    </ErrorBoundary>
   );
 }
