@@ -113,12 +113,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => { cancelled = true; subscription.unsubscribe(); };
   }, [restoreManualUser]);
 
-  const syncPremiumFromDB = useCallback(async (email: string) => {
+  const syncPremiumFromDB = useCallback(async (email: string, userId?: string) => {
     try {
       const res = await fetch(CHECK_PREMIUM_FUNC, {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${ANON_KEY}` },
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({ email, user_id: userId }),
       });
       const data = await res.json();
       if (data.isPremium && data.premiumUntil) {
@@ -130,9 +130,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (user?.email) {
-      syncPremiumFromDB(user.email);
+      syncPremiumFromDB(user.email, user.sub);
     }
-  }, [user?.email, syncPremiumFromDB]);
+  }, [user?.email, user?.sub, syncPremiumFromDB]);
 
   useEffect(() => {
     savePremium(isPremium, premiumTrialEndsAt);

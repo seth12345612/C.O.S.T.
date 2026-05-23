@@ -24,17 +24,21 @@ Deno.serve(async (req) => {
   if (req.method !== "POST") return respond({ error: "Method not allowed" }, 405);
 
   try {
-    const { email } = await req.json();
-    if (!email) return respond({ isPremium: false });
+    const { email, user_id } = await req.json();
+    if (!email && !user_id) return respond({ isPremium: false });
 
-    const { data } = await supabase
+    const query = supabase
       .from("payments")
       .select("premium_until")
-      .eq("email", email)
       .eq("status", "completed")
       .gte("premium_until", new Date().toISOString())
       .order("premium_until", { ascending: false })
       .limit(1);
+
+    if (user_id) query.eq("user_id", user_id);
+    else query.eq("email", email);
+
+    const { data } = await query;
 
     if (data?.length) {
       const until = new Date(data[0].premium_until).getTime();

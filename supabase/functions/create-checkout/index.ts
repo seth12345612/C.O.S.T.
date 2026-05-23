@@ -64,6 +64,7 @@ Deno.serve(async (req) => {
 
     const { error: payErr } = await supabase.from("payments").insert({
       order_id: order.id,
+      user_id: userId,
       provider: "stripe",
       provider_session_id: session.id,
       amount: 900,
