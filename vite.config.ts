@@ -32,6 +32,9 @@ export default defineConfig({
   resolve: {
     alias: { "@": path.resolve(__dirname, "./src") },
   },
+  preview: {
+    allowedHosts: ["c-o-s-t.onrender.com"],
+  },
   test: {
     environment: "jsdom",
     globals: true,
