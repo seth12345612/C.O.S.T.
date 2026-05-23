@@ -1,12 +1,12 @@
 import { Link, useLocation } from "wouter";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useXP } from "@/context/XPContext";
 import { useTheme } from "@/context/ThemeContext";
 import { useAuth } from "@/context/AuthContext";
 import { ThemePicker } from "@/components/ThemePicker";
 import { DarkModeToggle } from "@/components/DarkModeToggle";
 import { SoundEffects } from "@/lib/sounds";
-import { Home, PhoneCall, Wallet, Trophy, Menu, X, Crown, Shield, ShieldCheck, Info, Award, Volume2, VolumeX, LogIn, UserCircle } from "lucide-react";
+import { Home, PhoneCall, Wallet, Trophy, Menu, X, Crown, Shield, ShieldCheck, Info, Award, Volume2, VolumeX, LogIn, UserCircle, LogOut } from "lucide-react";
 
 const NAV = [
   { href: "/", label: "Acasă", icon: Home },
@@ -20,9 +20,21 @@ const NAV = [
 export function Layout({ children }: { children: React.ReactNode }) {
   const { xpState } = useXP();
   const { themeState, currentPreset } = useTheme();
-  const { isPremium, premiumTrialEndsAt, isAdmin, user } = useAuth();
-  const [location] = useLocation();
+  const { isPremium, premiumTrialEndsAt, isAdmin, user, logout } = useAuth();
+  const [location, setLocation] = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const userMenuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (userMenuRef.current && !userMenuRef.current.contains(e.target as Node)) {
+        setUserMenuOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   const activeColor = themeState.customColor ?? currentPreset.primary;
   const secondaryColor = currentPreset.secondary;
@@ -115,15 +127,43 @@ export function Layout({ children }: { children: React.ReactNode }) {
             </button>
             <DarkModeToggle />
             {user ? (
-              <div className="flex items-center gap-1.5">
-                {user.picture ? (
-                  <img src={user.picture} alt={user.name} className="w-6 h-6 rounded-full" />
-                ) : (
-                  <div className="w-6 h-6 rounded-full bg-white/10 flex items-center justify-center">
-                    <UserCircle size={14} className="text-white/60" />
+              <div className="relative" ref={userMenuRef}>
+                <button
+                  onClick={() => setUserMenuOpen((v) => !v)}
+                  className="flex items-center gap-1.5 cursor-pointer"
+                >
+                  {user.picture ? (
+                    <img src={user.picture} alt={user.name} className="w-6 h-6 rounded-full" />
+                  ) : (
+                    <div className="w-6 h-6 rounded-full bg-white/10 flex items-center justify-center">
+                      <UserCircle size={14} className="text-white/60" />
+                    </div>
+                  )}
+                  <span className="hidden sm:block text-xs text-white/60 max-w-[80px] truncate">{user.name}</span>
+                </button>
+
+                {userMenuOpen && (
+                  <div className="absolute right-0 top-full mt-1 w-44 rounded-xl border border-white/10 bg-[#0d0820] shadow-2xl py-1 z-50">
+                    <div className="px-3 py-2 border-b border-white/10">
+                      <p className="text-xs font-medium text-white truncate">{user.name}</p>
+                      <p className="text-[10px] text-white/40 truncate">{user.email}</p>
+                    </div>
+                    <button
+                      onClick={() => {
+                        setUserMenuOpen(false);
+                        const confirm = window.confirm("Vrei să te deloghezi?");
+                        if (confirm) {
+                          logout();
+                          setLocation("/");
+                        }
+                      }}
+                      className="flex items-center gap-2 w-full px-3 py-2 text-xs text-red-400 hover:bg-red-500/10 transition-colors"
+                    >
+                      <LogOut size={14} />
+                      Deloghează-te
+                    </button>
                   </div>
                 )}
-                <span className="hidden sm:block text-xs text-white/60 max-w-[80px] truncate">{user.name}</span>
               </div>
             ) : (
               <Link
