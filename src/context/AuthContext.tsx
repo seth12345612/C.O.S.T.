@@ -149,7 +149,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [isPremium, premiumTrialEndsAt]);
 
   const login = useCallback(() => {
-    supabase.auth.signInWithOAuth({ provider: "google", options: { redirectTo: window.location.origin } });
+    supabase.auth.signInWithOAuth({ provider: "google", options: { redirectTo: `${window.location.origin}/login/success` } });
   }, []);
 
   const loginManual = useCallback((nume: string, prenume: string, email: string) => {
