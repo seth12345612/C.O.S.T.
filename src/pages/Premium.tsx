@@ -19,8 +19,8 @@ const BENEFITS = [
   },
   {
     icon: MessageCircle,
-    title: "Chat cu Mentorul",
-    desc: "Primești sfaturi personalizate de la mentorul AI pentru finanțele tale.",
+    title: "Chat AI Nelimitat",
+    desc: "Acces nelimitat la Mentorul AI — utilizatorii free au doar 5 mesaje/zi.",
     color: "from-purple-400 to-pink-500",
   },
   {
