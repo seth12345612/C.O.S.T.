@@ -2,6 +2,9 @@ import { createContext, useCallback, useContext, useEffect, useState, type React
 import type { AuthUser, DBUser } from "@/types";
 import { supabase, syncUserToDB } from "@/lib/supabase";
 
+const CHECK_PREMIUM_FUNC = "https://twdvhkwrlwhadbmortqk.supabase.co/functions/v1/check-premium";
+const ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || "";
+
 interface AuthContextType {
   user: AuthUser | null;
   dbUser: DBUser | null;
@@ -109,6 +112,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     return () => { cancelled = true; subscription.unsubscribe(); };
   }, [restoreManualUser]);
+
+  const syncPremiumFromDB = useCallback(async (email: string) => {
+    try {
+      const res = await fetch(CHECK_PREMIUM_FUNC, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${ANON_KEY}` },
+        body: JSON.stringify({ email }),
+      });
+      const data = await res.json();
+      if (data.isPremium && data.premiumUntil) {
+        setIsPremium(true);
+        setPremiumTrialEndsAt(data.premiumUntil);
+      }
+    } catch {}
+  }, []);
+
+  useEffect(() => {
+    if (user?.email) {
+      syncPremiumFromDB(user.email);
+    }
+  }, [user?.email, syncPremiumFromDB]);
 
   useEffect(() => {
     savePremium(isPremium, premiumTrialEndsAt);

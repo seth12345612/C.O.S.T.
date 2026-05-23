@@ -1,7 +1,13 @@
 import Stripe from "https://esm.sh/stripe@17.7.0?target=deno";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const STRIPE_SECRET_KEY = Deno.env.get("STRIPE_SECRET_KEY") ?? "";
 const stripe = new Stripe(STRIPE_SECRET_KEY, { apiVersion: "2025-02-24.acacia", httpClient: Stripe.createFetchHttpClient() });
+
+const supabase = createClient(
+  Deno.env.get("SUPABASE_URL") ?? "",
+  Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
+);
 
 const CORS_HEADERS = {
   "Access-Control-Allow-Origin": "*",
@@ -24,29 +30,48 @@ Deno.serve(async (req) => {
 
   try {
     const { email, name } = await req.json();
-
     const baseUrl = req.headers.get("origin") ?? "http://localhost:3000";
+
+    let userId: string | null = null;
+    if (email) {
+      const { data: users } = await supabase.from("users").select("id").eq("email", email).limit(1);
+      if (users?.length) userId = users[0].id;
+    }
+
+    const { data: order, error: orderErr } = await supabase
+      .from("orders")
+      .insert({ user_id: userId, email: email || "", amount: 900, currency: "ron", status: "pending", duration_days: 30 })
+      .select("id")
+      .single();
+
+    if (orderErr || !order) return respond({ error: "Failed to create order" }, 500);
 
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
-      line_items: [
-        {
-          price_data: {
-            currency: "ron",
-            product_data: {
-              name: "C.O.S.T. Premium — 30 de zile",
-              description: "Acces complet la toate funcțiile premium ale jocului C.O.S.T.",
-            },
-            unit_amount: 900,
-          },
-          quantity: 1,
+      line_items: [{
+        price_data: {
+          currency: "ron",
+          product_data: { name: "C.O.S.T. Premium — 30 de zile", description: "Acces complet la toate funcțiile premium" },
+          unit_amount: 900,
         },
-      ],
+        quantity: 1,
+      }],
       success_url: `${baseUrl}/payment/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${baseUrl}/premium?canceled=1`,
       customer_email: email,
-      ...(name ? { customer_creation: "always", metadata: { name } } : {}),
+      metadata: { order_id: order.id },
     });
+
+    const { error: payErr } = await supabase.from("payments").insert({
+      order_id: order.id,
+      provider: "stripe",
+      provider_session_id: session.id,
+      amount: 900,
+      currency: "ron",
+      status: "pending",
+    });
+
+    if (payErr) return respond({ error: "Failed to create payment record" }, 500);
 
     return respond({ url: session.url });
   } catch (err) {
