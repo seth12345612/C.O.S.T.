@@ -147,11 +147,8 @@ export function Layout({ children }: { children: React.ReactNode }) {
                     <button
                       onClick={() => {
                         setUserMenuOpen(false);
-                        const confirm = window.confirm("Vrei să te deloghezi?");
-                        if (confirm) {
-                          logout();
-                          setLocation("/");
-                        }
+                        logout();
+                        setLocation("/");
                       }}
                       className="flex items-center gap-2 w-full px-3 py-2 text-xs text-red-400 hover:bg-red-500/10 transition-colors"
                     >
