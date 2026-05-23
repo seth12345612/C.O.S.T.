@@ -129,7 +129,7 @@ export function MentorChat() {
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.9 }}
         onClick={() => setIsOpen(true)}
-        className="fixed bottom-6 right-6 z-40 w-14 h-14 rounded-full bg-gradient-to-r from-purple-600 to-fuchsia-600 text-white shadow-lg shadow-purple-900/50 flex items-center justify-center"
+        className="fixed bottom-6 right-6 z-40 w-14 h-14 rounded-full bg-gradient-to-r from-purple-600 to-fuchsia-600 text-main shadow-lg shadow-purple-900/50 flex items-center justify-center"
       >
         <MessageCircle size={24} />
       </motion.button>
@@ -140,15 +140,15 @@ export function MentorChat() {
             initial={{ opacity: 0, y: 20, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
-            className="fixed bottom-6 right-6 z-50 w-[360px] max-w-[calc(100vw-3rem)] h-[500px] rounded-2xl border border-white/10 bg-[#0d0820] shadow-2xl flex flex-col overflow-hidden"
+            className="fixed bottom-6 right-6 z-50 w-[360px] max-w-[calc(100vw-3rem)] h-[500px] rounded-2xl border border-subtle bg-card-strong shadow-2xl flex flex-col overflow-hidden"
           >
-            <div className="flex items-center justify-between p-4 border-b border-white/10 bg-gradient-to-r from-purple-600/20 to-fuchsia-600/20">
+            <div className="flex items-center justify-between p-4 border-b border-subtle bg-gradient-to-r from-purple-600/20 to-fuchsia-600/20">
               <div className="flex items-center gap-2">
                 <div className="w-8 h-8 rounded-full bg-gradient-to-r from-purple-500 to-fuchsia-500 flex items-center justify-center">
-                  <Sparkles size={16} className="text-white" />
+                  <Sparkles size={16} className="text-main" />
                 </div>
                 <div>
-                  <h3 className="text-sm font-bold text-white">Mentorul C.O.S.T.</h3>
+                  <h3 className="text-sm font-bold text-main">Mentorul C.O.S.T.</h3>
                   <div className="flex items-center gap-1.5 mt-0.5">
                     {isPremium ? (
                       <span className="flex items-center gap-1 text-[10px] text-yellow-400 font-medium">
@@ -156,7 +156,7 @@ export function MentorChat() {
                         Acces nelimitat
                       </span>
                     ) : (
-                      <span className="text-[10px] text-white/40">
+                      <span className="text-[10px] text-subtle">
                         {remaining}/{FREE_DAILY_LIMIT} întrebări azi
                       </span>
                     )}
@@ -165,7 +165,7 @@ export function MentorChat() {
               </div>
               <button
                 onClick={() => setIsOpen(false)}
-                className="p-1.5 rounded-lg text-white/50 hover:text-white hover:bg-white/10 transition-colors"
+                className="p-1.5 rounded-lg text-dim hover:text-main hover:bg-card-hover transition-colors"
               >
                 <X size={18} />
               </button>
@@ -173,7 +173,7 @@ export function MentorChat() {
 
             <div className="flex-1 overflow-y-auto p-4 space-y-3">
               {messages.length === 0 && (
-                <p className="text-white/40 text-sm text-center py-8">
+                <p className="text-subtle text-sm text-center py-8">
                   Bună! Cu ce te pot ajuta cu finanțele tale?
                 </p>
               )}
@@ -184,14 +184,14 @@ export function MentorChat() {
                   className={`p-3 rounded-xl text-sm whitespace-pre-wrap ${
                     msg.role === "user"
                       ? "bg-purple-600/20 border border-purple-500/30 text-purple-100 ml-8"
-                      : "bg-white/5 border border-white/10 text-white/80 mr-8"
+                      : "bg-card border border-subtle text-bright mr-8"
                   }`}
                 >
                   {msg.content}
                 </div>
               ))}
               {isTyping && (
-                <div className="flex items-center gap-2 text-white/40 text-sm ml-8">
+                <div className="flex items-center gap-2 text-subtle text-sm ml-8">
                   <Loader2 size={14} className="animate-spin" />
                   Scrie...
                 </div>
@@ -200,18 +200,18 @@ export function MentorChat() {
               <div ref={messagesEndRef} />
             </div>
 
-            <div className="p-3 border-t border-white/10 flex gap-2">
+            <div className="p-3 border-t border-subtle flex gap-2">
               <input
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && handleSend()}
                 placeholder="Întreabă ceva..."
-                className="flex-1 px-3 py-2 rounded-xl border border-white/15 bg-white/5 text-white placeholder:text-white/25 text-sm focus:outline-none focus:border-purple-500/50"
+                className="flex-1 px-3 py-2 rounded-xl border border-medium bg-card text-main placeholder:text-fainter text-sm focus:outline-none focus:border-purple-500/50"
               />
               <button
                 onClick={handleSend}
                 disabled={!input.trim() || isTyping}
-                className="p-2 rounded-xl bg-purple-600 hover:bg-purple-500 disabled:opacity-50 disabled:cursor-not-allowed text-white transition-colors"
+                className="p-2 rounded-xl bg-purple-600 hover:bg-purple-500 disabled:opacity-50 disabled:cursor-not-allowed text-main transition-colors"
               >
                 <Send size={18} />
               </button>

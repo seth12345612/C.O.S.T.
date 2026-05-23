@@ -45,7 +45,7 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center relative overflow-hidden bg-gradient-to-br from-[#0d0820] via-[#1a0a30] to-[#0d0820]">
+    <div className="min-h-screen flex items-center justify-center relative overflow-hidden" style={{ background: "var(--login-bg-gradient)" }}>
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute -top-40 -right-40 w-80 h-80 rounded-full opacity-10 blur-3xl"
           style={{ background: `radial-gradient(circle, ${currentPreset.primary}, transparent)` }} />
@@ -60,13 +60,13 @@ export default function Login() {
       >
         <button
           onClick={() => setLocation("/")}
-          className="flex items-center gap-1.5 text-white/40 hover:text-white/70 text-sm mb-4 transition-colors"
+          className="flex items-center gap-1.5 text-subtle hover:text-strong text-sm mb-4 transition-colors"
         >
           <ArrowLeft size={16} />
           Înapoi
         </button>
 
-        <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-8 shadow-2xl">
+        <div className="bg-card backdrop-blur-xl border border-subtle rounded-3xl p-8 shadow-2xl">
           <div className="text-center mb-8">
             <span
               className="text-3xl font-black bg-clip-text text-transparent"
@@ -74,13 +74,13 @@ export default function Login() {
             >
               C.O.S.T.
             </span>
-            <p className="text-white/40 text-sm mt-2">Conectează-te pentru a continua</p>
+            <p className="text-subtle text-sm mt-2">Conectează-te pentru a continua</p>
           </div>
 
           {/* Google login */}
           <button
             onClick={login}
-            className="w-full flex items-center justify-center gap-3 rounded-xl border border-white/15 bg-white/5 px-5 py-3 text-sm font-medium text-white hover:bg-white/10 hover:border-white/30 transition-all mb-6"
+            className="w-full flex items-center justify-center gap-3 rounded-xl border border-medium bg-card px-5 py-3 text-sm font-medium text-main hover:bg-card-hover hover:border-stronger transition-all mb-6"
           >
             <svg className="w-5 h-5 shrink-0" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
               <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
@@ -92,15 +92,15 @@ export default function Login() {
           </button>
 
           <div className="flex items-center gap-3 mb-6">
-            <div className="flex-1 h-px bg-white/10" />
-            <span className="text-xs text-white/30">sau cu email</span>
-            <div className="flex-1 h-px bg-white/10" />
+            <div className="flex-1 h-px bg-card-hover" />
+            <span className="text-xs text-faint">sau cu email</span>
+            <div className="flex-1 h-px bg-card-hover" />
           </div>
 
           {/* Manual form */}
           <form onSubmit={handleManualSubmit} className="space-y-4">
             <div>
-              <label className="flex items-center gap-2 text-xs text-white/50 mb-1.5">
+              <label className="flex items-center gap-2 text-xs text-dim mb-1.5">
                 <User size={13} />
                 Prenume
               </label>
@@ -108,12 +108,12 @@ export default function Login() {
                 value={prenume}
                 onChange={(e) => setPrenume(e.target.value)}
                 placeholder="ex: Ioana"
-                className="w-full px-4 py-2.5 rounded-xl border border-white/15 bg-white/5 text-white placeholder:text-white/20 text-sm focus:outline-none focus:border-purple-500/50 transition-all"
+                className="w-full px-4 py-2.5 rounded-xl border border-medium bg-card text-main placeholder:text-faintest text-sm focus:outline-none focus:border-purple-500/50 transition-all"
               />
             </div>
 
             <div>
-              <label className="flex items-center gap-2 text-xs text-white/50 mb-1.5">
+              <label className="flex items-center gap-2 text-xs text-dim mb-1.5">
                 <User size={13} />
                 Nume
               </label>
@@ -121,12 +121,12 @@ export default function Login() {
                 value={nume}
                 onChange={(e) => setNume(e.target.value)}
                 placeholder="ex: Popescu"
-                className="w-full px-4 py-2.5 rounded-xl border border-white/15 bg-white/5 text-white placeholder:text-white/20 text-sm focus:outline-none focus:border-purple-500/50 transition-all"
+                className="w-full px-4 py-2.5 rounded-xl border border-medium bg-card text-main placeholder:text-faintest text-sm focus:outline-none focus:border-purple-500/50 transition-all"
               />
             </div>
 
             <div>
-              <label className="flex items-center gap-2 text-xs text-white/50 mb-1.5">
+              <label className="flex items-center gap-2 text-xs text-dim mb-1.5">
                 <Mail size={13} />
                 Email
               </label>
@@ -135,7 +135,7 @@ export default function Login() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="ex: ioana@example.com"
-                className="w-full px-4 py-2.5 rounded-xl border border-white/15 bg-white/5 text-white placeholder:text-white/20 text-sm focus:outline-none focus:border-purple-500/50 transition-all"
+                className="w-full px-4 py-2.5 rounded-xl border border-medium bg-card text-main placeholder:text-faintest text-sm focus:outline-none focus:border-purple-500/50 transition-all"
               />
             </div>
 
@@ -146,7 +146,7 @@ export default function Login() {
             <button
               type="submit"
               disabled={submitting}
-              className="w-full flex items-center justify-center gap-2 rounded-xl px-5 py-3 text-sm font-bold text-white transition-all disabled:opacity-60"
+              className="w-full flex items-center justify-center gap-2 rounded-xl px-5 py-3 text-sm font-bold text-main transition-all disabled:opacity-60"
               style={{
                 background: `linear-gradient(to right, ${currentPreset.primary}, ${currentPreset.secondary})`,
               }}

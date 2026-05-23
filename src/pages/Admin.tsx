@@ -4,7 +4,7 @@ import { Layout } from "@/components/Layout";
 import { useAuth } from "@/context/AuthContext";
 import type { LeaderboardEntry, DBUser } from "@/types";
 import {
-  loadLeaderboardEntries, deleteLeaderboardEntry,
+  loadLeaderboardEntries, deleteLeaderboardEntry, clearLeaderboard,
   getBannedUsers, banUser, unbanUser,
 } from "@/lib/leaderboard";
 import { getAllUsers as getDBUsers, getLeaderboardStats } from "@/lib/supabase";
@@ -65,8 +65,8 @@ export default function Admin() {
         <OrbBackground />
         <div className="max-w-2xl mx-auto px-4 py-20 text-center">
           <Shield size={48} className="text-red-500/40 mx-auto mb-4" />
-          <h1 className="text-2xl font-black text-white mb-2">Acces interzis</h1>
-          <p className="text-white/50">Nu ai permisiuni de administrator.</p>
+          <h1 className="text-2xl font-black text-main mb-2">Acces interzis</h1>
+          <p className="text-dim">Nu ai permisiuni de administrator.</p>
         </div>
       </Layout>
     );
@@ -98,7 +98,7 @@ export default function Admin() {
       <Layout>
         <OrbBackground />
         <div className="max-w-3xl mx-auto px-4 py-20 text-center">
-          <p className="text-white/50">Se incarca...</p>
+          <p className="text-dim">Se incarca...</p>
         </div>
       </Layout>
     );
@@ -106,10 +106,10 @@ export default function Admin() {
 
   const tabClass = (t: string) =>
     "px-4 py-2 rounded-xl text-sm font-semibold transition-all " +
-    (tab === t ? "bg-purple-600 text-white" : "bg-white/5 text-white/60 hover:bg-white/10");
+    (tab === t ? "bg-purple-600 text-main" : "bg-card text-muted hover:bg-card-hover");
   const banTabClass = (t: string) =>
     "px-4 py-2 rounded-xl text-sm font-semibold transition-all " +
-    (tab === t ? "bg-red-600 text-white" : "bg-white/5 text-white/60 hover:bg-white/10");
+    (tab === t ? "bg-red-600 text-main" : "bg-card text-muted hover:bg-card-hover");
 
   return (
     <Layout>
@@ -117,7 +117,7 @@ export default function Admin() {
       <div className="max-w-3xl mx-auto px-4 py-8">
         <div className="flex items-center gap-3 mb-6">
           <Shield size={24} className="text-red-400" />
-          <h1 className="text-2xl font-black text-white">Panou Admin</h1>
+          <h1 className="text-2xl font-black text-main">Panou Admin</h1>
         </div>
 
         <div className="flex gap-2 mb-6 flex-wrap">
@@ -146,8 +146,8 @@ export default function Admin() {
                     <User size={24} className="text-purple-400" />
                   )}
                   <div>
-                    <div className="font-bold text-white text-sm">{user.name}</div>
-                    <div className="text-xs text-white/50">{user.email}</div>
+                    <div className="font-bold text-main text-sm">{user.name}</div>
+                    <div className="text-xs text-dim">{user.email}</div>
                   </div>
                   <span className="ml-auto text-[10px] px-2 py-1 rounded-full bg-purple-500/30 text-purple-300 font-medium">TU (admin)</span>
                 </div>
@@ -155,7 +155,7 @@ export default function Admin() {
             )}
 
             {users.length === 0 ? (
-              <div className="text-center py-12 text-white/40">
+              <div className="text-center py-12 text-subtle">
                 <Users size={36} className="mx-auto mb-3 opacity-40" />
                 <p>Niciun utilizator inregistrat.</p>
               </div>
@@ -163,14 +163,14 @@ export default function Admin() {
               users.map((u) => (
                 <div
                   key={u.email}
-                  className={"flex items-center gap-3 p-3 rounded-2xl border " + (u.isBanned ? "border-red-500/30 bg-red-500/10" : "border-white/10 bg-white/5")}
+                  className={"flex items-center gap-3 p-3 rounded-2xl border " + (u.isBanned ? "border-red-500/30 bg-red-500/10" : "border-subtle bg-card")}
                 >
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
-                      <span className={"font-bold text-sm " + (u.isBanned ? "text-red-400 line-through" : "text-white")}>
+                      <span className={"font-bold text-sm " + (u.isBanned ? "text-red-400 line-through" : "text-main")}>
                         {u.username}
                       </span>
-                      <span className="text-xs text-white/40">{u.email}</span>
+                      <span className="text-xs text-subtle">{u.email}</span>
                       {u.isBanned && (
                         <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-red-500/30 text-red-300 font-medium">BANAT</span>
                       )}
@@ -178,7 +178,7 @@ export default function Admin() {
                         <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-purple-500/30 text-purple-300 font-medium">ADMIN</span>
                       )}
                     </div>
-                    <div className="text-xs text-white/40">
+                    <div className="text-xs text-subtle">
                       {u.totalEntries} intrari . Cel mai bun: {u.bestScore.toLocaleString("ro-RO")} RON . Total: {u.totalScore.toLocaleString("ro-RO")} RON
                     </div>
                   </div>
@@ -205,8 +205,14 @@ export default function Admin() {
 
         {tab === "leaderboard" && (
           <div className="space-y-2">
+            <div className="flex justify-end">
+              <button onClick={async () => { if (confirm("Stergi TOATE intrarile din clasament?")) { await clearLeaderboard(); setEntries([]); } }}
+                className="px-3 py-1.5 rounded-lg bg-red-600/20 border border-red-500/30 text-red-400 hover:bg-red-600/30 text-xs font-semibold transition-colors">
+                <Trash2 size={12} className="inline mr-1" /> Sterge tot clasamentul
+              </button>
+            </div>
             {sorted.length === 0 ? (
-              <div className="text-center py-12 text-white/40">
+              <div className="text-center py-12 text-subtle">
                 <Search size={36} className="mx-auto mb-3 opacity-40" />
                 <p>Nicio intrare in clasament.</p>
               </div>
@@ -215,15 +221,15 @@ export default function Admin() {
                 const ib = banned.includes(e.username);
                 return (
                   <div key={e.id}
-                    className={"flex items-center gap-3 p-3 rounded-2xl border " + (ib ? "border-red-500/30 bg-red-500/10" : "border-white/10 bg-white/5")}>
+                    className={"flex items-center gap-3 p-3 rounded-2xl border " + (ib ? "border-red-500/30 bg-red-500/10" : "border-subtle bg-card")}>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
-                        <span className={"font-bold text-sm " + (ib ? "text-red-400 line-through" : "text-white")}>
+                        <span className={"font-bold text-sm " + (ib ? "text-red-400 line-through" : "text-main")}>
                           {e.username}
                         </span>
                         {ib && <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-red-500/30 text-red-300 font-medium">BANAT</span>}
                       </div>
-                      <div className="text-xs text-white/40">
+                      <div className="text-xs text-subtle">
                         {e.score.toLocaleString("ro-RO")} RON . {e.months} luni . {e.scenario}
                       </div>
                     </div>
@@ -259,16 +265,16 @@ export default function Admin() {
             <div className="flex items-center gap-2 mb-4">
               <input value={banInput} onChange={(e) => setBanInput(e.target.value)}
                 placeholder="Nume utilizator de banat..."
-                className="flex-1 px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white text-sm placeholder:text-white/30 focus:outline-none focus:border-red-500/50"
+                className="flex-1 px-4 py-2.5 rounded-xl bg-card border border-subtle text-main text-sm placeholder:text-faint focus:outline-none focus:border-red-500/50"
                 onKeyDown={(e) => e.key === "Enter" && handleBan(banInput)} />
               <button onClick={() => handleBan(banInput)}
-                className="px-4 py-2.5 rounded-xl bg-red-600 hover:bg-red-500 text-white font-semibold text-sm transition-colors">
+                className="px-4 py-2.5 rounded-xl bg-red-600 hover:bg-red-500 text-main font-semibold text-sm transition-colors">
                 <Shield size={14} className="inline mr-1" /> Ban
               </button>
             </div>
 
             {banned.length === 0 ? (
-              <div className="text-center py-12 text-white/40">
+              <div className="text-center py-12 text-subtle">
                 <ShieldOff size={36} className="mx-auto mb-3 opacity-40" />
                 <p>Niciun jucator banat.</p>
               </div>
@@ -278,7 +284,7 @@ export default function Admin() {
                   <div key={name}
                     className="flex items-center gap-3 p-3 rounded-2xl border border-red-500/20 bg-red-500/5">
                     <AlertTriangle size={16} className="text-red-400 shrink-0" />
-                    <span className="flex-1 text-sm font-medium text-white">{name}</span>
+                    <span className="flex-1 text-sm font-medium text-main">{name}</span>
                     <button onClick={() => handleUnban(name)}
                       className="px-3 py-1.5 rounded-lg bg-green-500/20 border border-green-500/30 text-green-400 hover:bg-green-500/30 text-xs font-semibold transition-colors">
                       Unban

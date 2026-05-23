@@ -1,5 +1,5 @@
-import { createContext, useContext, useState, useCallback, useRef, useEffect, type ReactNode } from "react";
-import type { DifficultyKey, GameEvent, DecizieIstorica, GameState } from "@/types";
+import { createContext, useContext, useState, useCallback, useRef, useEffect, useMemo, type ReactNode } from "react";
+import type { DifficultyKey, GameEvent, DecizieIstorica, GameState, AiQuestion, AiAnswerResult } from "@/types";
 import { SCENARII, DIFICULTATI, START_CONFIG } from "@/data/scenarios";
 import { GAME_EVENTS, shuffleArray } from "@/data/events";
 import { useAuth } from "./AuthContext";
@@ -13,9 +13,26 @@ interface GameContextType {
   startEndless: () => void;
   resetGame: () => void;
   savedCapital: () => number;
+  submitAiAnswer: (answer: string) => Promise<void>;
+  dismissAiQuestion: () => void;
 }
 
 const CAPITAL_KEY = "cost_capital";
+const FUNC_BASE = "https://twdvhkwrlwhadbmortqk.supabase.co";
+const ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR3ZHZoa3dybHdoYWRibW9ydHFrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkyMDM4OTAsImV4cCI6MjA5NDc3OTg5MH0.mvQkXjYR3YDChjbuGmmm006QOTjw6rQz6UdAKZYG-lQ";
+
+const WEEKLY_QUESTIONS = [
+  "Imaginează-ți că primești 50 de lei de la bunici de ziua ta. Un prieten îți spune să îi cheltuiești azi pe dulciuri și suc, iar altul îți spune să îi pui deoparte pentru ceva mai important mai târziu. Tu ce crezi că e mai bine să faci cu banii ăia? Explică de ce ai alege așa.",
+  "Dacă ai vrea să îți cumperi o tabletă care costă 400 de lei și primești 20 de lei pe săptămână de la părinți, câte săptămâni ar trebui să economisești ca s-o iei? Dar dacă cheltuiești jumătate din bani în fiecare săptămână pe alte chestii, cât timp ți-ar lua?",
+  "Te afli într-un magazin și vezi un super joc video la reducere cu 50% — costă 150 de lei în loc de 300. Tu ai doar 200 de lei strânși pentru o geantă nouă de școală. Ce faci: cumperi jocul sau iei geanta? De ce? Există vreo variantă prin care ai putea avea amândouă?",
+  "Hai să zicem că ai un cont de economii unde primești 5 lei în plus la fiecare 100 de lei pe an (asta e dobânda). Dacă pui 200 de lei anul ăsta și nu te atingi de ei, câți bani vei avea peste un an? Dar dacă mai pui încă 100 de lei anul următor?",
+  "Un prieten vrea să împrumute 30 de lei de la tine și zice că ți-i dă înapoi săptămâna viitoare. Tu știi că el mai are datorii și la alți colegi și nu și le-a plătit încă. Ce faci? Îi împrumuți banii sau nu? Cum i-ai spune politicos dacă nu vrei să îi dai?",
+  "Părinții tăi îți dau 100 de lei pe lună pentru cheltuieli. Tu vrei să îți cumperi un joc de 60 de lei, să mergi la film (20 de lei) și să îți iei și un tricou (30 de lei). Adună toate costurile. Îți ajung banii? Dacă nu, la ce ai putea renunța ca să îți încapă în buget?",
+  "De sărbători primești în total 300 de lei cadou de la toată familia. Un prieten îți spune să îi cheltuiești imediat, altul îți spune să îi împărți: o parte să cheltuiești, o parte să economisești, o parte să donezi. Tu ce crezi că e mai înțelept? Cum ai împărți cei 300 de lei?",
+  "La școală se organizează o tombolă: costă 5 lei biletul, iar premiul mare e o consolă de 1000 de lei. Un coleg cumpără 10 bilete și zice că „sigur câștigă”. Tu ce crezi, e sigur că va câștiga? Câți bilet ai cumpăra tu și de ce?",
+  "Ana primește 15 lei pe săptămână de la părinți. Ea își notează într-un caiet pe ce cheltuiește fiecare bănuț. După o lună, vede că a dat 30 de lei pe snacksuri și sucuri. Tu ții evidența cheltuielilor tale? Crezi că te-ar ajuta să îți dai seama pe ce se duc banii?",
+  "Vrei să strângi bani pentru un telefon care costă 600 de lei. Ai putea să faci mici slujbe prin cartier: să plimbi câini (20 de lei/plimbare), să ajuți la teme (15 lei/ședință) sau să speli mașini (30 de lei/masina). Alege o combinație de slujbe câștigi 600 de lei într-o lună (4 săptămâni). Câte slujbe ar trebui să faci pe săptămână?",
+];
 
 const GameContext = createContext<GameContextType | null>(null);
 
@@ -92,6 +109,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
       evenimentCurent: null,
       evenimenteRamase: [],
       limitedEventBonus,
+      aiQuestion: null,
       isRecoveryMode: false,
       recoveryWeeksRemaining: 0,
     });
@@ -168,10 +186,6 @@ export function GameProvider({ children }: { children: ReactNode }) {
         eventQueueRef.current = shuffleArray(GAME_EVENTS.recuperare ?? []);
       }
 
-      const nextEvent = !go.over && !(newSaptamana >= 48 && !prev.isEndless)
-        ? getNextEvent(isRecoveryMode ? "recuperare" : prev.scenariuId)
-        : null;
-
       const newScenariuId = isRecoveryMode && !prev.isRecoveryMode ? "recuperare" : (newBani >= 0 && prev.isRecoveryMode ? (prev.originalScenarioId ?? prev.scenariuId) : prev.scenariuId);
 
       return {
@@ -181,11 +195,12 @@ export function GameProvider({ children }: { children: ReactNode }) {
         bani: newBani, fericire: Math.max(0, Math.min(100, newFericire)),
         isGameOver: go.over || (newSaptamana >= 48 && !prev.isEndless),
         gameOverTitle: go.title, gameOverReason: go.reason,
-        evenimentCurent: nextEvent,
-        isRecoveryMode, recoveryWeeksRemaining: newRecoveryWeeks, originalScenarioId,
+        evenimentCurent: null,
+        aiQuestion: prev.aiQuestion ? prev.aiQuestion : { intrebare: WEEKLY_QUESTIONS[Math.floor(Math.random() * WEEKLY_QUESTIONS.length)], status: "available", rezultat: null },
+        isRecoveryMode, recoveryWeeksRemaining: originalScenarioId,
       };
     });
-  }, [checkGameOver, getNextEvent]);
+  }, [checkGameOver]);
 
   const chooseOption = useCallback((optionIndex: number) => {
     setState((prev) => {
@@ -229,12 +244,21 @@ export function GameProvider({ children }: { children: ReactNode }) {
         eventQueueRef.current = shuffleArray(GAME_EVENTS[newScenariuId] ?? []);
       }
 
+      const randomQuestion = prev.aiQuestion
+        ? prev.aiQuestion
+        : {
+            intrebare: WEEKLY_QUESTIONS[Math.floor(Math.random() * WEEKLY_QUESTIONS.length)],
+            status: "available" as const,
+            rezultat: null,
+          };
+
       return {
         ...prev,
         scenariuId: newScenariuId,
         bani: newBani, fericire: newFericire,
         istoricDecizii: [...prev.istoricDecizii, decizie],
         evenimentCurent: null,
+        aiQuestion: randomQuestion,
         isGameOver: go.over, gameOverTitle: go.over ? go.title : prev.gameOverTitle,
         gameOverReason: go.over ? go.reason : prev.gameOverReason,
         isRecoveryMode, recoveryWeeksRemaining, originalScenarioId,
@@ -262,8 +286,120 @@ export function GameProvider({ children }: { children: ReactNode }) {
     return Number(localStorage.getItem(CAPITAL_KEY) ?? 0);
   }, []);
 
+  const submitAiAnswer = useCallback(async (answer: string) => {
+    let intrebare = "";
+    let baniCurenti = 0;
+    let fericireCurenta = 50;
+    let saptamanaCurenta = 1;
+    let scenariuId = "";
+
+    setState((prev) => {
+      if (!prev?.aiQuestion || prev.aiQuestion.status !== "available") return prev;
+      intrebare = prev.aiQuestion.intrebare;
+      baniCurenti = prev.bani;
+      fericireCurenta = prev.fericire;
+      saptamanaCurenta = prev.saptamana;
+      scenariuId = prev.scenariuId;
+      return { ...prev, aiQuestion: { ...prev.aiQuestion, status: "evaluating" } };
+    });
+
+    if (!intrebare) return;
+
+    try {
+      const prompt =
+        `Evaluează răspunsul unui elev la o întrebare de educație financiară (copii până în 20 de ani).\n\n` +
+        `Întrebarea: "${intrebare}"\n` +
+        `Răspunsul elevului: "${answer}"\n\n` +
+        `Context: bani=${baniCurenti} RON, fericire=${fericireCurenta}%, săptămâna ${saptamanaCurenta}/48.\n\n` +
+        `EXPLICAȚIE (maxim 3 propoziții): Explică prietenos, pe înțelesul unui copil, de ce răspunsul e bun sau greșit și ce putea face mai bine.\n\n` +
+        `APOI, pe ultima linie, adaugă DOAR un JSON cu acest format:\n` +
+        `{"corect":true,"baniDelta":12,"fericireDelta":5}\n\n` +
+        `Reguli pentru delte (în funcție de cât de complet și corect e răspunsul):\n` +
+        `- complet, bine explicat, exemple → baniDelta 140-200, fericireDelta 10-15\n` +
+        `- corect dar incomplet (doar parțial) → baniDelta 50-80, fericireDelta 5-10\n` +
+        `- greșit dar a încercat → baniDelta -100 până la -200, fericireDelta -15 până la -20\n` +
+        `- greșit complet sau off-topic → baniDelta -300 până la -400, fericireDelta -30 până la -35`;
+
+      const res = await fetch(`${FUNC_BASE}/functions/v1/mentor`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${ANON_KEY}` },
+        body: JSON.stringify({
+          messages: [{ role: "user", content: prompt }],
+          context: { bani: baniCurenti, fericire: fericireCurenta, saptamana: saptamanaCurenta, scenariu: scenariuId },
+        }),
+      });
+
+      if (!res.ok) throw new Error(`API ${res.status}`);
+      const data = await res.json();
+      const reply = String(data.reply || "");
+      const jsonRegex = /\{"corect":(true|false),"baniDelta":(-?\d+),"fericireDelta":(-?\d+)\}/;
+      const jsonMatch = reply.match(jsonRegex);
+
+      let corect = answer.trim().length > 20;
+      let baniDelta = corect ? 120 : -200;
+      let fericireDelta = corect ? 10 : -20;
+      let explicatie = reply;
+
+      if (jsonMatch) {
+        corect = jsonMatch[1] === "true";
+        baniDelta = Math.round(Number(jsonMatch[2]) / 5) * 5;
+        fericireDelta = Math.round(Number(jsonMatch[3]));
+        explicatie = reply.replace(jsonMatch[0], "").trim();
+      }
+
+      explicatie = explicatie
+        .replace(/^(Explicație:|Explicaţie:|Răspuns:|Evaluare:)\s*/i, "")
+        .replace(/\n{3,}/g, "\n\n")
+        .trim();
+
+      if (!explicatie || explicatie.length < 10) {
+        explicatie = corect
+          ? "Răspuns bun! Ai înțeles ideea. Continuă să înveți despre bani și economisire!"
+          : "Mai încearcă! Gândește-te cum ai putea să răspunzi mai bine data viitoare.";
+      }
+
+      const rezultat: AiAnswerResult = { corect, baniDelta, fericireDelta, explicatie };
+      setState((prev) => {
+        if (!prev?.aiQuestion) return prev;
+        return {
+          ...prev,
+          bani: Math.max(0, prev.bani + rezultat.baniDelta),
+          fericire: Math.max(0, Math.min(100, prev.fericire + rezultat.fericireDelta)),
+          aiQuestion: { ...prev.aiQuestion, status: "evaluated", rezultat },
+        };
+      });
+    } catch {
+      const len = answer.trim().length;
+      let corect = len > 15;
+      let baniDelta = 0;
+      let fericireDelta = 0;
+      let explicatie = "";
+      if (len > 120) { corect = true; baniDelta = 170; fericireDelta = 12; explicatie = "Răspuns excelent! Ai intrat în detalii și ai arătat că ai înțeles bine ideea. Bravo!"; }
+      else if (len > 60) { corect = true; baniDelta = 65; fericireDelta = 7; explicatie = "Răspuns corect! Data viitoare încearcă să adaugi mai multe detalii sau exemple."; }
+      else if (len > 20) { corect = true; baniDelta = 50; fericireDelta = 5; explicatie = "Ideea e corectă, dar e cam scurt. Ce ai putea adăuga ca să fie mai complet?"; }
+      else { baniDelta = -150; fericireDelta = -18; explicatie = "Răspunsul e prea scurt. Scrie măcar 2-3 propoziții ca să înveți ceva nou!"; }
+      const rezultat: AiAnswerResult = { corect, baniDelta, fericireDelta, explicatie };
+      setState((prev) => {
+        if (!prev?.aiQuestion) return prev;
+        return { ...prev, bani: Math.max(0, prev.bani + rezultat.baniDelta), fericire: Math.max(0, Math.min(100, prev.fericire + rezultat.fericireDelta)), aiQuestion: { ...prev.aiQuestion, status: "evaluated", rezultat } };
+      });
+    }
+  }, []);
+
+  const dismissAiQuestion = useCallback(() => {
+    setState((prev) => {
+      if (!prev) return prev;
+      const rezultat = prev.aiQuestion?.rezultat;
+      return {
+        ...prev,
+        aiQuestion: null,
+        ...(rezultat?.baniDelta ? { bani: Math.max(0, prev.bani) } : {}),
+      };
+    });
+  }, []);
+
   return (
-    <GameContext.Provider value={{ state, initGame, nextWeek, chooseOption, startEndless, resetGame, savedCapital }}>
+    <GameContext.Provider value={{ state, initGame, nextWeek, chooseOption, startEndless, resetGame, savedCapital, submitAiAnswer, dismissAiQuestion }}>
       {children}
     </GameContext.Provider>
   );

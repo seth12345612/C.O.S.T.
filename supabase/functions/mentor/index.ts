@@ -52,23 +52,20 @@ Deno.serve(async (req) => {
       `Nu da sfaturi de investiții speculative sau recomandări financiare personalizate — oferă doar educație financiară generală.` +
       contextBlock;
 
-    const contents = messages.map((m) => ({
-      role: m.role === "assistant" ? "model" : "user",
+    const firstMsg = messages[0];
+    const systemMsg = { role: "user" as const, parts: [{ text: `${systemText}\n\n${firstMsg.content}` }] };
+    const restMsgs = messages.slice(1).map((m) => ({
+      role: m.role === "assistant" ? "model" as const : "user" as const,
       parts: [{ text: m.content }],
     }));
+    const contents = [systemMsg, ...restMsgs];
 
     const geminiRes = await fetch(`${GEMINI_URL}?key=${GEMINI_API_KEY}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        system_instruction: { parts: [{ text: systemText }] },
         contents,
-        generationConfig: { temperature: 0.8, maxOutputTokens: 900, topP: 0.95 },
-        safetySettings: [
-          { category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_NONE" },
-          { category: "HARM_CATEGORY_HATE_SPEECH", threshold: "BLOCK_NONE" },
-          { category: "HARM_CATEGORY_SEXUALLY_EXPLICIT", threshold: "BLOCK_NONE" },
-        ],
+        generationConfig: { temperature: 0.7, maxOutputTokens: 1500, topP: 0.95 },
       }),
     });
 

@@ -28,25 +28,25 @@ export function FinancialReport({ onClose }: { onClose: () => void }) {
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="bg-[#0d0820] border border-white/10 rounded-2xl p-6 max-w-2xl mx-auto max-h-[80vh] overflow-y-auto"
+      className="bg-card-strong border border-subtle rounded-2xl p-6 max-w-2xl mx-auto max-h-[80vh] overflow-y-auto"
     >
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-xl font-bold text-white flex items-center gap-2">
+        <h2 className="text-xl font-bold text-main flex items-center gap-2">
           <Lightbulb size={20} className="text-yellow-400" />
           Raport Financiar
         </h2>
         <div className="flex gap-2">
-          <button onClick={() => exportReportToCSV(report)} className="p-2 rounded-lg bg-white/5 hover:bg-white/10 text-white/60 hover:text-white transition-colors" title="Exportă raportul">
+          <button onClick={() => exportReportToCSV(report)} className="p-2 rounded-lg bg-card hover:bg-card-hover text-muted hover:text-main transition-colors" title="Exportă raportul">
             <Download size={16} />
           </button>
-          <button onClick={() => exportToCSV(financeState.tranzactii)} className="p-2 rounded-lg bg-white/5 hover:bg-white/10 text-white/60 hover:text-white transition-colors" title="Exportă tranzacțiile">
+          <button onClick={() => exportToCSV(financeState.tranzactii)} className="p-2 rounded-lg bg-card hover:bg-card-hover text-muted hover:text-main transition-colors" title="Exportă tranzacțiile">
             <Download size={16} />
           </button>
         </div>
       </div>
 
       <div className={`bg-gradient-to-br ${scorBg} rounded-xl p-4 mb-6 text-center`}>
-        <p className="text-white/50 text-xs mb-1">Scor Sănătate Financiară</p>
+        <p className="text-dim text-xs mb-1">Scor Sănătate Financiară</p>
         <p className={`text-4xl font-black ${scorColor}`}>{report.scorSanatateFinanciara}/100</p>
       </div>
 
@@ -54,25 +54,25 @@ export function FinancialReport({ onClose }: { onClose: () => void }) {
         <div className="bg-green-500/10 border border-green-500/20 rounded-xl p-3 text-center">
           <TrendingUp size={16} className="text-green-400 mx-auto mb-1" />
           <p className="text-lg font-bold text-green-300">{report.totalVenituri} RON</p>
-          <p className="text-xs text-white/40">Venituri</p>
+          <p className="text-xs text-subtle">Venituri</p>
         </div>
         <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-3 text-center">
           <TrendingDown size={16} className="text-red-400 mx-auto mb-1" />
           <p className="text-lg font-bold text-red-300">{report.totalCheltuieli} RON</p>
-          <p className="text-xs text-white/40">Cheltuieli</p>
+          <p className="text-xs text-subtle">Cheltuieli</p>
         </div>
         <div className="bg-blue-500/10 border border-blue-500/20 rounded-xl p-3 text-center">
           <HeartPulse size={16} className={`mx-auto mb-1 ${report.balanta >= 0 ? "text-blue-400" : "text-red-400"}`} />
           <p className={`text-lg font-bold ${report.balanta >= 0 ? "text-blue-300" : "text-red-300"}`}>
             {report.balanta >= 0 ? "+" : ""}{report.balanta} RON
           </p>
-          <p className="text-xs text-white/40">Balanta</p>
+          <p className="text-xs text-subtle">Balanta</p>
         </div>
       </div>
 
       {pieData.length > 0 && (
         <div className="mb-6">
-          <h3 className="text-sm font-semibold text-white/70 mb-3">Cheltuieli pe Categorii</h3>
+          <h3 className="text-sm font-semibold text-strong mb-3">Cheltuieli pe Categorii</h3>
           <div className="flex items-center gap-4">
             <div className="w-40 h-40 shrink-0">
               <ResponsiveContainer width="100%" height="100%">
@@ -88,8 +88,8 @@ export function FinancialReport({ onClose }: { onClose: () => void }) {
               {pieData.map((item, i) => (
                 <div key={item.name} className="flex items-center gap-2 text-xs">
                   <span className="w-2 h-2 rounded-full shrink-0" style={{ background: COLORS[i % COLORS.length] }} />
-                  <span className="text-white/60">{item.name}</span>
-                  <span className="text-white font-medium ml-auto">{item.value} RON</span>
+                  <span className="text-muted">{item.name}</span>
+                  <span className="text-main font-medium ml-auto">{item.value} RON</span>
                 </div>
               ))}
             </div>
@@ -99,7 +99,7 @@ export function FinancialReport({ onClose }: { onClose: () => void }) {
 
       {report.cashFlow.length > 1 && (
         <div className="mb-6">
-          <h3 className="text-sm font-semibold text-white/70 mb-3">Cash Flow</h3>
+          <h3 className="text-sm font-semibold text-strong mb-3">Cash Flow</h3>
           <div className="h-40">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={report.cashFlow}>
@@ -115,20 +115,20 @@ export function FinancialReport({ onClose }: { onClose: () => void }) {
       )}
 
       <div>
-        <h3 className="text-sm font-semibold text-white/70 mb-3 flex items-center gap-1.5">
+        <h3 className="text-sm font-semibold text-strong mb-3 flex items-center gap-1.5">
           <Lightbulb size={14} className="text-yellow-400" />
           Sfaturi Personalizate
         </h3>
         <div className="space-y-2">
           {report.sfaturi.map((s, i) => (
-            <div key={i} className="p-3 rounded-xl bg-white/5 border border-white/10 text-sm text-white/70 leading-relaxed">
+            <div key={i} className="p-3 rounded-xl bg-card border border-subtle text-sm text-strong leading-relaxed">
               {s}
             </div>
           ))}
         </div>
       </div>
 
-      <button onClick={onClose} className="w-full mt-6 py-3 rounded-xl bg-white/5 hover:bg-white/10 text-white/60 hover:text-white border border-white/10 transition-all text-sm">
+      <button onClick={onClose} className="w-full mt-6 py-3 rounded-xl bg-card hover:bg-card-hover text-muted hover:text-main border border-subtle transition-all text-sm">
         Închide
       </button>
     </motion.div>

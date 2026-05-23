@@ -23,14 +23,14 @@ export class ErrorBoundary extends Component<Props, State> {
           flexDirection: "column",
           alignItems: "center",
           justifyContent: "center",
-          background: "#0d0820",
-          color: "white",
+          background: "var(--bg-card-strong)",
+          color: "var(--text-main)",
           fontFamily: "system-ui, sans-serif",
           padding: "2rem",
           textAlign: "center",
         }}>
-          <h1 style={{ fontSize: "1.5rem", marginBottom: "0.5rem" }}>A apărut o eroare</h1>
-          <p style={{ color: "rgba(255,255,255,0.6)", marginBottom: "1rem", maxWidth: "500px" }}>
+          <h1 style={{ fontSize: "1.5rem", marginBottom: "0.5rem", color: "var(--text-main)" }}>A apărut o eroare</h1>
+          <p style={{ color: "var(--text-muted)", marginBottom: "1rem", maxWidth: "500px" }}>
             {this.state.error?.message || "Eroare necunoscută"}
           </p>
           <button

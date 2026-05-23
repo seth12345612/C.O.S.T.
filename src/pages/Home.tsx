@@ -40,7 +40,7 @@ function PremiumModal({ onClose }: { onClose: () => void }) {
       className="fixed inset-0 z-50 flex items-center justify-center p-4"
       onClick={onClose}
     >
-      <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" />
+      <div className="absolute inset-0 bg-overlay-strong backdrop-blur-sm" />
       <motion.div
         initial={{ scale: 0.9, y: 20 }}
         animate={{ scale: 1, y: 0 }}
@@ -49,16 +49,16 @@ function PremiumModal({ onClose }: { onClose: () => void }) {
       >
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
+          className="absolute top-4 right-4 p-2 rounded-full bg-card-hover hover:bg-card-strong transition-colors"
         >
-          <X size={18} className="text-white" />
+          <X size={18} className="text-main" />
         </button>
         <div className="text-center">
           <div className="inline-flex items-center justify-center w-16 h-16 mb-4 rounded-full bg-gradient-to-r from-yellow-400 to-orange-500">
-            <Crown size={32} className="text-white" />
+            <Crown size={32} className="text-main" />
           </div>
-          <h2 className="text-2xl font-black text-white mb-2">Dorești Premium?</h2>
-          <p className="text-white/70 mb-6">
+          <h2 className="text-2xl font-black text-main mb-2">Dorești Premium?</h2>
+          <p className="text-strong mb-6">
             Deblochează toate scenariile sezoniere și caracteristici exclusive!
           </p>
           <div className="space-y-3 mb-6">
@@ -68,7 +68,7 @@ function PremiumModal({ onClose }: { onClose: () => void }) {
               "💬 Chat cu mentorul",
               "🔓 Toate scenariile premium",
             ].map((feature) => (
-              <div key={feature} className="flex items-center gap-3 text-white/80 text-sm">
+              <div key={feature} className="flex items-center gap-3 text-bright text-sm">
                 <span className="text-purple-300">✓</span>
                 {feature}
               </div>
@@ -76,7 +76,7 @@ function PremiumModal({ onClose }: { onClose: () => void }) {
           </div>
           <Link
             href="/premium"
-            className="block w-full py-3 rounded-xl bg-gradient-to-r from-yellow-500 to-orange-500 text-white font-bold transition-all hover:shadow-lg hover:shadow-yellow-500/30"
+            className="block w-full py-3 rounded-xl bg-gradient-to-r from-yellow-500 to-orange-500 text-main font-bold transition-all hover:shadow-lg hover:shadow-yellow-500/30"
           >
             Vezi Varianta Premium
           </Link>
@@ -124,20 +124,20 @@ export default function Home() {
               C.O.S.T.
             </span>
           </motion.h1>
-          <motion.p variants={fadeUp} custom={2} className="text-lg sm:text-xl text-white/60 max-w-2xl mx-auto mb-2 font-medium">
+          <motion.p variants={fadeUp} custom={2} className="text-lg sm:text-xl text-muted max-w-2xl mx-auto mb-2 font-medium">
             College Operating &amp; Survival Tactics
           </motion.p>
-          <motion.p variants={fadeUp} custom={3} className="text-white/40 max-w-xl mx-auto mb-10 text-sm">
+          <motion.p variants={fadeUp} custom={3} className="text-subtle max-w-xl mx-auto mb-10 text-sm">
             Simulează viața financiară a unui student, ia decizii inteligente și deblochează noi scenarii prin XP.
           </motion.p>
           <motion.div variants={fadeUp} custom={4} className="flex flex-wrap gap-3 justify-center">
-            <Link href="/game" className="px-8 py-3 bg-gradient-to-r from-purple-600 to-fuchsia-600 hover:from-purple-500 hover:to-fuchsia-500 text-white rounded-2xl font-bold text-lg transition-all shadow-lg shadow-purple-900/30 hover:shadow-purple-900/50 hover:-translate-y-0.5 active:translate-y-0">
+            <Link href="/game" className="px-8 py-3 bg-gradient-to-r from-purple-600 to-fuchsia-600 hover:from-purple-500 hover:to-fuchsia-500 text-main rounded-2xl font-bold text-lg transition-all shadow-lg shadow-purple-900/30 hover:shadow-purple-900/50 hover:-translate-y-0.5 active:translate-y-0">
               Joacă acum
             </Link>
             <Link href="/tutorial" className="px-8 py-3 border border-blue-400/40 hover:border-blue-400 bg-blue-500/10 text-blue-300 hover:text-blue-200 rounded-2xl font-bold text-lg transition-all hover:bg-blue-500/20">
               Tutorial
             </Link>
-            <Link href="/finance" className="px-8 py-3 border border-white/20 hover:border-white/40 text-white/80 hover:text-white rounded-2xl font-bold text-lg transition-all hover:bg-white/5">
+            <Link href="/finance" className="px-8 py-3 border border-strong hover:border-strongest text-bright hover:text-main rounded-2xl font-bold text-lg transition-all hover:bg-card">
               Finanțele mele
             </Link>
           </motion.div>
@@ -152,8 +152,8 @@ export default function Home() {
           >
             <div className="flex items-center gap-2 mb-4">
               <Clock size={18} className="text-orange-400" />
-              <h2 className="text-lg font-bold text-white">Evenimente cu timp limitat</h2>
-              <span className="ml-auto text-xs text-white/40">Bonus XP special</span>
+              <h2 className="text-lg font-bold text-main">Evenimente cu timp limitat</h2>
+              <span className="ml-auto text-xs text-subtle">Bonus XP special</span>
             </div>
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
               {limitedEvents.map((ev) => {
@@ -163,7 +163,7 @@ export default function Home() {
                   <motion.div
                     key={ev.id}
                     whileHover={{ scale: 1.02 }}
-                    className="relative p-4 rounded-2xl border border-white/10 bg-white/5 backdrop-blur-sm overflow-hidden cursor-pointer"
+                    className="relative p-4 rounded-2xl border border-subtle bg-card backdrop-blur-sm overflow-hidden cursor-pointer"
                     style={{ borderColor: `${ev.culoare}50` }}
                     onClick={() => setSelectedEvent(ev)}
                   >
@@ -172,9 +172,9 @@ export default function Home() {
                       <span className="text-3xl shrink-0">{ev.emoji}</span>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-1">
-                          <span className="font-bold text-white text-sm truncate">{ev.titlu}</span>
+                          <span className="font-bold text-main text-sm truncate">{ev.titlu}</span>
                         </div>
-                        <p className="text-xs text-white/50 mb-2 line-clamp-2">{ev.descriere}</p>
+                        <p className="text-xs text-dim mb-2 line-clamp-2">{ev.descriere}</p>
                         <div className="flex items-center gap-2 flex-wrap">
                           <span className={`flex items-center gap-1 text-xs font-bold px-2 py-0.5 rounded-full ${isExpiringSoon ? "bg-red-500/20 text-red-300 pulse-red" : "bg-orange-500/20 text-orange-300"}`}>
                             <Clock size={10} />
@@ -187,7 +187,7 @@ export default function Home() {
                         </div>
                       </div>
                     </div>
-                    <div className="mt-3 w-full flex items-center justify-center gap-1.5 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-semibold transition-colors">
+                    <div className="mt-3 w-full flex items-center justify-center gap-1.5 py-1.5 rounded-xl bg-card-hover hover:bg-card-strong text-main text-xs font-semibold transition-colors">
                       <Gamepad2 size={12} />
                       Participă
                     </div>
@@ -210,10 +210,10 @@ export default function Home() {
             { label: "Nivel", value: xpState.level.toString(), icon: TrendingUp, color: "text-purple-400" },
             { label: "Scenarii deblocate", value: `${xpState.scenariiDeblocate.filter(id => !SCENARII[id]?.isPremium).length}/${freeScenarii.length}`, icon: Users, color: "text-orange-400" },
           ].map((stat) => (
-            <div key={stat.label} className="p-4 rounded-2xl border border-white/10 bg-white/5 text-center">
+            <div key={stat.label} className="p-4 rounded-2xl border border-subtle bg-card text-center">
               <stat.icon size={20} className={`${stat.color} mx-auto mb-2`} />
-              <div className="text-2xl font-black text-white">{stat.value}</div>
-              <div className="text-xs text-white/40 mt-0.5">{stat.label}</div>
+              <div className="text-2xl font-black text-main">{stat.value}</div>
+              <div className="text-xs text-subtle mt-0.5">{stat.label}</div>
             </div>
           ))}
         </motion.div>
@@ -222,8 +222,8 @@ export default function Home() {
         <motion.section initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.6 }}>
           <div className="flex items-center gap-2 mb-6">
             <Gamepad2 size={18} className="text-green-400" />
-            <h2 className="text-xl font-bold text-white">Scenarii Gratuite</h2>
-            <span className="ml-2 text-xs text-white/40">Ordonate după XP necesar</span>
+            <h2 className="text-xl font-bold text-main">Scenarii Gratuite</h2>
+            <span className="ml-2 text-xs text-subtle">Ordonate după XP necesar</span>
           </div>
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
             {freeScenarii.map((sc, i) => {
@@ -242,8 +242,8 @@ export default function Home() {
                   onClick={() => { if (unlocked && inSeason) navigate(`/game?scenario=${sc.id}`); }}
                   className={`relative rounded-2xl border overflow-hidden transition-all ${
                     unlocked && inSeason
-                      ? "border-white/15 bg-white/5 cursor-pointer hover:border-white/30"
-                      : "border-white/8 bg-white/3 cursor-not-allowed"
+                      ? "border-medium bg-card cursor-pointer hover:border-stronger"
+                      : "border-subtle8 bg-card-soft cursor-not-allowed"
                   } ${!inSeason ? "opacity-50" : ""}`}
                 >
                   <div className={`absolute inset-0 ${sc.bgClass} opacity-40`} />
@@ -259,15 +259,15 @@ export default function Home() {
                         )}
                       </div>
                     </div>
-                    <h3 className="font-bold text-white text-sm mb-1">{sc.nume}</h3>
-                    <p className="text-xs text-white/50 line-clamp-2 mb-3">{sc.descriere}</p>
+                    <h3 className="font-bold text-main text-sm mb-1">{sc.nume}</h3>
+                    <p className="text-xs text-dim line-clamp-2 mb-3">{sc.descriere}</p>
                     <div className="flex items-center gap-2 flex-wrap">
-                      <span className="text-xs text-white/40">{sc.cheltuieliFixe.length} cheltuieli fixe</span>
-                      <span className="text-xs text-white/40">·</span>
-                      <span className="text-xs text-white/40">{sc.subScenarii.length} sub-scenarii</span>
+                      <span className="text-xs text-subtle">{sc.cheltuieliFixe.length} cheltuieli fixe</span>
+                      <span className="text-xs text-subtle">·</span>
+                      <span className="text-xs text-subtle">{sc.subScenarii.length} sub-scenarii</span>
                       {!unlocked && (
                         <>
-                          <span className="text-xs text-white/40">·</span>
+                          <span className="text-xs text-subtle">·</span>
                           <span className="text-xs text-yellow-400 flex items-center gap-1">
                             <Lock size={10} />
                             {xpNeeded} XP
@@ -292,8 +292,8 @@ export default function Home() {
         <motion.section initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.7 }}>
           <div className="flex items-center gap-2 mb-6">
             <Crown size={18} className="text-yellow-400" />
-            <h2 className="text-xl font-bold text-white">Scenarii Premium</h2>
-            <span className="ml-2 text-xs text-white/40">Necesită XP sau abonament PRO</span>
+            <h2 className="text-xl font-bold text-main">Scenarii Premium</h2>
+            <span className="ml-2 text-xs text-subtle">Necesită XP sau abonament PRO</span>
           </div>
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
             {premiumScenarii.map((sc, i) => {
@@ -340,8 +340,8 @@ export default function Home() {
                         )}
                       </div>
                     </div>
-                    <h3 className="font-bold text-white text-sm mb-1">{sc.nume}</h3>
-                    <p className="text-xs text-white/50 line-clamp-2 mb-3">{sc.descriere}</p>
+                    <h3 className="font-bold text-main text-sm mb-1">{sc.nume}</h3>
+                    <p className="text-xs text-dim line-clamp-2 mb-3">{sc.descriere}</p>
                     <div className="flex items-center gap-2 flex-wrap">
                       <span className="text-xs text-yellow-300/60">{sc.cheltuieliFixe.length} cheltuieli fixe</span>
                       <span className="text-xs text-yellow-300/60">·</span>
@@ -381,10 +381,10 @@ export default function Home() {
             { emoji: "🧠", title: "Ia decizii financiare", desc: "Fiecare săptămână aduce evenimente reale. Alegerile tale contează." },
             { emoji: "📈", title: "Câștigă XP și deblochează", desc: "Cu fiecare joc câștigat, primești XP și deblochezi scenarii noi." },
           ].map((step) => (
-            <div key={step.title} className="p-5 rounded-2xl border border-white/10 bg-white/5 text-center">
+            <div key={step.title} className="p-5 rounded-2xl border border-subtle bg-card text-center">
               <div className="text-3xl mb-3">{step.emoji}</div>
-              <h3 className="font-bold text-white mb-1 text-sm">{step.title}</h3>
-              <p className="text-xs text-white/50">{step.desc}</p>
+              <h3 className="font-bold text-main mb-1 text-sm">{step.title}</h3>
+              <p className="text-xs text-dim">{step.desc}</p>
             </div>
           ))}
         </motion.section>
@@ -401,14 +401,14 @@ export default function Home() {
               <div className="flex flex-col md:flex-row items-center gap-6">
                 <div className="shrink-0">
                   <div className="w-20 h-20 rounded-full bg-gradient-to-r from-yellow-400 to-orange-500 flex items-center justify-center shadow-lg shadow-yellow-500/30">
-                    <Crown size={40} className="text-white" />
+                    <Crown size={40} className="text-main" />
                   </div>
                 </div>
                 <div className="flex-1 text-center md:text-left">
-                  <h2 className="text-2xl md:text-3xl font-black text-white mb-2">
+                  <h2 className="text-2xl md:text-3xl font-black text-main mb-2">
                     🌟 Varianta Premium
                   </h2>
-                  <p className="text-white/70 mb-4 max-w-xl">
+                  <p className="text-strong mb-4 max-w-xl">
                     Deblochează toate scenariile sezoniere, evenimente exclusive și chat cu mentorul!
                   </p>
                   <div className="flex flex-wrap justify-center md:justify-start gap-3 mb-4">
@@ -417,14 +417,14 @@ export default function Home() {
                       "Chat cu mentorul",
                       "Scenarii sezoniere oricând",
                     ].map((feature) => (
-                      <span key={feature} className="px-3 py-1 rounded-full bg-white/10 text-white/80 text-xs border border-white/20">
+                      <span key={feature} className="px-3 py-1 rounded-full bg-card-hover text-bright text-xs border border-strong">
                         {feature}
                       </span>
                     ))}
                   </div>
                   <Link
                     href="/premium"
-                    className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-gradient-to-r from-yellow-500 to-orange-500 text-white font-bold transition-all hover:shadow-lg hover:shadow-yellow-500/30 hover:-translate-y-0.5"
+                    className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-gradient-to-r from-yellow-500 to-orange-500 text-main font-bold transition-all hover:shadow-lg hover:shadow-yellow-500/30 hover:-translate-y-0.5"
                   >
                     <Crown size={16} />
                     Vrei Premium?

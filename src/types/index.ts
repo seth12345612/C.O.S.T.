@@ -103,6 +103,7 @@ export interface GameState {
   evenimentCurent: GameEvent | null;
   evenimenteRamase: GameEvent[];
   limitedEventBonus?: { xp: number; bani?: number; fericire?: number };
+  aiQuestion: AiQuestion | null;
   isRecoveryMode: boolean;
   recoveryWeeksRemaining: number;
   originalScenarioId?: string;
@@ -249,6 +250,20 @@ export interface CompletedChoice {
   fericirePct: number;
   lectie: string;
   timestamp: number;
+}
+
+// === AI QUESTIONS ===
+export interface AiAnswerResult {
+  corect: boolean;
+  baniDelta: number;
+  fericireDelta: number;
+  explicatie: string;
+}
+
+export interface AiQuestion {
+  intrebare: string;
+  status: "generating" | "available" | "evaluating" | "evaluated";
+  rezultat: AiAnswerResult | null;
 }
 
 // Achievements

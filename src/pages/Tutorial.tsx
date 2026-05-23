@@ -159,8 +159,8 @@ function TutorialGame() {
             <Sparkles size={14} />
             Mod Practică
           </div>
-          <h1 className="text-4xl font-black text-white mb-4">Tutorial Financiar</h1>
-          <p className="text-white/60 max-w-md mx-auto">
+          <h1 className="text-4xl font-black text-main mb-4">Tutorial Financiar</h1>
+          <p className="text-muted max-w-md mx-auto">
             Învață cum să gestionezi banii de student în 4 săptămâni simulate. 
             Primești 10 XP la final și niciun ban nu va fi transferat în viața reală!
           </p>
@@ -178,12 +178,12 @@ function TutorialGame() {
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: i * 0.1 }}
-              className="flex items-center gap-4 p-4 rounded-2xl border border-white/10 bg-white/5"
+              className="flex items-center gap-4 p-4 rounded-2xl border border-subtle bg-card"
             >
               <span className="text-2xl">{item.emoji}</span>
               <div>
-                <div className="font-bold text-white text-sm">{item.title}</div>
-                <div className="text-xs text-white/50">{item.desc}</div>
+                <div className="font-bold text-main text-sm">{item.title}</div>
+                <div className="text-xs text-dim">{item.desc}</div>
               </div>
             </motion.div>
           ))}
@@ -191,14 +191,14 @@ function TutorialGame() {
 
         <button
           onClick={startTutorial}
-          className="w-full py-4 rounded-2xl bg-gradient-to-r from-purple-600 to-fuchsia-600 hover:from-purple-500 hover:to-fuchsia-500 text-white font-black text-lg transition-all shadow-lg shadow-purple-900/30 flex items-center justify-center gap-2"
+          className="w-full py-4 rounded-2xl bg-gradient-to-r from-purple-600 to-fuchsia-600 hover:from-purple-500 hover:to-fuchsia-500 text-main font-black text-lg transition-all shadow-lg shadow-purple-900/30 flex items-center justify-center gap-2"
         >
           Începe tutorialul <ChevronRight size={20} />
         </button>
 
         <Link
           href="/"
-          className="block text-center mt-4 text-white/40 hover:text-white text-sm transition-colors"
+          className="block text-center mt-4 text-subtle hover:text-main text-sm transition-colors"
         >
           Înapoi la meniu
         </Link>
@@ -215,8 +215,8 @@ function TutorialGame() {
           className="text-center mb-8"
         >
           <div className="text-6xl mb-4">🎓</div>
-          <h1 className="text-3xl font-black text-white mb-2">Felicitări!</h1>
-          <p className="text-white/60">Ai terminat tutorialul financiar</p>
+          <h1 className="text-3xl font-black text-main mb-2">Felicitări!</h1>
+          <p className="text-muted">Ai terminat tutorialul financiar</p>
         </motion.div>
 
         <motion.div
@@ -227,18 +227,18 @@ function TutorialGame() {
         >
           <div className="flex items-center gap-2 mb-4">
             <Sparkles size={18} className="text-purple-400" />
-            <h2 className="font-bold text-white"> Rezultatele tale</h2>
+            <h2 className="font-bold text-main"> Rezultatele tale</h2>
           </div>
           <div className="grid grid-cols-2 gap-4">
-            <div className="p-4 rounded-xl bg-white/5 border border-white/10 text-center">
+            <div className="p-4 rounded-xl bg-card border border-subtle text-center">
               <Coins size={20} className="text-yellow-400 mx-auto mb-2" />
-              <div className="text-2xl font-black text-white">{state.money} RON</div>
-              <div className="text-xs text-white/40">Bani rămași</div>
+              <div className="text-2xl font-black text-main">{state.money} RON</div>
+              <div className="text-xs text-subtle">Bani rămași</div>
             </div>
-            <div className="p-4 rounded-xl bg-white/5 border border-white/10 text-center">
+            <div className="p-4 rounded-xl bg-card border border-subtle text-center">
               <Smile size={20} className="text-green-400 mx-auto mb-2" />
-              <div className="text-2xl font-black text-white">{state.happiness}%</div>
-              <div className="text-xs text-white/40">Nivel fericire</div>
+              <div className="text-2xl font-black text-main">{state.happiness}%</div>
+              <div className="text-xs text-subtle">Nivel fericire</div>
             </div>
           </div>
           <div className="mt-4 p-3 rounded-xl bg-purple-600/20 border border-purple-500/30 text-center">
@@ -250,11 +250,11 @@ function TutorialGame() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
-          className="p-6 rounded-2xl border border-white/10 bg-white/5 mb-6"
+          className="p-6 rounded-2xl border border-subtle bg-card mb-6"
         >
           <div className="flex items-center gap-2 mb-4">
             <BookOpen size={18} className="text-yellow-400" />
-            <h2 className="font-bold text-white">Lecții învățate</h2>
+            <h2 className="font-bold text-main">Lecții învățate</h2>
           </div>
           <div className="space-y-2">
             {LESSONS_LEARNED.map((lesson, i) => (
@@ -263,7 +263,7 @@ function TutorialGame() {
                 initial={{ opacity: 0, x: -10 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.5 + i * 0.1 }}
-                className="text-sm text-white/70"
+                className="text-sm text-strong"
               >
                 {lesson}
               </motion.div>
@@ -288,19 +288,19 @@ function TutorialGame() {
                 isComplete: false,
               });
             }}
-            className="w-full py-3 rounded-2xl bg-gradient-to-r from-purple-600 to-fuchsia-600 hover:from-purple-500 hover:to-fuchsia-500 text-white font-bold transition-all"
+            className="w-full py-3 rounded-2xl bg-gradient-to-r from-purple-600 to-fuchsia-600 hover:from-purple-500 hover:to-fuchsia-500 text-main font-bold transition-all"
           >
             Repetă tutorialul
           </button>
           <Link
             href="/game"
-            className="block w-full py-3 rounded-2xl border border-white/20 hover:border-white/40 text-white/80 hover:text-white text-center font-semibold transition-all"
+            className="block w-full py-3 rounded-2xl border border-strong hover:border-strongest text-bright hover:text-main text-center font-semibold transition-all"
           >
             Joacă acum pe bune
           </Link>
           <Link
             href="/"
-            className="block w-full py-3 rounded-2xl bg-white/5 hover:bg-white/10 text-white/60 hover:text-white text-center font-medium transition-all text-sm"
+            className="block w-full py-3 rounded-2xl bg-card hover:bg-card-hover text-muted hover:text-main text-center font-medium transition-all text-sm"
           >
             Înapoi la meniu
           </Link>
@@ -314,7 +314,7 @@ function TutorialGame() {
   return (
     <div className="max-w-2xl mx-auto px-4 py-6">
       <div className="flex items-center justify-between mb-6">
-        <Link href="/" className="inline-flex items-center gap-1.5 text-white/50 hover:text-white text-sm transition-colors">
+        <Link href="/" className="inline-flex items-center gap-1.5 text-dim hover:text-main text-sm transition-colors">
           <ArrowLeft size={14} /> Ieșire
         </Link>
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-blue-500/30 bg-blue-500/10 text-blue-300 text-xs font-medium">
@@ -323,32 +323,32 @@ function TutorialGame() {
         </div>
       </div>
 
-      <div className="p-4 rounded-2xl border border-white/10 bg-white/5 mb-4">
+      <div className="p-4 rounded-2xl border border-subtle bg-card mb-4">
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center gap-2">
             <Calendar size={14} className="text-purple-400" />
-            <span className="font-bold text-white text-sm">Săptămâna {state.week} din 4</span>
+            <span className="font-bold text-main text-sm">Săptămâna {state.week} din 4</span>
           </div>
         </div>
-        <div className="w-full h-2 bg-white/10 rounded-full overflow-hidden">
+        <div className="w-full h-2 bg-card-hover rounded-full overflow-hidden">
           <div className="h-full bg-gradient-to-r from-purple-500 to-orange-500 rounded-full transition-all duration-500" style={{ width: `${progressPct}%` }} />
         </div>
       </div>
 
       <div className="grid grid-cols-2 gap-3 mb-6">
-        <div className="p-4 rounded-2xl border border-white/10 bg-white/5">
+        <div className="p-4 rounded-2xl border border-subtle bg-card">
           <div className="flex items-center gap-2 mb-2">
             <Coins size={16} className="text-yellow-400" />
-            <span className="text-xs text-white/60">Bani</span>
+            <span className="text-xs text-muted">Bani</span>
           </div>
-          <div className="text-xl font-black text-white">{state.money} RON</div>
+          <div className="text-xl font-black text-main">{state.money} RON</div>
         </div>
-        <div className="p-4 rounded-2xl border border-white/10 bg-white/5">
+        <div className="p-4 rounded-2xl border border-subtle bg-card">
           <div className="flex items-center gap-2 mb-2">
             <Smile size={16} className="text-green-400" />
-            <span className="text-xs text-white/60">Fericire</span>
+            <span className="text-xs text-muted">Fericire</span>
           </div>
-          <div className="text-xl font-black text-white">{state.happiness}%</div>
+          <div className="text-xl font-black text-main">{state.happiness}%</div>
         </div>
       </div>
 
@@ -364,7 +364,7 @@ function TutorialGame() {
               <BookOpen size={14} className="text-yellow-400" />
               <span className="font-bold text-yellow-300 text-sm">Lecție</span>
             </div>
-            <p className="text-sm text-white/80">{showLesson}</p>
+            <p className="text-sm text-bright">{showLesson}</p>
           </motion.div>
         )}
       </AnimatePresence>
@@ -374,23 +374,23 @@ function TutorialGame() {
           key={state.currentEvent.id}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="p-6 rounded-2xl border border-white/15 bg-white/5"
+          className="p-6 rounded-2xl border border-medium bg-card"
         >
           <div className="flex items-center gap-2 mb-4">
             <GraduationCap size={18} className="text-purple-400" />
             <span className="text-xs text-purple-300 font-medium">Eveniment</span>
           </div>
-          <h2 className="text-xl font-bold text-white mb-2">{state.currentEvent.title}</h2>
-          <p className="text-white/60 text-sm mb-6">{state.currentEvent.description}</p>
+          <h2 className="text-xl font-bold text-main mb-2">{state.currentEvent.title}</h2>
+          <p className="text-muted text-sm mb-6">{state.currentEvent.description}</p>
 
           <div className="space-y-3">
             {state.currentEvent.options.map((option, i) => (
               <button
                 key={i}
                 onClick={() => handleChoice(i)}
-                className="w-full p-4 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 hover:border-white/20 text-left transition-all group"
+                className="w-full p-4 rounded-xl border border-subtle bg-card hover:bg-card-hover hover:border-strong text-left transition-all group"
               >
-                <div className="font-semibold text-white text-sm mb-1">{option.text}</div>
+                <div className="font-semibold text-main text-sm mb-1">{option.text}</div>
                 <div className="flex gap-3 text-xs">
                   <span className={option.money >= 0 ? "text-green-400" : "text-red-400"}>
                     {option.money >= 0 ? "+" : ""}{option.money} RON

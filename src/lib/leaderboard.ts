@@ -1,6 +1,6 @@
 import type { LeaderboardEntry } from "@/types";
 import { SCENARII } from "@/data/scenarios";
-import { getLeaderboardEntries, saveLeaderboardEntry as supabaseSave, deleteLeaderboardEntry as supabaseDelete, getBannedUsernames, setBanStatus } from "./supabase";
+import { getLeaderboardEntries, saveLeaderboardEntry as supabaseSave, deleteLeaderboardEntry as supabaseDelete, clearLeaderboard as supabaseClear, getBannedUsernames, setBanStatus } from "./supabase";
 
 const LOCAL_KEY = "cost_leaderboard_local";
 
@@ -92,6 +92,15 @@ export async function unbanUser(username: string): Promise<void> {
     await withTimeout(setBanStatus(username, false), 8000);
   } catch (e) {
     console.warn("Supabase unban failed:", e);
+  }
+}
+
+export async function clearLeaderboard(): Promise<void> {
+  saveLocal([]);
+  try {
+    await withTimeout(supabaseClear(), 8000);
+  } catch (e) {
+    console.warn("Supabase clear failed, cleared locally only:", e);
   }
 }
 

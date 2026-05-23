@@ -54,6 +54,10 @@ export async function deleteLeaderboardEntry(id: string): Promise<void> {
   await api(`/leaderboard?id=eq.${id}`, { method: "DELETE" });
 }
 
+export async function clearLeaderboard(): Promise<void> {
+  await api("/leaderboard?id=gte.00000000-0000-0000-0000-000000000000", { method: "DELETE" });
+}
+
 export async function getBannedUsernames(): Promise<string[]> {
   try {
     const data: DBUser[] = await api("/users?select=name&is_banned=eq.true");

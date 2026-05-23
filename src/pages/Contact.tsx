@@ -49,7 +49,7 @@ const CATEGORIES: Record<MainCategory, { label: string; icon: React.ElementType;
   altele: {
     label: "Altele",
     icon: HelpCircle,
-    color: "text-white/60 border-white/20 bg-white/5",
+    color: "text-muted border-strong bg-card",
     subcategories: [
       "Întrebare generală",
       "Feedback general",
@@ -127,14 +127,14 @@ export default function Contact() {
       <OrbBackground />
       <div className="max-w-4xl mx-auto px-4 py-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-black text-white mb-2">Contact &amp; Suport</h1>
-          <p className="text-white/50 text-sm">Ai o întrebare, o problemă sau o idee? Trimite-ne un mesaj.</p>
+          <h1 className="text-3xl font-black text-main mb-2">Contact &amp; Suport</h1>
+          <p className="text-dim text-sm">Ai o întrebare, o problemă sau o idee? Trimite-ne un mesaj.</p>
         </div>
 
         <div className="grid lg:grid-cols-5 gap-6">
           {/* Form */}
           <div className="lg:col-span-3">
-            <div className="p-5 rounded-2xl border border-white/10 bg-white/5">
+            <div className="p-5 rounded-2xl border border-subtle bg-card">
               {sent ? (
                 <motion.div
                   initial={{ opacity: 0, scale: 0.95 }}
@@ -142,11 +142,11 @@ export default function Contact() {
                   className="text-center py-12"
                 >
                   <CheckCircle size={48} className="text-green-400 mx-auto mb-4" />
-                  <h3 className="text-xl font-black text-white mb-2">Mesaj trimis!</h3>
-                  <p className="text-white/50 text-sm mb-4">Îți mulțumim. Vom răspunde cât mai curând posibil.</p>
+                  <h3 className="text-xl font-black text-main mb-2">Mesaj trimis!</h3>
+                  <p className="text-dim text-sm mb-4">Îți mulțumim. Vom răspunde cât mai curând posibil.</p>
                   <button
                     onClick={() => { setSent(false); setMainCat(null); setSubCat(null); setFormData({ nume: "", email: "", mesaj: "" }); }}
-                    className="px-5 py-2 rounded-xl border border-white/20 text-white/70 hover:text-white hover:border-white/40 text-sm font-semibold transition-all"
+                    className="px-5 py-2 rounded-xl border border-strong text-strong hover:text-main hover:border-strongest text-sm font-semibold transition-all"
                   >
                     Trimite alt mesaj
                   </button>
@@ -161,7 +161,7 @@ export default function Contact() {
 
                   {/* Category selection */}
                   <div>
-                    <label className="text-xs font-bold text-white/50 uppercase tracking-wider block mb-2">Categorie *</label>
+                    <label className="text-xs font-bold text-dim uppercase tracking-wider block mb-2">Categorie *</label>
                     <div className="grid grid-cols-2 gap-2">
                       {(Object.entries(CATEGORIES) as [MainCategory, typeof CATEGORIES[MainCategory]][]).map(([key, cat]) => (
                         <button
@@ -169,12 +169,12 @@ export default function Contact() {
                           type="button"
                           onClick={() => { setMainCat(key); setSubCat(null); }}
                           className={`p-3 rounded-xl border text-left transition-all ${
-                            mainCat === key ? cat.color : "border-white/10 bg-white/5 hover:border-white/20"
+                            mainCat === key ? cat.color : "border-subtle bg-card hover:border-strong"
                           }`}
                         >
                           <div className="flex items-center gap-2">
-                            <cat.icon size={14} className={mainCat === key ? "" : "text-white/40"} />
-                            <span className={`text-sm font-semibold ${mainCat === key ? "" : "text-white/60"}`}>{cat.label}</span>
+                            <cat.icon size={14} className={mainCat === key ? "" : "text-subtle"} />
+                            <span className={`text-sm font-semibold ${mainCat === key ? "" : "text-muted"}`}>{cat.label}</span>
                           </div>
                         </button>
                       ))}
@@ -189,7 +189,7 @@ export default function Contact() {
                         animate={{ opacity: 1, height: "auto" }}
                         exit={{ opacity: 0, height: 0 }}
                       >
-                        <label className="text-xs font-bold text-white/50 uppercase tracking-wider block mb-2">Sub-categorie *</label>
+                        <label className="text-xs font-bold text-dim uppercase tracking-wider block mb-2">Sub-categorie *</label>
                         <div className="flex flex-wrap gap-2">
                           {CATEGORIES[mainCat].subcategories.map((sub) => (
                             <button
@@ -199,7 +199,7 @@ export default function Contact() {
                               className={`px-3 py-1.5 rounded-xl text-xs font-semibold border transition-all ${
                                 subCat === sub
                                   ? "border-purple-500/60 bg-purple-600/20 text-purple-300"
-                                  : "border-white/10 bg-white/5 text-white/50 hover:text-white hover:border-white/20"
+                                  : "border-subtle bg-card text-dim hover:text-main hover:border-strong"
                               }`}
                             >
                               {sub}
@@ -213,49 +213,49 @@ export default function Contact() {
                   {/* Name & Email */}
                   <div className="grid sm:grid-cols-2 gap-3">
                     <div>
-                      <label className="text-xs font-bold text-white/50 block mb-1.5">Numele tău *</label>
+                      <label className="text-xs font-bold text-dim block mb-1.5">Numele tău *</label>
                       <input
                         type="text"
                         required
                         value={formData.nume}
                         onChange={(e) => setFormData((p) => ({ ...p, nume: e.target.value }))}
                         placeholder="Ion Popescu"
-                        className="w-full px-3 py-2.5 rounded-xl border border-white/15 bg-white/5 text-white placeholder:text-white/25 text-sm focus:outline-none focus:border-purple-500/50 focus:bg-white/8 transition-all"
+                        className="w-full px-3 py-2.5 rounded-xl border border-medium bg-card text-main placeholder:text-fainter text-sm focus:outline-none focus:border-purple-500/50 focus:bg-card-soft8 transition-all"
                       />
                     </div>
                     <div>
-                      <label className="text-xs font-bold text-white/50 block mb-1.5">Email *</label>
+                      <label className="text-xs font-bold text-dim block mb-1.5">Email *</label>
                       <input
                         type="email"
                         required
                         value={formData.email}
                         onChange={(e) => setFormData((p) => ({ ...p, email: e.target.value }))}
                         placeholder="exemplu@email.com"
-                        className="w-full px-3 py-2.5 rounded-xl border border-white/15 bg-white/5 text-white placeholder:text-white/25 text-sm focus:outline-none focus:border-purple-500/50 focus:bg-white/8 transition-all"
+                        className="w-full px-3 py-2.5 rounded-xl border border-medium bg-card text-main placeholder:text-fainter text-sm focus:outline-none focus:border-purple-500/50 focus:bg-card-soft8 transition-all"
                       />
                     </div>
                   </div>
 
                   {/* Message */}
                   <div>
-                    <label className="text-xs font-bold text-white/50 block mb-1.5">Mesajul tău *</label>
+                    <label className="text-xs font-bold text-dim block mb-1.5">Mesajul tău *</label>
                     <textarea
                       required
                       rows={5}
                       value={formData.mesaj}
                       onChange={(e) => setFormData((p) => ({ ...p, mesaj: e.target.value }))}
                       placeholder="Descrie în detaliu..."
-                      className="w-full px-3 py-2.5 rounded-xl border border-white/15 bg-white/5 text-white placeholder:text-white/25 text-sm focus:outline-none focus:border-purple-500/50 focus:bg-white/8 transition-all resize-none"
+                      className="w-full px-3 py-2.5 rounded-xl border border-medium bg-card text-main placeholder:text-fainter text-sm focus:outline-none focus:border-purple-500/50 focus:bg-card-soft8 transition-all resize-none"
                     />
                   </div>
 
                   <button
                     type="submit"
                     disabled={!mainCat || !subCat || sending}
-                    className="w-full py-3 rounded-2xl bg-gradient-to-r from-purple-600 to-fuchsia-600 hover:from-purple-500 hover:to-fuchsia-500 disabled:opacity-40 disabled:cursor-not-allowed text-white font-bold transition-all flex items-center justify-center gap-2"
+                    className="w-full py-3 rounded-2xl bg-gradient-to-r from-purple-600 to-fuchsia-600 hover:from-purple-500 hover:to-fuchsia-500 disabled:opacity-40 disabled:cursor-not-allowed text-main font-bold transition-all flex items-center justify-center gap-2"
                   >
                     {sending ? (
-                      <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                      <div className="w-5 h-5 border-2 border-stronger border-t-white rounded-full animate-spin" />
                     ) : (
                       <>
                         <Send size={16} />
@@ -270,9 +270,9 @@ export default function Contact() {
 
           {/* FAQ */}
           <div className="lg:col-span-2 space-y-4">
-            <div className="p-4 rounded-2xl border border-white/10 bg-white/5">
-              <h3 className="text-sm font-bold text-white mb-1">Contact direct</h3>
-              <p className="text-xs text-white/50 mb-3">Preferi să ne scrii direct?</p>
+            <div className="p-4 rounded-2xl border border-subtle bg-card">
+              <h3 className="text-sm font-bold text-main mb-1">Contact direct</h3>
+              <p className="text-xs text-dim mb-3">Preferi să ne scrii direct?</p>
               <a
                 href="mailto:alexandruaoglagioaie@gmail.com"
                 className="text-sm font-semibold text-purple-400 hover:text-purple-300 transition-colors"
@@ -281,19 +281,19 @@ export default function Contact() {
               </a>
             </div>
 
-            <div className="p-4 rounded-2xl border border-white/10 bg-white/5">
-              <h3 className="text-sm font-bold text-white mb-3">Întrebări frecvente</h3>
+            <div className="p-4 rounded-2xl border border-subtle bg-card">
+              <h3 className="text-sm font-bold text-main mb-3">Întrebări frecvente</h3>
               <div className="space-y-2">
                 {FAQ.map((faq, i) => (
-                  <div key={i} className="border border-white/8 rounded-xl overflow-hidden">
+                  <div key={i} className="border border-subtle8 rounded-xl overflow-hidden">
                     <button
                       onClick={() => setExpandedFaq(expandedFaq === i ? null : i)}
-                      className="w-full flex items-center justify-between p-3 text-left hover:bg-white/5 transition-colors"
+                      className="w-full flex items-center justify-between p-3 text-left hover:bg-card transition-colors"
                     >
-                      <span className="text-xs font-semibold text-white/80 pr-2">{faq.q}</span>
+                      <span className="text-xs font-semibold text-bright pr-2">{faq.q}</span>
                       <ChevronDown
                         size={14}
-                        className={`text-white/40 shrink-0 transition-transform ${expandedFaq === i ? "rotate-180" : ""}`}
+                        className={`text-subtle shrink-0 transition-transform ${expandedFaq === i ? "rotate-180" : ""}`}
                       />
                     </button>
                     <AnimatePresence>
@@ -304,7 +304,7 @@ export default function Contact() {
                           exit={{ height: 0 }}
                           className="overflow-hidden"
                         >
-                          <div className="px-3 pb-3 text-xs text-white/50 leading-relaxed border-t border-white/8 pt-2">
+                          <div className="px-3 pb-3 text-xs text-dim leading-relaxed border-t border-subtle8 pt-2">
                             {faq.a}
                           </div>
                         </motion.div>

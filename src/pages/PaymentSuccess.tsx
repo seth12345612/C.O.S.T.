@@ -70,8 +70,8 @@ export default function PaymentSuccess() {
               <div className="w-20 h-20 mx-auto rounded-full bg-purple-600/20 flex items-center justify-center">
                 <Loader2 size={40} className="text-purple-400 animate-spin" />
               </div>
-              <h1 className="text-2xl font-bold text-white">Verificăm plata...</h1>
-              <p className="text-white/50">Te rugăm să aștepți un moment.</p>
+              <h1 className="text-2xl font-bold text-main">Verificăm plata...</h1>
+              <p className="text-dim">Te rugăm să aștepți un moment.</p>
             </div>
           )}
 
@@ -80,13 +80,13 @@ export default function PaymentSuccess() {
               <div className="w-20 h-20 mx-auto rounded-full bg-green-500/20 flex items-center justify-center">
                 <CheckCircle2 size={40} className="text-green-400" />
               </div>
-              <h1 className="text-2xl font-bold text-white">Plată Confirmată!</h1>
-              <p className="text-white/60">
+              <h1 className="text-2xl font-bold text-main">Plată Confirmată!</h1>
+              <p className="text-muted">
                 Ai activat Premium C.O.S.T. pentru 30 de zile. Bucură-te de toate funcțiile exclusive!
               </p>
               <Link
                 href="/premium"
-                className="inline-block px-6 py-3 rounded-xl bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-400 hover:to-emerald-500 text-white font-bold transition-all"
+                className="inline-block px-6 py-3 rounded-xl bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-400 hover:to-emerald-500 text-main font-bold transition-all"
               >
                 Mergi la Premium
               </Link>
@@ -98,18 +98,18 @@ export default function PaymentSuccess() {
               <div className="w-20 h-20 mx-auto rounded-full bg-red-500/20 flex items-center justify-center">
                 <XCircle size={40} className="text-red-400" />
               </div>
-              <h1 className="text-2xl font-bold text-white">Eroare la Verificare</h1>
-              <p className="text-white/60">{errorMsg}</p>
+              <h1 className="text-2xl font-bold text-main">Eroare la Verificare</h1>
+              <p className="text-muted">{errorMsg}</p>
               <div className="flex gap-3 justify-center">
                 <Link
                   href="/premium"
-                  className="inline-block px-6 py-3 rounded-xl bg-gradient-to-r from-purple-600 to-fuchsia-600 text-white font-bold transition-all"
+                  className="inline-block px-6 py-3 rounded-xl bg-gradient-to-r from-purple-600 to-fuchsia-600 text-main font-bold transition-all"
                 >
                   Înapoi la Premium
                 </Link>
                 <Link
                   href="/"
-                  className="inline-block px-6 py-3 rounded-xl border border-white/20 text-white/80 font-bold transition-all hover:bg-white/5"
+                  className="inline-block px-6 py-3 rounded-xl border border-strong text-bright font-bold transition-all hover:bg-card"
                 >
                   Acasă
                 </Link>

@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 export function Skeleton({ className = "", ...props }: React.HTMLAttributes<HTMLDivElement>) {
   return (
     <motion.div
-      className={`rounded-xl bg-white/5 animate-pulse ${className}`}
+      className={`rounded-xl bg-card animate-pulse ${className}`}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       {...props}
@@ -13,7 +13,7 @@ export function Skeleton({ className = "", ...props }: React.HTMLAttributes<HTML
 
 export function CardSkeleton() {
   return (
-    <div className="bg-white/5 border border-white/10 rounded-2xl p-6 space-y-4">
+    <div className="bg-card border border-subtle rounded-2xl p-6 space-y-4">
       <Skeleton className="h-6 w-2/3" />
       <Skeleton className="h-4 w-full" />
       <Skeleton className="h-4 w-4/5" />

@@ -42,10 +42,10 @@ export default function Achievements() {
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-yellow-500/10 border border-yellow-500/20 text-yellow-300 text-xs mb-4">
             <Sparkles size={12} /> Realizări
           </div>
-          <h1 className="text-3xl font-bold text-white mb-2">Achievements</h1>
-          <p className="text-white/50">{deblocate.length} / {ACHIEVEMENTS.length} deblocate</p>
+          <h1 className="text-3xl font-bold text-main mb-2">Achievements</h1>
+          <p className="text-dim">{deblocate.length} / {ACHIEVEMENTS.length} deblocate</p>
           <div className="max-w-md mx-auto mt-4">
-            <div className="h-2 bg-white/10 rounded-full overflow-hidden">
+            <div className="h-2 bg-card-hover rounded-full overflow-hidden">
               <motion.div
                 initial={{ width: 0 }}
                 animate={{ width: `${procentaj}%` }}
@@ -63,10 +63,10 @@ export default function Achievements() {
             transition={{ delay: gi * 0.1 }}
             className="mb-8"
           >
-            <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+            <h2 className="text-xl font-bold text-main mb-4 flex items-center gap-2">
               <span>{categorieIcone[cat]}</span>
               <span>{categorieLabel[cat]}</span>
-              <span className="text-sm font-normal text-white/30">
+              <span className="text-sm font-normal text-faint">
                 ({items.filter((a) => deblocate.includes(a.id)).length}/{items.length})
               </span>
             </h2>
@@ -82,25 +82,25 @@ export default function Achievements() {
                     className={`relative rounded-xl p-4 border transition-all ${
                       deblocat
                         ? "bg-gradient-to-br from-yellow-500/10 to-amber-500/5 border-yellow-500/30"
-                        : "bg-white/5 border-white/10 opacity-60"
+                        : "bg-card border-subtle opacity-60"
                     }`}
                   >
                     <div className="flex items-start gap-3">
                       <span className={`text-2xl ${!deblocat ? "grayscale" : ""}`}>{a.icon}</span>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-1.5">
-                          <p className={`font-semibold text-sm ${deblocat ? "text-white" : "text-white/60"}`}>
+                          <p className={`font-semibold text-sm ${deblocat ? "text-main" : "text-muted"}`}>
                             {a.titlu}
                           </p>
                           {deblocat && <Trophy size={12} className="text-yellow-400 shrink-0" />}
-                          {!deblocat && <Lock size={10} className="text-white/30 shrink-0" />}
+                          {!deblocat && <Lock size={10} className="text-faint shrink-0" />}
                         </div>
-                        <p className="text-xs text-white/40 mt-0.5">{a.descriere}</p>
+                        <p className="text-xs text-subtle mt-0.5">{a.descriere}</p>
                         {deblocat && (
                           <span className="text-xs text-yellow-400/70 mt-1 inline-block">+{a.xpReward} XP</span>
                         )}
                         {!deblocat && a.categorie === "ascuns" && (
-                          <span className="text-xs text-white/20 mt-1 inline-block">???</span>
+                          <span className="text-xs text-faintest mt-1 inline-block">???</span>
                         )}
                       </div>
                     </div>

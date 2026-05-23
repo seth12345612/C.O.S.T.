@@ -31,7 +31,7 @@ function ScoreRow({ entry, rank, isUserScore, showRank = true }: ScoreRowProps) 
     ? "border-purple-500/50 bg-purple-500/10"
     : isTop3
       ? "border-yellow-500/20 bg-yellow-500/5"
-      : "border-white/8 bg-white/4";
+      : "border-subtle8 bg-card-soft4";
 
   return (
     <div className={"flex items-center gap-3 p-3.5 rounded-2xl border transition-all " + rowClass}>
@@ -40,13 +40,13 @@ function ScoreRow({ entry, rank, isUserScore, showRank = true }: ScoreRowProps) 
           {RankIcon ? (
             <RankIcon size={18} className={RANK_ICONS[rank - 1].color} />
           ) : (
-            <span className="text-sm font-black text-white/40">#{rank}</span>
+            <span className="text-sm font-black text-subtle">#{rank}</span>
           )}
         </div>
       )}
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2">
-          <span className={"font-bold text-sm " + (isUserScore ? "text-purple-300" : "text-white")}>
+          <span className={"font-bold text-sm " + (isUserScore ? "text-purple-300" : "text-main")}>
             {entry.username}
           </span>
           {isUserScore && (
@@ -55,15 +55,15 @@ function ScoreRow({ entry, rank, isUserScore, showRank = true }: ScoreRowProps) 
             </span>
           )}
         </div>
-        <div className="text-xs text-white/40">
+        <div className="text-xs text-subtle">
           {entry.months} luni . {entry.scenario}
           {entry.date > 0 && (
-            <span className="ml-2 text-white/30">. {formatDate(entry.date)}</span>
+            <span className="ml-2 text-faint">. {formatDate(entry.date)}</span>
           )}
         </div>
       </div>
       <div className="text-right shrink-0">
-        <div className="font-black text-white text-sm">{entry.score.toLocaleString("ro-RO")} RON</div>
+        <div className="font-black text-main text-sm">{entry.score.toLocaleString("ro-RO")} RON</div>
         <div className="flex items-center gap-1 justify-end">
           <Star size={10} className="text-purple-400" />
           <span className="text-xs text-purple-400">{entry.score * 2} XP</span>
@@ -115,7 +115,7 @@ export default function Leaderboard() {
         <div className="max-w-2xl mx-auto px-4 py-8">
           <div className="text-center">
             <div className="animate-pulse text-4xl mb-3">🏆</div>
-            <h1 className="text-3xl font-black text-white mb-2">Clasament</h1>
+            <h1 className="text-3xl font-black text-main mb-2">Clasament</h1>
           </div>
         </div>
       </Layout>
@@ -128,15 +128,15 @@ export default function Leaderboard() {
       <div className="max-w-2xl mx-auto px-4 py-8">
         <div className="text-center mb-8">
           <div className="text-4xl mb-3">🏆</div>
-          <h1 className="text-3xl font-black text-white mb-2">Clasament</h1>
-          <p className="text-white/50 text-sm">Top jucatori dupa economii finale.</p>
+          <h1 className="text-3xl font-black text-main mb-2">Clasament</h1>
+          <p className="text-dim text-sm">Top jucatori dupa economii finale.</p>
         </div>
 
         {!hasScores ? (
           <div className="text-center py-12">
-            <User size={48} className="text-white/20 mx-auto mb-4" />
-            <p className="text-white/50 text-lg font-medium">Nu exista scoruri inca</p>
-            <p className="text-white/30 text-sm mt-2">Joaca un joc pentru a aparea in clasament!</p>
+            <User size={48} className="text-faintest mx-auto mb-4" />
+            <p className="text-dim text-lg font-medium">Nu exista scoruri inca</p>
+            <p className="text-faint text-sm mt-2">Joaca un joc pentru a aparea in clasament!</p>
           </div>
         ) : (
           <div className="space-y-4">
@@ -154,10 +154,10 @@ export default function Leaderboard() {
               </div>
             )}
 
-            {userScores.length > 0 && <div className="border-t border-white/10 my-4" />}
+            {userScores.length > 0 && <div className="border-t border-subtle my-4" />}
 
             <div>
-              <h2 className="text-sm font-bold text-white/60 mb-3">
+              <h2 className="text-sm font-bold text-muted mb-3">
                 {userScores.length > 0 ? "Top Global" : "Clasament"}
               </h2>
               <div className="space-y-2">
@@ -169,8 +169,8 @@ export default function Leaderboard() {
           </div>
         )}
 
-        <div className="mt-6 p-4 rounded-2xl border border-white/10 bg-white/5 text-center">
-          <p className="text-xs text-white/40">
+        <div className="mt-6 p-4 rounded-2xl border border-subtle bg-card text-center">
+          <p className="text-xs text-subtle">
             Clasamentul se sincronizeaza online.
             {userScores.length > 0 && " Scorurile tale sunt evidentiate cu mov."}
           </p>

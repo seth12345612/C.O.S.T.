@@ -22,18 +22,24 @@ export function ThemePicker() {
 
   const activeColor = themeState.customColor ?? currentPreset.primary;
 
+  function applyColor(hex: string) {
+    if (/^#[0-9a-fA-F]{6}$/.test(hex)) {
+      setCustomColor(hex);
+    }
+  }
+
   return (
     <div className="relative" ref={pickerRef}>
       <button
         onClick={() => setOpen((v) => !v)}
-        className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border border-white/15 bg-white/5 hover:bg-white/10 hover:border-white/30 transition-all"
+        className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border border-medium bg-card hover:bg-card-hover hover:border-stronger transition-all"
         title="Personalizează culoarea"
       >
         <div
-          className="w-4 h-4 rounded-full border-2 border-white/30 shrink-0"
+          className="w-4 h-4 rounded-full border-2 border-stronger shrink-0"
           style={{ background: activeColor }}
         />
-        <Palette size={13} className="text-white/60" />
+        <Palette size={13} className="text-muted" />
       </button>
 
       <AnimatePresence>
@@ -43,22 +49,22 @@ export function ThemePicker() {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: -8 }}
             transition={{ duration: 0.18 }}
-            className="absolute right-0 top-full mt-2 w-72 bg-[#0d0820] border border-white/15 rounded-2xl shadow-2xl shadow-black/60 z-[60] overflow-hidden"
+            className="absolute right-0 top-full mt-2 w-72 bg-card-strong border border-medium rounded-2xl shadow-2xl shadow-black/60 z-[60] overflow-hidden"
           >
             <div className="p-4">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2">
                   <Palette size={14} className="text-primary" style={{ color: activeColor }} />
-                  <span className="text-sm font-bold text-white">Tema interfeței</span>
+                  <span className="text-sm font-bold text-main">Tema interfeței</span>
                 </div>
-                <button onClick={() => setOpen(false)} className="p-1 rounded-lg text-white/40 hover:text-white hover:bg-white/10 transition-all">
+                <button onClick={() => setOpen(false)} className="p-1 rounded-lg text-subtle hover:text-main hover:bg-card-hover transition-all">
                   <X size={14} />
                 </button>
               </div>
 
               {/* Preset grid */}
               <div className="mb-4">
-                <p className="text-xs text-white/40 font-semibold uppercase tracking-wider mb-2">Teme predefinite</p>
+                <p className="text-xs text-subtle font-semibold uppercase tracking-wider mb-2">Teme predefinite</p>
                 <div className="grid grid-cols-4 gap-2">
                   {THEME_PRESETS.map((preset) => {
                     const isActive = themeState.presetId === preset.id && !themeState.customColor;
@@ -79,11 +85,11 @@ export function ThemePicker() {
                         >
                           {isActive && (
                             <div className="absolute inset-0 flex items-center justify-center">
-                              <Check size={16} className="text-white drop-shadow-md" />
+                              <Check size={16} className="text-main drop-shadow-md" />
                             </div>
                           )}
                         </div>
-                        <span className="text-xs text-white/50 group-hover:text-white/80 transition-colors text-center leading-tight" style={{ fontSize: "10px" }}>
+                        <span className="text-xs text-dim group-hover:text-bright transition-colors text-center leading-tight" style={{ fontSize: "10px" }}>
                           {preset.label.split(" ")[0]}
                         </span>
                       </button>
@@ -93,11 +99,11 @@ export function ThemePicker() {
               </div>
 
               {/* Custom color */}
-              <div className="border-t border-white/10 pt-4">
-                <p className="text-xs text-white/40 font-semibold uppercase tracking-wider mb-2">Culoare personalizată</p>
+              <div className="border-t border-subtle pt-4">
+                <p className="text-xs text-subtle font-semibold uppercase tracking-wider mb-2">Culoare personalizată</p>
                 <div className="flex items-center gap-2">
                   <div
-                    className="w-10 h-10 rounded-xl border-2 border-white/20 cursor-pointer shrink-0 relative overflow-hidden"
+                    className="w-10 h-10 rounded-xl border-2 border-strong cursor-pointer shrink-0 relative overflow-hidden"
                     style={{ background: customInput }}
                     onClick={() => colorInputRef.current?.click()}
                   >
@@ -105,31 +111,24 @@ export function ThemePicker() {
                       ref={colorInputRef}
                       type="color"
                       value={customInput}
-                      onChange={(e) => setCustomInput(e.target.value)}
+                      onChange={(e) => { setCustomInput(e.target.value); applyColor(e.target.value); }}
                       className="absolute inset-0 opacity-0 cursor-pointer w-full h-full"
                     />
                     <div className="absolute bottom-0 right-0 p-0.5">
-                      <Pipette size={10} className="text-white drop-shadow-md" />
+                      <Pipette size={10} className="text-main drop-shadow-md" />
                     </div>
                   </div>
                   <input
                     type="text"
                     value={customInput}
-                    onChange={(e) => {
-                      const val = e.target.value;
-                      setCustomInput(val);
-                    }}
+                    onChange={(e) => setCustomInput(e.target.value)}
+                    onKeyDown={(e) => { if (e.key === "Enter") applyColor(customInput); }}
                     placeholder="#7828c8"
-                    className="flex-1 px-2.5 py-2 rounded-xl border border-white/15 bg-white/5 text-white text-xs font-mono focus:outline-none focus:border-white/40 transition-all"
+                    className="flex-1 px-2.5 py-2 rounded-xl border border-medium bg-card text-main text-xs font-mono focus:outline-none focus:border-strongest transition-all"
                   />
                   <button
-                    onClick={() => {
-                      if (/^#[0-9a-fA-F]{6}$/.test(customInput)) {
-                        setCustomColor(customInput);
-                      }
-                    }}
-                    className="px-3 py-2 rounded-xl text-xs font-bold text-white transition-all"
-                    style={{ background: `${currentPreset.primary}60`, border: `1px solid ${currentPreset.primary}40` }}
+                    onClick={() => applyColor(customInput)}
+                    className="px-3 py-2 rounded-xl text-xs font-bold bg-primary text-primary-foreground transition-all hover:opacity-90"
                   >
                     Aplică
                   </button>
@@ -137,7 +136,7 @@ export function ThemePicker() {
                 {themeState.customColor && (
                   <button
                     onClick={clearCustom}
-                    className="mt-2 text-xs text-white/40 hover:text-white/70 transition-colors flex items-center gap-1"
+                    className="mt-2 text-xs text-subtle hover:text-strong transition-colors flex items-center gap-1"
                   >
                     <X size={11} />
                     Elimină culoarea personalizată
@@ -146,14 +145,14 @@ export function ThemePicker() {
               </div>
 
               {/* Preview badge */}
-              <div className="mt-4 p-3 rounded-xl bg-white/5 border border-white/10 flex items-center gap-3">
-                <div className="w-8 h-8 rounded-lg flex items-center justify-center text-sm font-black text-white"
+              <div className="mt-4 p-3 rounded-xl bg-card border border-subtle flex items-center gap-3">
+                <div className="w-8 h-8 rounded-lg flex items-center justify-center text-sm font-black text-main"
                   style={{ background: `linear-gradient(135deg, ${activeColor}, ${currentPreset.secondary})` }}>
                   C
                 </div>
                 <div>
-                  <div className="text-xs font-bold text-white">{themeState.customColor ? "Culoare personalizată" : currentPreset.label}</div>
-                  <div className="text-xs text-white/40 font-mono">{activeColor}</div>
+                  <div className="text-xs font-bold text-main">{themeState.customColor ? "Culoare personalizată" : currentPreset.label}</div>
+                  <div className="text-xs text-subtle font-mono">{activeColor}</div>
                 </div>
               </div>
             </div>

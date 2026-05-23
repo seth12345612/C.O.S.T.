@@ -6,6 +6,7 @@ import { OrbBackground } from "@/components/OrbBackground";
 import { Layout } from "@/components/Layout";
 import { EventModal } from "@/components/EventModal";
 import { GameOver } from "@/components/GameOver";
+import { WeeklyQuiz } from "@/components/WeeklyQuiz";
 import { useGame } from "@/context/GameContext";
 import { useXP } from "@/context/XPContext";
 import { useFinance } from "@/context/FinanceContext";
@@ -97,12 +98,12 @@ function SetupScreen() {
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-8">
-      <Link href="/" className="inline-flex items-center gap-1.5 text-white/50 hover:text-white text-sm mb-6 transition-colors">
+      <Link href="/" className="inline-flex items-center gap-1.5 text-dim hover:text-main text-sm mb-6 transition-colors">
         <ArrowLeft size={14} /> Înapoi
       </Link>
 
       <div className="flex items-center justify-between mb-2">
-        <h1 className="text-3xl font-black text-white">Configurează jocul</h1>
+        <h1 className="text-3xl font-black text-main">Configurează jocul</h1>
         <Link
           href="/tutorial"
           className="px-3 py-1.5 rounded-lg border border-yellow-500/40 bg-yellow-500/10 text-yellow-300 text-xs font-semibold hover:bg-yellow-500/20 transition-colors"
@@ -110,7 +111,7 @@ function SetupScreen() {
           📖 Tutorial
         </Link>
       </div>
-      <p className="text-white/50 text-sm mb-8">Alege scenariul, sub-scenariul și dificultatea ta.</p>
+      <p className="text-dim text-sm mb-8">Alege scenariul, sub-scenariul și dificultatea ta.</p>
 
       {limitedEvent && (
         <div className="mb-6 p-4 rounded-2xl border border-orange-500/30 bg-orange-500/10">
@@ -118,7 +119,7 @@ function SetupScreen() {
             <span className="text-lg">{limitedEvent.emoji}</span>
             <span className="font-bold text-orange-300 text-sm">{limitedEvent.titlu} — Eveniment cu timp limitat!</span>
           </div>
-          <p className="text-xs text-white/50">{limitedEvent.descriere}</p>
+          <p className="text-xs text-dim">{limitedEvent.descriere}</p>
           <div className="flex gap-3 mt-2 flex-wrap">
             <span className="text-xs font-bold text-purple-300">+{limitedEvent.bonusXP} XP</span>
             {limitedEvent.bonusBani && limitedEvent.bonusBani > 0 && <span className="text-xs font-bold text-green-400">+{limitedEvent.bonusBani} RON start</span>}
@@ -129,7 +130,7 @@ function SetupScreen() {
 
       {/* Income selection - custom sources */}
       <div className="mb-6">
-        <h2 className="text-sm font-bold text-white/60 uppercase tracking-wider mb-3">Veniturile tale</h2>
+        <h2 className="text-sm font-bold text-muted uppercase tracking-wider mb-3">Veniturile tale</h2>
         <div className="space-y-2">
           {surseVenit.map((sursa) => (
             <div key={sursa.id} className="flex items-center gap-2">
@@ -138,7 +139,7 @@ function SetupScreen() {
                 placeholder="Nume venit (ex: Salariu)"
                 value={sursa.nume}
                 onChange={(e) => updateSursa(sursa.id, "nume", e.target.value)}
-                className="flex-1 px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-white text-sm placeholder-white/30 focus:outline-none focus:border-green-500/40"
+                className="flex-1 px-3 py-2 rounded-xl bg-card border border-subtle text-main text-sm placeholder-white/30 focus:outline-none focus:border-green-500/40"
               />
               <div className="relative w-32">
                 <input
@@ -146,9 +147,9 @@ function SetupScreen() {
                   placeholder="Suma"
                   value={sursa.suma || ""}
                   onChange={(e) => updateSursa(sursa.id, "suma", Number(e.target.value))}
-                  className="w-full pl-3 pr-8 py-2 rounded-xl bg-white/5 border border-white/10 text-white text-sm placeholder-white/30 focus:outline-none focus:border-green-500/40"
+                  className="w-full pl-3 pr-8 py-2 rounded-xl bg-card border border-subtle text-main text-sm placeholder-white/30 focus:outline-none focus:border-green-500/40"
                 />
-                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-white/40">RON</span>
+                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-subtle">RON</span>
               </div>
               {surseVenit.length > 1 && (
                 <button onClick={() => removeSursa(sursa.id)} className="p-2 text-red-400 hover:text-red-300 transition-colors">
@@ -178,7 +179,7 @@ function SetupScreen() {
 
       {/* Scenario selection */}
       <div className="mb-6">
-        <h2 className="text-sm font-bold text-white/60 uppercase tracking-wider mb-3">Scenariu</h2>
+        <h2 className="text-sm font-bold text-muted uppercase tracking-wider mb-3">Scenariu</h2>
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
           {allScenarii.map((sc) => {
             const unlocked = isUnlocked(sc.id);
@@ -192,15 +193,15 @@ function SetupScreen() {
                   selectedScenariu === sc.id
                     ? "border-purple-500/60 bg-purple-600/20"
                     : unlocked
-                    ? "border-white/10 bg-white/5 hover:border-white/20 hover:bg-white/8"
-                    : "border-white/5 bg-white/3 opacity-50 cursor-not-allowed"
+                    ? "border-subtle bg-card hover:border-strong hover:bg-card-soft8"
+                    : "border-subtler bg-card-soft opacity-50 cursor-not-allowed"
                 }`}
               >
                 <div className={`absolute inset-0 ${sc.bgClass} opacity-30`} />
                 <div className="relative">
                   <span className="text-xl block mb-1">{sc.emoji}</span>
-                  <span className="text-xs font-semibold text-white block leading-tight">{sc.nume}</span>
-                  {!unlocked && <span className="text-xs text-white/40">🔒 {xpNeeded} XP</span>}
+                  <span className="text-xs font-semibold text-main block leading-tight">{sc.nume}</span>
+                  {!unlocked && <span className="text-xs text-subtle">🔒 {xpNeeded} XP</span>}
                   {sc.seasonal && <span className="text-xs text-orange-400">Sezonier</span>}
                 </div>
               </button>
@@ -211,7 +212,7 @@ function SetupScreen() {
 
       {/* Sub-scenario */}
       <div className="mb-6">
-        <h2 className="text-sm font-bold text-white/60 uppercase tracking-wider mb-3">Sub-scenariu</h2>
+        <h2 className="text-sm font-bold text-muted uppercase tracking-wider mb-3">Sub-scenariu</h2>
         <div className="space-y-2">
           {scenario.subScenarii.map((sub) => (
             <button
@@ -220,11 +221,11 @@ function SetupScreen() {
               className={`w-full p-3 rounded-2xl border text-left transition-all ${
                 selectedSub === sub.id
                   ? "border-purple-500/60 bg-purple-600/20"
-                  : "border-white/10 bg-white/5 hover:border-white/20"
+                  : "border-subtle bg-card hover:border-strong"
               }`}
             >
-              <div className="font-semibold text-white text-sm">{sub.label}</div>
-              <div className="text-xs text-white/50 mt-0.5">{sub.description}</div>
+              <div className="font-semibold text-main text-sm">{sub.label}</div>
+              <div className="text-xs text-dim mt-0.5">{sub.description}</div>
               <div className="flex gap-3 mt-1.5 flex-wrap">
                 {sub.venitBonus !== 0 && (
                   <span className={`text-xs font-bold ${sub.venitBonus > 0 ? "text-green-400" : "text-red-400"}`}>
@@ -244,7 +245,7 @@ function SetupScreen() {
 
       {/* Difficulty */}
       <div className="mb-8">
-        <h2 className="text-sm font-bold text-white/60 uppercase tracking-wider mb-3">Dificultate</h2>
+        <h2 className="text-sm font-bold text-muted uppercase tracking-wider mb-3">Dificultate</h2>
         <div className="grid grid-cols-3 gap-2">
           {(Object.entries(DIFICULTATI) as [DifficultyKey, typeof DIFICULTATI[DifficultyKey]][]).map(([key, diff]) => (
             <button
@@ -255,7 +256,7 @@ function SetupScreen() {
                   ? key === "usor" ? "border-green-500/60 bg-green-600/20 text-green-300"
                     : key === "greu" ? "border-red-500/60 bg-red-600/20 text-red-300"
                     : "border-yellow-500/60 bg-yellow-600/20 text-yellow-300"
-                  : "border-white/10 bg-white/5 text-white/60 hover:border-white/20"
+                  : "border-subtle bg-card text-muted hover:border-strong"
               }`}
             >
               <div className="font-bold text-sm">{diff.nume}</div>
@@ -266,7 +267,7 @@ function SetupScreen() {
 
       <button
         onClick={start}
-        className="w-full py-4 rounded-2xl bg-gradient-to-r from-purple-600 to-fuchsia-600 hover:from-purple-500 hover:to-fuchsia-500 text-white font-black text-lg transition-all shadow-lg shadow-purple-900/30 flex items-center justify-center gap-2"
+        className="w-full py-4 rounded-2xl bg-gradient-to-r from-purple-600 to-fuchsia-600 hover:from-purple-500 hover:to-fuchsia-500 text-main font-black text-lg transition-all shadow-lg shadow-purple-900/30 flex items-center justify-center gap-2"
       >
         Începe jocul <ChevronRight size={20} />
       </button>
@@ -289,14 +290,14 @@ function HistoryPanel({ decizii, filter, setFilter }: {
   return (
     <div className="flex flex-col h-full">
       <div className="flex items-center gap-2 mb-3">
-        <Filter size={14} className="text-white/40" />
-        <span className="text-sm font-bold text-white/60">Filtrare:</span>
+        <Filter size={14} className="text-subtle" />
+        <span className="text-sm font-bold text-muted">Filtrare:</span>
         {(["tutto", "luna", "saptamana"] as HistoryFilter[]).map((f) => (
           <button
             key={f}
             onClick={() => setFilter(f)}
             className={`px-2 py-0.5 rounded-lg text-xs font-semibold transition-all ${
-              filter === f ? "bg-purple-600/30 text-purple-300 border border-purple-500/40" : "text-white/40 hover:text-white/60"
+              filter === f ? "bg-purple-600/30 text-purple-300 border border-purple-500/40" : "text-subtle hover:text-muted"
             }`}
           >
             {f === "tutto" ? "Toate" : f === "luna" ? "Luna curentă" : "Săptămâna curentă"}
@@ -305,7 +306,7 @@ function HistoryPanel({ decizii, filter, setFilter }: {
       </div>
       <div className="flex-1 overflow-y-auto space-y-2 pr-1 max-h-[400px] lg:max-h-[600px]">
         {filtered.length === 0 ? (
-          <div className="text-center text-white/30 text-sm py-8">Nicio decizie încă.</div>
+          <div className="text-center text-faint text-sm py-8">Nicio decizie încă.</div>
         ) : (
           [...filtered].reverse().map((d, i) => (
             <motion.div
@@ -313,13 +314,13 @@ function HistoryPanel({ decizii, filter, setFilter }: {
               initial={{ opacity: 0, x: 10 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: i * 0.02 }}
-              className="p-3 rounded-xl border border-white/8 bg-white/4"
+              className="p-3 rounded-xl border border-subtle8 bg-card-soft4"
             >
               <div className="flex items-center justify-between mb-1">
-                <span className="text-xs font-bold text-white/70">{d.titluEveniment}</span>
-                <span className="text-xs text-white/30">L{d.luna}·S{d.saptamana}</span>
+                <span className="text-xs font-bold text-strong">{d.titluEveniment}</span>
+                <span className="text-xs text-faint">L{d.luna}·S{d.saptamana}</span>
               </div>
-              <div className="text-xs text-white/60 mb-1">"{d.alegere}"</div>
+              <div className="text-xs text-muted mb-1">"{d.alegere}"</div>
               <div className="flex items-center gap-3">
                 <span className={`text-xs font-bold ${d.baniDelta >= 0 ? "text-green-400" : "text-red-400"}`}>
                   {d.baniDelta >= 0 ? "+" : ""}{Math.round(d.baniDelta)} RON
@@ -328,7 +329,7 @@ function HistoryPanel({ decizii, filter, setFilter }: {
                   {d.fericireDelta >= 0 ? "+" : ""}{Math.round(d.fericireDelta)}%
                 </span>
               </div>
-              <div className="text-xs text-white/30 italic mt-1">{d.lectie}</div>
+              <div className="text-xs text-faint italic mt-1">{d.lectie}</div>
             </motion.div>
           ))
         )}
@@ -359,26 +360,26 @@ function GameScreen() {
   return (
     <div className="max-w-6xl mx-auto px-4 py-6">
       <div className="flex items-center justify-between mb-6">
-        <button onClick={() => { resetGame(); window.location.href = "/game"; }} className="inline-flex items-center gap-1.5 text-white/50 hover:text-white text-sm transition-colors">
+        <button onClick={() => { resetGame(); window.location.href = "/game"; }} className="inline-flex items-center gap-1.5 text-dim hover:text-main text-sm transition-colors">
           <ArrowLeft size={14} /> Schimbă scenariul</button>
-        <div className="text-xs text-white/40">{diff.nume} · {scenario.emoji} {scenario.nume}</div>
+        <div className="text-xs text-subtle">{diff.nume} · {scenario.emoji} {scenario.nume}</div>
       </div>
 
       <div className="grid lg:grid-cols-3 gap-5">
         {/* Main game column */}
         <div className="lg:col-span-2 space-y-4">
           {/* Progress */}
-          <div className="p-4 rounded-2xl border border-white/10 bg-white/5">
+          <div className="p-4 rounded-2xl border border-subtle bg-card">
             <div className="flex items-center justify-between mb-1">
               <div className="flex items-center gap-2">
                 <Calendar size={14} className="text-purple-400" />
-                <span className="font-bold text-white text-sm">
+                <span className="font-bold text-main text-sm">
                   Luna {state.luna} · Săptămâna {state.saptamanaInLuna} din 4
                 </span>
               </div>
-              <span className="text-xs text-white/40">{state.saptamana}/48</span>
+              <span className="text-xs text-subtle">{state.saptamana}/48</span>
             </div>
-            <div className="w-full h-2 bg-white/10 rounded-full overflow-hidden mt-2">
+            <div className="w-full h-2 bg-card-hover rounded-full overflow-hidden mt-2">
               <div
                 className="h-full bg-gradient-to-r from-purple-500 to-orange-500 rounded-full transition-all duration-500"
                 style={{ width: `${weekPct}%` }}
@@ -388,30 +389,30 @@ function GameScreen() {
 
           {/* Stats */}
           <div className="grid grid-cols-2 gap-3">
-            <div className="p-4 rounded-2xl border border-white/10 bg-white/5">
+            <div className="p-4 rounded-2xl border border-subtle bg-card">
               <div className="flex items-center gap-2 mb-2">
                 <Coins size={16} className="text-yellow-400" />
-                <span className="text-sm font-bold text-white/70">Bani disponibili</span>
+                <span className="text-sm font-bold text-strong">Bani disponibili</span>
               </div>
-              <div className={`text-2xl font-black mb-2 ${state.bani < 0 ? "text-red-400" : state.bani < 500 ? "text-orange-400" : "text-white"}`}>
+              <div className={`text-2xl font-black mb-2 ${state.bani < 0 ? "text-red-400" : state.bani < 500 ? "text-orange-400" : "text-main"}`}>
                 {Math.round(state.bani).toLocaleString("ro-RO")} RON
               </div>
-              <div className="w-full h-2 bg-white/10 rounded-full overflow-hidden">
+              <div className="w-full h-2 bg-card-hover rounded-full overflow-hidden">
                 <div
                   className={`h-full rounded-full transition-all duration-500 ${state.bani < 500 ? "bg-red-500" : "bg-gradient-to-r from-yellow-500 to-green-500"}`}
                   style={{ width: `${moneyPct}%` }}
                 />
               </div>
             </div>
-            <div className="p-4 rounded-2xl border border-white/10 bg-white/5">
+            <div className="p-4 rounded-2xl border border-subtle bg-card">
               <div className="flex items-center gap-2 mb-2">
                 <Smile size={16} className="text-green-400" />
-                <span className="text-sm font-bold text-white/70">Fericire / Energie</span>
+                <span className="text-sm font-bold text-strong">Fericire / Energie</span>
               </div>
-              <div className={`text-2xl font-black mb-2 ${state.fericire < 20 ? "text-red-400" : state.fericire < 50 ? "text-orange-400" : "text-white"}`}>
+              <div className={`text-2xl font-black mb-2 ${state.fericire < 20 ? "text-red-400" : state.fericire < 50 ? "text-orange-400" : "text-main"}`}>
                 {Math.round(state.fericire)}%
               </div>
-              <div className="w-full h-2 bg-white/10 rounded-full overflow-hidden">
+              <div className="w-full h-2 bg-card-hover rounded-full overflow-hidden">
                 <div
                   className={`h-full rounded-full transition-all duration-500 ${state.fericire < 30 ? "bg-red-500" : "bg-gradient-to-r from-green-500 to-teal-500"}`}
                   style={{ width: `${happyPct}%` }}
@@ -421,17 +422,17 @@ function GameScreen() {
           </div>
 
           {/* Fixed costs */}
-          <div className="p-4 rounded-2xl border border-white/10 bg-white/5">
-            <h3 className="text-sm font-bold text-white/60 mb-3">Cheltuieli fixe lunare</h3>
+          <div className="p-4 rounded-2xl border border-subtle bg-card">
+            <h3 className="text-sm font-bold text-muted mb-3">Cheltuieli fixe lunare</h3>
             <div className="space-y-1.5">
               {allCheltuieli.map((c, i) => (
                 <div key={i} className="flex items-center justify-between">
-                  <span className="text-xs text-white/60">{c.nume}</span>
+                  <span className="text-xs text-muted">{c.nume}</span>
                   <span className="text-xs font-bold text-red-400">-{c.suma} RON</span>
                 </div>
               ))}
-              <div className="border-t border-white/10 pt-1.5 flex items-center justify-between">
-                <span className="text-xs font-bold text-white/60">Total / lună</span>
+              <div className="border-t border-subtle pt-1.5 flex items-center justify-between">
+                <span className="text-xs font-bold text-muted">Total / lună</span>
                 <span className="text-xs font-black text-red-400">
                   -{allCheltuieli.reduce((s, c) => s + c.suma, 0)} RON
                 </span>
@@ -443,14 +444,14 @@ function GameScreen() {
           <button
             onClick={nextWeek}
             disabled={!!state.evenimentCurent}
-            className="w-full py-4 rounded-2xl bg-gradient-to-r from-purple-600 to-fuchsia-600 hover:from-purple-500 hover:to-fuchsia-500 disabled:opacity-50 disabled:cursor-not-allowed text-white font-black text-base transition-all shadow-lg shadow-purple-900/30 flex items-center justify-center gap-2"
+            className="w-full py-4 rounded-2xl bg-gradient-to-r from-purple-600 to-fuchsia-600 hover:from-purple-500 hover:to-fuchsia-500 disabled:opacity-50 disabled:cursor-not-allowed text-main font-black text-base transition-all shadow-lg shadow-purple-900/30 flex items-center justify-center gap-2"
           >
             Avansează la săptămâna următoare <ChevronRight size={18} />
           </button>
 
           {/* History toggle (mobile) */}
           <button
-            className="lg:hidden w-full py-2.5 rounded-xl border border-white/15 bg-white/5 text-white/60 text-sm font-semibold"
+            className="lg:hidden w-full py-2.5 rounded-xl border border-medium bg-card text-muted text-sm font-semibold"
             onClick={() => setShowHistory((v) => !v)}
           >
             {showHistory ? "Ascunde istoricul" : `Afișează istoricul (${state.istoricDecizii.length} decizii)`}
@@ -465,7 +466,7 @@ function GameScreen() {
                 exit={{ height: 0, opacity: 0 }}
                 className="lg:hidden overflow-hidden"
               >
-                <div className="p-4 rounded-2xl border border-white/10 bg-white/5">
+                <div className="p-4 rounded-2xl border border-subtle bg-card">
                   <HistoryPanel decizii={state.istoricDecizii} filter={historyFilter} setFilter={setHistoryFilter} />
                 </div>
               </motion.div>
@@ -474,8 +475,8 @@ function GameScreen() {
         </div>
 
         {/* History sidebar (desktop) */}
-        <div className="hidden lg:block p-4 rounded-2xl border border-white/10 bg-white/5 self-start sticky top-20">
-          <h3 className="text-sm font-bold text-white mb-3">Istoricul deciziilor</h3>
+        <div className="hidden lg:block p-4 rounded-2xl border border-subtle bg-card self-start sticky top-20">
+          <h3 className="text-sm font-bold text-main mb-3">Istoricul deciziilor</h3>
           <HistoryPanel decizii={state.istoricDecizii} filter={historyFilter} setFilter={setHistoryFilter} />
         </div>
       </div>
@@ -511,6 +512,7 @@ export default function GamePage() {
       <OrbBackground bgClass={state ? scenario?.bgClass : undefined} />
       {state ? <GameScreen /> : <SetupScreen key={currentScenario} />}
       <EventModal />
+      <WeeklyQuiz />
       <GameOver />
     </Layout>
   );

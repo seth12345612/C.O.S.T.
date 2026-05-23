@@ -75,13 +75,13 @@ export function LimitedEventModal({ event, onClose }: LimitedEventModalProps) {
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          className="absolute inset-0 bg-black/70 backdrop-blur-sm"
+          className="absolute inset-0 bg-overlay-strong backdrop-blur-sm"
           onClick={onClose}
         />
         <motion.div
           initial={{ opacity: 0, scale: 0.92, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
-          className="relative w-full max-w-md bg-[#0d0820] rounded-3xl shadow-2xl overflow-hidden"
+          className="relative w-full max-w-md bg-card-strong rounded-3xl shadow-2xl overflow-hidden"
           style={{ borderColor: `${event.culoare}60`, borderWidth: 1 }}
         >
           <div
@@ -94,10 +94,10 @@ export function LimitedEventModal({ event, onClose }: LimitedEventModalProps) {
               <CheckCircle size={18} className="text-green-400" />
               <span className="font-bold text-green-400 text-sm">Deja participat</span>
             </div>
-            <h3 className="font-black text-white text-lg mb-1">{event.titlu}</h3>
+            <h3 className="font-black text-main text-lg mb-1">{event.titlu}</h3>
             <div className="p-3 rounded-xl border border-green-500/20 bg-green-500/5 text-left mt-4">
-              <div className="text-xs text-white/40 mb-1 font-medium">Ai ales:</div>
-              <div className="text-sm text-white mb-2 font-semibold">{chosenOpt?.text}</div>
+              <div className="text-xs text-subtle mb-1 font-medium">Ai ales:</div>
+              <div className="text-sm text-main mb-2 font-semibold">{chosenOpt?.text}</div>
               <div className="flex items-center gap-3 flex-wrap">
                 <span className={`flex items-center gap-1 text-xs font-bold ${completed.bani >= 0 ? "text-green-400" : "text-red-400"}`}>
                   <Coins size={10} />
@@ -109,13 +109,13 @@ export function LimitedEventModal({ event, onClose }: LimitedEventModalProps) {
                 </span>
               </div>
               <div className="flex items-start gap-1.5 mt-2">
-                <BookOpen size={10} className="text-white/30 shrink-0 mt-0.5" />
-                <span className="text-xs text-white/40 italic">{completed.lectie}</span>
+                <BookOpen size={10} className="text-faint shrink-0 mt-0.5" />
+                <span className="text-xs text-subtle italic">{completed.lectie}</span>
               </div>
             </div>
             <button
               onClick={onClose}
-              className="mt-4 w-full py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white/70 text-sm font-medium transition-all"
+              className="mt-4 w-full py-2.5 rounded-xl bg-card-hover hover:bg-card-strong text-strong text-sm font-medium transition-all"
             >
               Închide
             </button>
@@ -135,7 +135,7 @@ export function LimitedEventModal({ event, onClose }: LimitedEventModalProps) {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="absolute inset-0 bg-black/70 backdrop-blur-sm"
+        className="absolute inset-0 bg-overlay-strong backdrop-blur-sm"
         onClick={onClose}
       />
       <motion.div
@@ -143,7 +143,7 @@ export function LimitedEventModal({ event, onClose }: LimitedEventModalProps) {
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.95, y: 10 }}
         transition={{ type: "spring", damping: 24, stiffness: 300 }}
-        className="relative w-full max-w-lg bg-[#0d0820] rounded-3xl shadow-2xl overflow-hidden max-h-[90vh] overflow-y-auto"
+        className="relative w-full max-w-lg bg-card-strong rounded-3xl shadow-2xl overflow-hidden max-h-[90vh] overflow-y-auto"
         style={{ borderColor: `${event.culoare}60`, borderWidth: 1 }}
       >
         <div
@@ -151,10 +151,10 @@ export function LimitedEventModal({ event, onClose }: LimitedEventModalProps) {
           style={{ background: `linear-gradient(to right, ${event.culoare}, ${event.culoare}88)` }}
         />
 
-        <div className="flex items-center gap-4 px-5 pt-5 pb-3 border-b border-white/10">
+        <div className="flex items-center gap-4 px-5 pt-5 pb-3 border-b border-subtle">
           <span className="text-2xl">{event.emoji}</span>
           <div>
-            <div className="font-bold text-white text-sm">{event.titlu}</div>
+            <div className="font-bold text-main text-sm">{event.titlu}</div>
             <div className="flex items-center gap-2 mt-0.5">
               <span className="flex items-center gap-1 text-xs text-purple-300">
                 <Star size={10} />
@@ -165,14 +165,14 @@ export function LimitedEventModal({ event, onClose }: LimitedEventModalProps) {
           </div>
           <button
             onClick={onClose}
-            className="ml-auto p-1.5 rounded-lg text-white/30 hover:text-white hover:bg-white/10 transition-all"
+            className="ml-auto p-1.5 rounded-lg text-faint hover:text-main hover:bg-card-hover transition-all"
           >
             <X size={16} />
           </button>
         </div>
 
         <div className="p-5">
-          <p className="text-white/70 text-sm mb-5">{event.descriere}</p>
+          <p className="text-strong text-sm mb-5">{event.descriere}</p>
 
           <div className="space-y-2.5">
             {event.optiuni?.map((opt, i) => {
@@ -186,11 +186,11 @@ export function LimitedEventModal({ event, onClose }: LimitedEventModalProps) {
                   className={`p-4 rounded-2xl border transition-all cursor-pointer ${
                     isSelected
                       ? "border-green-500/40 bg-green-500/10"
-                      : "border-white/10 bg-white/5 hover:bg-white/10 hover:border-white/20"
+                      : "border-subtle bg-card hover:bg-card-hover hover:border-strong"
                   }`}
                 >
                   <div className="flex items-center justify-between mb-2">
-                    <div className="font-semibold text-white text-sm flex-1 pr-3">
+                    <div className="font-semibold text-main text-sm flex-1 pr-3">
                       {opt.text}
                     </div>
                     {isSelected && (
@@ -211,12 +211,12 @@ export function LimitedEventModal({ event, onClose }: LimitedEventModalProps) {
                     )}
                   </div>
                   <div className="flex items-start gap-1.5">
-                    <BookOpen size={11} className="text-white/30 shrink-0 mt-0.5" />
-                    <span className="text-xs text-white/40 italic">{opt.lectie}</span>
+                    <BookOpen size={11} className="text-faint shrink-0 mt-0.5" />
+                    <span className="text-xs text-subtle italic">{opt.lectie}</span>
                   </div>
                   {opt.explicatie && (
-                    <div className="mt-2 p-2.5 rounded-xl bg-white/3 border border-white/5">
-                      <div className="text-xs text-white/30 leading-relaxed">{opt.explicatie}</div>
+                    <div className="mt-2 p-2.5 rounded-xl bg-card-soft border border-subtler">
+                      <div className="text-xs text-faint leading-relaxed">{opt.explicatie}</div>
                     </div>
                   )}
                 </div>
@@ -226,7 +226,7 @@ export function LimitedEventModal({ event, onClose }: LimitedEventModalProps) {
 
           <button
             onClick={onClose}
-            className="mt-4 w-full py-3 rounded-2xl bg-white/10 hover:bg-white/20 text-white/70 text-sm font-medium transition-all"
+            className="mt-4 w-full py-3 rounded-2xl bg-card-hover hover:bg-card-strong text-strong text-sm font-medium transition-all"
           >
             Anulează
           </button>

@@ -4,7 +4,6 @@ import { useXP } from "@/context/XPContext";
 import { useTheme } from "@/context/ThemeContext";
 import { useAuth } from "@/context/AuthContext";
 import { ThemePicker } from "@/components/ThemePicker";
-import { DarkModeToggle } from "@/components/DarkModeToggle";
 import { SoundEffects } from "@/lib/sounds";
 import { Home, PhoneCall, Wallet, Trophy, Menu, X, Crown, Shield, ShieldCheck, Info, Award, Volume2, VolumeX, LogIn, UserCircle, LogOut } from "lucide-react";
 
@@ -42,7 +41,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="min-h-screen flex flex-col relative">
-      <header className="sticky top-0 z-50 border-b border-white/10 backdrop-blur-xl bg-black/40">
+      <header className="sticky top-0 z-50 border-b border-subtle backdrop-blur-xl bg-overlay-soft">
         <div className="max-w-6xl mx-auto px-4 h-12 flex items-center justify-between gap-2">
           <Link href="/" className="flex items-center gap-2 shrink-0">
             <span
@@ -51,7 +50,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
             >
               C.O.S.T.
             </span>
-            <span className="hidden lg:block text-[11px] text-white/40 font-medium">Educație Financiară</span>
+            <span className="hidden lg:block text-[11px] text-subtle font-medium">Educație Financiară</span>
           </Link>
 
           <nav className="hidden md:flex items-center gap-0.5">
@@ -120,29 +119,28 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
             <button
               onClick={() => SoundEffects.setEnabled(!SoundEffects.enabled)}
-              className="p-1.5 rounded-lg text-white/40 hover:text-white hover:bg-white/5 transition-colors"
+              className="p-1.5 rounded-lg text-subtle hover:text-main hover:bg-card transition-colors"
               title={SoundEffects.enabled ? "Sunete activate" : "Sunete dezactivate"}
             >
               {SoundEffects.enabled ? <Volume2 size={15} /> : <VolumeX size={15} />}
             </button>
-            <DarkModeToggle />
             {user ? (
               <div className="relative" ref={userMenuRef}>
                 <button
                   onClick={() => setUserMenuOpen((v) => !v)}
                   className="flex items-center gap-1.5 cursor-pointer"
                 >
-                  <div className="w-6 h-6 rounded-full bg-white/10 flex items-center justify-center">
-                    <UserCircle size={14} className="text-white/60" />
+                  <div className="w-6 h-6 rounded-full bg-card-hover flex items-center justify-center">
+                    <UserCircle size={14} className="text-muted" />
                   </div>
-                  <span className="hidden sm:block text-xs text-white/60 max-w-[80px] truncate">{user.name}</span>
+                  <span className="hidden sm:block text-xs text-muted max-w-[80px] truncate">{user.name}</span>
                 </button>
 
                 {userMenuOpen && (
-                  <div className="absolute right-0 top-full mt-1 w-44 rounded-xl border border-white/10 bg-[#0d0820] shadow-2xl py-1 z-50">
-                    <div className="px-3 py-2 border-b border-white/10">
-                      <p className="text-xs font-medium text-white truncate">{user.name}</p>
-                      <p className="text-[10px] text-white/40 truncate">{user.email}</p>
+                  <div className="absolute right-0 top-full mt-1 w-44 rounded-xl border border-subtle bg-card-strong shadow-2xl py-1 z-50">
+                    <div className="px-3 py-2 border-b border-subtle">
+                      <p className="text-xs font-medium text-main truncate">{user.name}</p>
+                      <p className="text-[10px] text-subtle truncate">{user.email}</p>
                     </div>
                     <button
                       onClick={() => {
@@ -161,7 +159,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
             ) : (
               <Link
                 href="/login"
-                className="p-1.5 rounded-lg text-white/40 hover:text-white hover:bg-white/5 transition-colors"
+                className="p-1.5 rounded-lg text-subtle hover:text-main hover:bg-card transition-colors"
                 title="Conectare"
               >
                 <LogIn size={15} />
@@ -170,7 +168,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
             <ThemePicker />
 
             <button
-              className="md:hidden p-1.5 rounded-lg text-white/60 hover:text-white hover:bg-white/10 transition-colors"
+              className="md:hidden p-1.5 rounded-lg text-muted hover:text-main hover:bg-card-hover transition-colors"
               onClick={() => setMenuOpen((v) => !v)}
             >
               {menuOpen ? <X size={18} /> : <Menu size={18} />}
@@ -179,7 +177,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         </div>
 
         {menuOpen && (
-          <div className="md:hidden border-t border-white/10 bg-black/60 backdrop-blur-xl">
+          <div className="md:hidden border-t border-subtle bg-overlay backdrop-blur-xl">
             <nav className="max-w-6xl mx-auto px-4 py-3 flex flex-col gap-1">
               {isAdmin && (
                 <Link
@@ -215,8 +213,8 @@ export function Layout({ children }: { children: React.ReactNode }) {
                   </Link>
                 );
               })}
-              <div className="flex items-center gap-2 px-3 py-2 mt-1 border-t border-white/10">
-                <div className="flex items-center gap-2 text-xs text-white/50">
+              <div className="flex items-center gap-2 px-3 py-2 mt-1 border-t border-subtle">
+                <div className="flex items-center gap-2 text-xs text-dim">
                   <span className="font-bold" style={{ color: activeColor }}>Lv.{xpState.level}</span>
                   <span>{xpState.xp} XP</span>
                 </div>
@@ -230,7 +228,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         {children}
       </main>
 
-      <footer className="border-t border-white/10 py-4 text-center text-xs text-white/30 relative z-10">
+      <footer className="border-t border-subtle py-4 text-center text-xs text-faint relative z-10">
         <div className="max-w-6xl mx-auto px-4">
           C.O.S.T. — College Operating &amp; Survival Tactics &copy; 2025 · Educație financiară pentru studenți
         </div>

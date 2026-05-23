@@ -91,10 +91,10 @@ export default function Premium() {
             <Crown size={14} />
             Varianta Premium
           </motion.div>
-          <motion.h1 variants={fadeUp} custom={1} className="text-4xl sm:text-5xl font-black text-white mb-4">
+          <motion.h1 variants={fadeUp} custom={1} className="text-4xl sm:text-5xl font-black text-main mb-4">
             De<span className="bg-gradient-to-r from-yellow-400 via-orange-400 to-yellow-400 bg-clip-text text-transparent">blochează</span> Potențialul
           </motion.h1>
-          <motion.p variants={fadeUp} custom={2} className="text-lg text-white/60 max-w-2xl mx-auto mb-8">
+          <motion.p variants={fadeUp} custom={2} className="text-lg text-muted max-w-2xl mx-auto mb-8">
             Transformă-ți experiența de educație financiară cu funcții exclusive și suport prioritar.
           </motion.p>
 
@@ -124,7 +124,7 @@ export default function Premium() {
               >
                 Activează Demo Premium
               </button>
-              <div className="text-xs text-white/30">Fără card — doar pentru testare</div>
+              <div className="text-xs text-faint">Fără card — doar pentru testare</div>
             </motion.div>
           )}
         </motion.section>
@@ -141,15 +141,15 @@ export default function Premium() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.6 + i * 0.1 }}
-              className="p-5 rounded-2xl border border-white/10 bg-white/5 hover:bg-white/8 transition-all group"
+              className="p-5 rounded-2xl border border-subtle bg-card hover:bg-card-soft8 transition-all group"
             >
               <div className="flex items-start gap-3">
                 <div className={`w-10 h-10 rounded-xl flex items-center justify-center bg-gradient-to-br ${benefit.color} shrink-0`}>
-                  <benefit.icon size={20} className="text-white" />
+                  <benefit.icon size={20} className="text-main" />
                 </div>
                 <div>
-                  <h3 className="font-bold text-white text-sm mb-1">{benefit.title}</h3>
-                  <p className="text-xs text-white/50">{benefit.desc}</p>
+                  <h3 className="font-bold text-main text-sm mb-1">{benefit.title}</h3>
+                  <p className="text-xs text-dim">{benefit.desc}</p>
                 </div>
               </div>
             </motion.div>
@@ -163,8 +163,8 @@ export default function Premium() {
           className="p-6 rounded-2xl border border-purple-500/20 bg-purple-500/5"
         >
           <div className="text-center mb-6">
-            <h2 className="text-xl font-bold text-white mb-2">Ce include Premium?</h2>
-            <p className="text-sm text-white/50">Toate beneficiile pentru a-ți maximiza experiența</p>
+            <h2 className="text-xl font-bold text-main mb-2">Ce include Premium?</h2>
+            <p className="text-sm text-dim">Toate beneficiile pentru a-ți maximiza experiența</p>
           </div>
           <div className="grid sm:grid-cols-2 gap-3 mb-6">
             {[
@@ -175,7 +175,7 @@ export default function Premium() {
               "Badge special de utilizator Premium",
               "Suport prioritar prin email",
             ].map((item) => (
-              <div key={item} className="flex items-center gap-2 text-sm text-white/70">
+              <div key={item} className="flex items-center gap-2 text-sm text-strong">
                 <Check size={14} className="text-green-400 shrink-0" />
                 {item}
               </div>
@@ -187,13 +187,13 @@ export default function Premium() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 1.1 }}
-          className="p-6 rounded-2xl border border-white/10 bg-white/5 text-center"
+          className="p-6 rounded-2xl border border-subtle bg-card text-center"
         >
-          <h2 className="text-xl font-bold text-white mb-2">Cumpără Premium</h2>
-          <p className="text-3xl font-black text-white mb-1">
-            9 <span className="text-lg font-normal text-white/50">RON / lună</span>
+          <h2 className="text-xl font-bold text-main mb-2">Cumpără Premium</h2>
+          <p className="text-3xl font-black text-main mb-1">
+            9 <span className="text-lg font-normal text-dim">RON / lună</span>
           </p>
-          <p className="text-sm text-white/40 mb-6">Plată unică lunară — acces complet la toate funcțiile</p>
+          <p className="text-sm text-subtle mb-6">Plată unică lunară — acces complet la toate funcțiile</p>
 
           {checkoutError && (
             <p className="text-sm text-red-400 mb-4">{checkoutError}</p>
@@ -202,7 +202,7 @@ export default function Premium() {
           <button
             onClick={handleBuyPremium}
             disabled={checkoutLoading}
-            className="inline-flex items-center gap-2 px-8 py-3 rounded-2xl bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-400 hover:to-emerald-500 text-white font-bold text-sm transition-all hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="inline-flex items-center gap-2 px-8 py-3 rounded-2xl bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-400 hover:to-emerald-500 text-main font-bold text-sm transition-all hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {checkoutLoading ? (
               <Loader2 size={18} className="animate-spin" />
@@ -212,7 +212,7 @@ export default function Premium() {
             {checkoutLoading ? "Se procesează..." : "Plătește cu Cardul"}
           </button>
 
-          <p className="text-xs text-white/30 mt-4">
+          <p className="text-xs text-faint mt-4">
             Plăți securizate prin Stripe. Nu stocăm datele cardului tău.
           </p>
         </motion.section>
