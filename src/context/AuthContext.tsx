@@ -12,9 +12,12 @@ interface AuthContextType {
   isAdmin: boolean;
   isPremium: boolean;
   premiumTrialEndsAt: number | null;
+  showNicknameModal: boolean;
   login: () => void;
   loginManual: (nume: string, prenume: string, email: string) => void;
   logout: () => void;
+  setDisplayName: (name: string) => void;
+  closeNicknameModal: () => void;
   activateDemoPremium: () => void;
   activateFullPremium: (durationMs: number) => void;
   deactivatePremium: () => void;
@@ -24,6 +27,7 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | null>(null);
 const PREMIUM_KEY = "cost_premium";
 const MANUAL_USER_KEY = "cost_manual_user";
+const DISPLAY_NAME_KEY = "cost_display_name";
 
 function loadPremium(): { isPremium: boolean; premiumTrialEndsAt: number | null } {
   try {
@@ -45,6 +49,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isPremium, setIsPremium] = useState(premiumInit().isPremium);
   const [premiumTrialEndsAt, setPremiumTrialEndsAt] = useState<number | null>(premiumInit().premiumTrialEndsAt);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [showNicknameModal, setShowNicknameModal] = useState(false);
 
   const restoreManualUser = useCallback(() => {
     try {
@@ -72,7 +77,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         });
         if (error) { console.error("setSession error:", error); return; }
         if (data.session?.user && !cancelled) {
-          await handleSession(data.session);
+          await handleSession(data.session, true);
           window.history.replaceState({}, document.title, window.location.pathname);
         }
       } else {
@@ -85,10 +90,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
     }
 
-    async function handleSession(session: import("@supabase/supabase-js").Session) {
+    async function handleSession(session: import("@supabase/supabase-js").Session, isNewLogin = false) {
+      const storedName = localStorage.getItem(DISPLAY_NAME_KEY);
+      const name = storedName || session.user.user_metadata.full_name || session.user.email || "";
       const authUser: AuthUser = {
         sub: session.user.id,
-        name: session.user.user_metadata.full_name ?? session.user.email ?? "",
+        name,
         email: session.user.email ?? "",
         picture: session.user.user_metadata.avatar_url,
       };
@@ -96,6 +103,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setIsVerified(true);
       const dbUser = await syncUserToDB({ email: authUser.email, name: authUser.name, picture: authUser.picture });
       if (dbUser) { setDbUser(dbUser); setIsAdmin(dbUser.is_admin); }
+      if (isNewLogin && !storedName) {
+        setShowNicknameModal(true);
+      }
     }
 
     initAuth().catch((e) => console.error("Auth init error:", e));
@@ -166,6 +176,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     supabase.auth.signOut().catch(e => console.error("signOut error:", e));
   }, []);
 
+  const setDisplayName = useCallback((name: string) => {
+    localStorage.setItem(DISPLAY_NAME_KEY, name);
+    setUser((prev) => prev ? { ...prev, name } : null);
+    if (user?.email) syncUserToDB({ email: user.email, name });
+    setShowNicknameModal(false);
+  }, [user?.email]);
+
+  const closeNicknameModal = useCallback(() => {
+    setShowNicknameModal(false);
+  }, []);
+
   const activateDemoPremium = useCallback(() => {
     const endsAt = Date.now() + 7 * 24 * 60 * 60 * 1000;
     setIsPremium(true);
@@ -202,9 +223,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         isAdmin,
         isPremium,
         premiumTrialEndsAt,
+        showNicknameModal,
         login,
         loginManual,
         logout,
+        setDisplayName,
+        closeNicknameModal,
         activateDemoPremium,
         activateFullPremium,
         deactivatePremium,

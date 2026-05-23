@@ -8,6 +8,7 @@ import { AuthProvider, useAuth } from "@/context/AuthContext";
 import { AchievementProvider } from "@/context/AchievementContext";
 import { AchievementNotification } from "@/components/AchievementNotification";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
+import { NicknameModal } from "@/components/NicknameModal";
 import NotFound from "@/pages/not-found";
 import Home from "@/pages/Home";
 import GamePage from "@/pages/Game";
@@ -67,6 +68,7 @@ export default function App() {
             <AchievementProvider>
               <PremiumSync />
               <AchievementNotification />
+              <NicknameModal />
               <FinanceProvider>
                 <GameProvider>
                   <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}> 

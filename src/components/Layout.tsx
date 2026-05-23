@@ -132,13 +132,9 @@ export function Layout({ children }: { children: React.ReactNode }) {
                   onClick={() => setUserMenuOpen((v) => !v)}
                   className="flex items-center gap-1.5 cursor-pointer"
                 >
-                  {user.picture ? (
-                    <img src={user.picture} alt={user.name} className="w-6 h-6 rounded-full" />
-                  ) : (
-                    <div className="w-6 h-6 rounded-full bg-white/10 flex items-center justify-center">
-                      <UserCircle size={14} className="text-white/60" />
-                    </div>
-                  )}
+                  <div className="w-6 h-6 rounded-full bg-white/10 flex items-center justify-center">
+                    <UserCircle size={14} className="text-white/60" />
+                  </div>
                   <span className="hidden sm:block text-xs text-white/60 max-w-[80px] truncate">{user.name}</span>
                 </button>
 
