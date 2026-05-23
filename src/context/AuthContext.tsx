@@ -77,8 +77,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         });
         if (error) { console.error("setSession error:", error); return; }
         if (data.session?.user && !cancelled) {
-          await handleSession(data.session, true);
+          await handleSession(data.session);
           window.history.replaceState({}, document.title, window.location.pathname);
+          window.location.href = "/login/success";
         }
       } else {
         const { data: { session } } = await supabase.auth.getSession();
@@ -90,7 +91,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
     }
 
-    async function handleSession(session: import("@supabase/supabase-js").Session, isNewLogin = false) {
+    async function handleSession(session: import("@supabase/supabase-js").Session) {
       const storedName = localStorage.getItem(DISPLAY_NAME_KEY);
       const name = storedName || session.user.user_metadata.full_name || session.user.email || "";
       const authUser: AuthUser = {
@@ -103,7 +104,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setIsVerified(true);
       const dbUser = await syncUserToDB({ email: authUser.email, name: authUser.name, picture: authUser.picture });
       if (dbUser) { setDbUser(dbUser); setIsAdmin(dbUser.is_admin); }
-      if (isNewLogin && !storedName) {
+      if (!storedName) {
         setShowNicknameModal(true);
       }
     }
@@ -149,7 +150,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [isPremium, premiumTrialEndsAt]);
 
   const login = useCallback(() => {
-    supabase.auth.signInWithOAuth({ provider: "google", options: { redirectTo: `${window.location.origin}/login/success` } });
+    supabase.auth.signInWithOAuth({ provider: "google", options: { redirectTo: window.location.origin } });
   }, []);
 
   const loginManual = useCallback((nume: string, prenume: string, email: string) => {
