@@ -13,7 +13,6 @@
     "jsx": "react-jsx",
     "strict": false,
     "types": ["node", "vite/client", "vitest/globals"],
-    "ignoreDeprecations": "6.0",
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"],

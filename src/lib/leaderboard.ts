@@ -4,6 +4,7 @@ import { getLeaderboardEntries, saveLeaderboardEntry as supabaseSave, deleteLead
 
 const LOCAL_KEY = "cost_leaderboard_local";
 
+/** Incarca scorurile salvate local (localStorage). */
 export function loadLocalScores(): LeaderboardEntry[] {
   try {
     const raw = localStorage.getItem(LOCAL_KEY);
@@ -22,6 +23,7 @@ async function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
   ]);
 }
 
+/** Incarca clasamentul din Supabase cu fallback pe datele locale daca expira. */
 export async function loadLeaderboardEntries(): Promise<LeaderboardEntry[]> {
   try {
     const entries = await withTimeout(getLeaderboardEntries(), 8000);
@@ -39,6 +41,7 @@ export async function loadLeaderboardEntries(): Promise<LeaderboardEntry[]> {
   }
 }
 
+/** Salveaza o intrare in clasament atat local cat si in Supabase. */
 export async function saveLeaderboardEntry(entry: { userId: string; username: string; score: number; months: number; scenario: string }): Promise<void> {
   const localEntry: LeaderboardEntry = {
     id: "local-" + Date.now(),
@@ -61,6 +64,7 @@ export async function saveLeaderboardEntry(entry: { userId: string; username: st
   }
 }
 
+/** Sterge o intrare din clasament dupa ID, local si din Supabase. */
 export async function deleteLeaderboardEntry(id: string): Promise<void> {
   const local = loadLocalScores();
   saveLocal(local.filter((e) => e.id !== id));
@@ -71,30 +75,7 @@ export async function deleteLeaderboardEntry(id: string): Promise<void> {
   }
 }
 
-export async function getBannedUsers(): Promise<string[]> {
-  try {
-    return await withTimeout(getBannedUsernames(), 8000);
-  } catch {
-    return [];
-  }
-}
-
-export async function banUser(username: string): Promise<void> {
-  try {
-    await withTimeout(setBanStatus(username, true), 8000);
-  } catch (e) {
-    console.warn("Supabase ban failed:", e);
-  }
-}
-
-export async function unbanUser(username: string): Promise<void> {
-  try {
-    await withTimeout(setBanStatus(username, false), 8000);
-  } catch (e) {
-    console.warn("Supabase unban failed:", e);
-  }
-}
-
+/** Goleste complet clasamentul (local si Supabase). */
 export async function clearLeaderboard(): Promise<void> {
   saveLocal([]);
   try {
@@ -104,6 +85,34 @@ export async function clearLeaderboard(): Promise<void> {
   }
 }
 
+/** Returneaza lista de utilizatori banati. */
+export async function getBannedUsers(): Promise<string[]> {
+  try {
+    return await withTimeout(getBannedUsernames(), 8000);
+  } catch {
+    return [];
+  }
+}
+
+/** Adauga un utilizator in lista de banati. */
+export async function banUser(username: string): Promise<void> {
+  try {
+    await withTimeout(setBanStatus(username, true), 8000);
+  } catch (e) {
+    console.warn("Supabase ban failed:", e);
+  }
+}
+
+/** Elimina un utilizator din lista de banati. */
+export async function unbanUser(username: string): Promise<void> {
+  try {
+    await withTimeout(setBanStatus(username, false), 8000);
+  } catch (e) {
+    console.warn("Supabase unban failed:", e);
+  }
+}
+
+/** Returneaza eticheta afisabila pentru un scenariu pe baza ID-urilor. */
 export function getScenarioLabel(scenarioId: string, subScenarioId?: string) {
   const scenario = SCENARII[scenarioId];
   if (!scenario) return scenarioId;

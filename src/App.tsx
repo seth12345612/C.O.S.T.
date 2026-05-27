@@ -9,6 +9,7 @@ import { AchievementProvider } from "@/context/AchievementContext";
 import { AchievementNotification } from "@/components/AchievementNotification";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { NicknameModal } from "@/components/NicknameModal";
+import { Toaster } from "sonner";
 import NotFound from "@/pages/not-found";
 import Home from "@/pages/Home";
 import GamePage from "@/pages/Game";
@@ -17,12 +18,17 @@ import Contact from "@/pages/Contact";
 import Finance from "@/pages/Finance";
 import Leaderboard from "@/pages/Leaderboard";
 import Premium from "@/pages/Premium";
+import Shop from "@/pages/Shop";
 import Admin from "@/pages/Admin";
 import Despre from "@/pages/Despre";
 import Achievements from "@/pages/Achievements";
 import Login from "@/pages/Login";
+import Challenges from "@/pages/Challenges";
 import LoginSuccess from "@/pages/LoginSuccess";
 import PaymentSuccess from "@/pages/PaymentSuccess";
+import Profile from "@/pages/Profile";
+import QuizGame from "@/pages/QuizGame";
+import StockGame from "@/pages/StockGame";
 import { useEffect } from "react";
 
 const queryClient = new QueryClient();
@@ -48,13 +54,18 @@ function Router() {
       <Route path="/contact" component={Contact} />
       <Route path="/finance" component={Finance} />
       <Route path="/premium" component={Premium} />
+      <Route path="/shop" component={Shop} />
       <Route path="/leaderboard" component={Leaderboard} />
       <Route path="/admin" component={Admin} />
       <Route path="/despre" component={Despre} />
       <Route path="/achievements" component={Achievements} />
+      <Route path="/challenges" component={Challenges} />
       <Route path="/login" component={Login} />
       <Route path="/login/success" component={LoginSuccess} />
       <Route path="/payment/success" component={PaymentSuccess} />
+      <Route path="/profile" component={Profile} />
+      <Route path="/mini-game/quiz" component={QuizGame} />
+      <Route path="/mini-game/bursa" component={StockGame} />
       <Route component={NotFound} />
     </Switch>
   );
@@ -71,6 +82,7 @@ export default function App() {
               <PremiumSync />
               <AchievementNotification />
               <NicknameModal />
+              <Toaster position="bottom-right" toastOptions={{ style: { background: '#1a1a2e', border: '1px solid rgba(139, 92, 246, 0.3)', color: '#f1f5f9' } }} />
               <FinanceProvider>
                 <GameProvider>
                   <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}> 

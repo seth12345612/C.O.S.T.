@@ -59,7 +59,7 @@ const XPContext = createContext<XPContextType | null>(null);
 export function XPProvider({ children }: { children: ReactNode }) {
   const [xpState, setXPState] = useState<XPState>(loadLocal);
   const [premiumOverride, setPremiumOverride] = useState(false);
-  const { user } = useAuth();
+  const { user, subscriptionTier } = useAuth();
   const dbSynced = useRef(false);
   const saveTimer = useRef<ReturnType<typeof setTimeout>>();
 
@@ -84,13 +84,15 @@ export function XPProvider({ children }: { children: ReactNode }) {
   }, [xpState, user?.email, user?.sub]);
 
   const addXP = useCallback((amount: number) => {
+    const boost = subscriptionTier === "premium_advanced" ? 1.2 : 1;
+    const finalAmount = Math.round(amount * boost);
     setXPState((prev) => {
-      const newXP = prev.xp + amount;
+      const newXP = prev.xp + finalAmount;
       const newLevel = computeLevel(newXP);
       const newUnlocked = computeUnlocked(newXP);
       return { xp: newXP, level: newLevel, scenariiDeblocate: newUnlocked };
     });
-  }, []);
+  }, [subscriptionTier]);
 
   const xpForNextLevel = XP_PER_LEVEL;
   const xpProgress = (xpState.xp % XP_PER_LEVEL) / XP_PER_LEVEL;

@@ -16,7 +16,9 @@ jobs:
           node-version: 20
           cache: npm
       - run: npm ci
-      - name: Lint
+      - name: ESLint
+        run: npm run lint || true
+      - name: Build
         run: npm run build
       - name: Run tests
         run: npm test

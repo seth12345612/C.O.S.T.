@@ -1,9 +1,22 @@
 import { useEffect, useState } from "react";
+import { motion } from "framer-motion";
 import { OrbBackground } from "@/components/OrbBackground";
 import { Layout } from "@/components/Layout";
-import { Trophy, Medal, Star, User } from "lucide-react";
+import {
+  Trophy,
+  Medal,
+  Star,
+  User,
+  UserPlus,
+  Filter,
+  Share2,
+  Users,
+  GraduationCap,
+  Globe,
+} from "lucide-react";
 import type { LeaderboardEntry } from "@/types";
 import { loadLeaderboardEntries, loadLocalScores, getBannedUsers } from "@/lib/leaderboard";
+import ShareButton from "@/components/ShareButton";
 
 const RANK_ICONS = [
   { icon: Trophy, color: "text-yellow-400" },
@@ -21,9 +34,10 @@ interface ScoreRowProps {
   rank: number;
   isUserScore: boolean;
   showRank?: boolean;
+  sortKey: "economii" | "xp" | "datorii";
 }
 
-function ScoreRow({ entry, rank, isUserScore, showRank = true }: ScoreRowProps) {
+function ScoreRow({ entry, rank, isUserScore, showRank = true, sortKey }: ScoreRowProps) {
   const isTop3 = rank <= 3;
   const RankIcon = RANK_ICONS[rank - 1]?.icon;
 
@@ -32,6 +46,9 @@ function ScoreRow({ entry, rank, isUserScore, showRank = true }: ScoreRowProps) 
     : isTop3
       ? "border-yellow-500/20 bg-yellow-500/5"
       : "border-subtle8 bg-card-soft4";
+
+  const sortValue = sortKey === "datorii" ? entry.months : sortKey === "xp" ? entry.score * 2 : entry.score;
+  const sortUnit = sortKey === "economii" ? "RON" : sortKey === "xp" ? "XP" : "luni";
 
   return (
     <div className={"flex items-center gap-3 p-3.5 rounded-2xl border transition-all " + rowClass}>
@@ -63,20 +80,39 @@ function ScoreRow({ entry, rank, isUserScore, showRank = true }: ScoreRowProps) 
         </div>
       </div>
       <div className="text-right shrink-0">
-        <div className="font-black text-main text-sm">{entry.score.toLocaleString("ro-RO")} RON</div>
-        <div className="flex items-center gap-1 justify-end">
-          <Star size={10} className="text-purple-400" />
-          <span className="text-xs text-purple-400">{entry.score * 2} XP</span>
-        </div>
+        <div className="font-black text-main text-sm">{sortValue.toLocaleString("ro-RO")} {sortUnit}</div>
+        {sortKey !== "xp" && (
+          <div className="flex items-center gap-1 justify-end">
+            <Star size={10} className="text-purple-400" />
+            <span className="text-xs text-purple-400">{entry.score * 2} XP</span>
+          </div>
+        )}
       </div>
     </div>
   );
 }
 
+type Category = "economii" | "xp" | "datorii";
+type Filter = "global" | "prieteni" | "facultate";
+
+const CATEGORIES: { key: Category; label: string; icon: typeof Star }[] = [
+  { key: "economii", label: "Economii", icon: Star },
+  { key: "xp", label: "XP", icon: Trophy },
+  { key: "datorii", label: "Management datorii", icon: Users },
+];
+
+const FILTERS: { key: Filter; label: string; icon: typeof Globe }[] = [
+  { key: "global", label: "Global", icon: Globe },
+  { key: "prieteni", label: "Prieteni", icon: Users },
+  { key: "facultate", label: "Facultatea mea", icon: GraduationCap },
+];
+
 export default function Leaderboard() {
   const [userScores, setUserScores] = useState<LeaderboardEntry[]>([]);
   const [sortedAll, setSortedAll] = useState<LeaderboardEntry[]>([]);
   const [isLoaded, setIsLoaded] = useState(false);
+  const [category, setCategory] = useState<Category>("economii");
+  const [filter, setFilter] = useState<Filter>("global");
 
   useEffect(() => {
     const local = loadLocalScores();
@@ -100,13 +136,22 @@ export default function Leaderboard() {
     return () => { cancelled = true; };
   }, []);
 
-  const hasScores = sortedAll.length > 0;
-  const sortedUser = [...userScores].sort((a, b) => b.score - a.score);
+  const sortFn = (a: LeaderboardEntry, b: LeaderboardEntry) => {
+    if (category === "datorii") return b.months - a.months;
+    return b.score - a.score;
+  };
 
-  const top10Marked = sortedAll.map(entry => ({
+  const hasScores = sortedAll.length > 0;
+  const sortedUser = [...userScores].sort(sortFn);
+
+  const sortedAllByCategory = [...sortedAll].sort(sortFn);
+
+  const top10Marked = sortedAllByCategory.map(entry => ({
     ...entry,
     isUserScore: userScores.some(u => u.id === entry.id)
   }));
+
+  const mockNote = filter !== "global" ? "funcționalitate în curând" : null;
 
   if (!isLoaded) {
     return (
@@ -126,11 +171,64 @@ export default function Leaderboard() {
     <Layout>
       <OrbBackground />
       <div className="max-w-2xl mx-auto px-4 py-8">
-        <div className="text-center mb-8">
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4 }}
+          className="text-center mb-8"
+        >
           <div className="text-4xl mb-3">🏆</div>
           <h1 className="text-3xl font-black text-main mb-2">Clasament</h1>
           <p className="text-dim text-sm">Top jucatori dupa economii finale.</p>
+        </motion.div>
+
+        <div className="flex flex-wrap gap-2 justify-center mb-4">
+          {CATEGORIES.map((cat) => {
+            const active = category === cat.key;
+            const Icon = cat.icon;
+            return (
+              <button
+                key={cat.key}
+                onClick={() => setCategory(cat.key)}
+                className={
+                  "inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-sm font-medium transition-all border " +
+                  (active
+                    ? "bg-purple-500/15 border-purple-500/40 text-purple-300"
+                    : "bg-card-soft4 border-subtle text-muted hover:text-main hover:border-strong")
+                }
+              >
+                <Icon size={15} />
+                {cat.label}
+              </button>
+            );
+          })}
         </div>
+
+        <div className="flex flex-wrap gap-2 justify-center mb-6">
+          {FILTERS.map((f) => {
+            const active = filter === f.key;
+            const Icon = f.icon;
+            return (
+              <button
+                key={f.key}
+                onClick={() => setFilter(f.key)}
+                className={
+                  "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all border " +
+                  (active
+                    ? "bg-card-active border-medium text-main"
+                    : "bg-card-soft4 border-subtle text-muted hover:text-main hover:border-strong")
+                }
+              >
+                <Icon size={13} />
+                {f.label}
+              </button>
+            );
+          })}
+        </div>
+
+        {mockNote && (
+          <p className="text-center text-xs text-faint mb-4 italic">~ {mockNote} ~</p>
+        )}
 
         {!hasScores ? (
           <div className="text-center py-12">
@@ -148,7 +246,7 @@ export default function Leaderboard() {
                 </h2>
                 <div className="space-y-2">
                   {sortedUser.slice(0, 10).map((s, i) => (
-                    <ScoreRow key={s.id} entry={s} rank={i + 1} isUserScore={true} showRank={true} />
+                    <ScoreRow key={s.id} entry={s} rank={i + 1} isUserScore={true} showRank={true} sortKey={category} />
                   ))}
                 </div>
               </div>
@@ -162,7 +260,7 @@ export default function Leaderboard() {
               </h2>
               <div className="space-y-2">
                 {top10Marked.map((s, i) => (
-                  <ScoreRow key={s.id} entry={s} rank={i + 1} isUserScore={s.isUserScore} showRank={true} />
+                  <ScoreRow key={s.id} entry={s} rank={i + 1} isUserScore={s.isUserScore} showRank={true} sortKey={category} />
                 ))}
               </div>
             </div>
@@ -174,6 +272,17 @@ export default function Leaderboard() {
             Clasamentul se sincronizeaza online.
             {userScores.length > 0 && " Scorurile tale sunt evidentiate cu mov."}
           </p>
+        </div>
+
+        <div className="mt-4 flex justify-center">
+          <ShareButton
+            title="Clasament C.O.S.T."
+            text={`Vezi clasamentul C.O.S.T.!\n${
+              top10Marked.length > 0
+                ? `Locul 1: ${top10Marked[0].username} – ${top10Marked[0].score.toLocaleString("ro-RO")} RON`
+                : "Fii primul pe podium!"
+            }`}
+          />
         </div>
       </div>
     </Layout>

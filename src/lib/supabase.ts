@@ -4,11 +4,9 @@ import type { DBUser, DBLeaderboardEntry } from "@/types";
 const sbUrl = import.meta.env.VITE_SUPABASE_URL || "https://twdvhkwrlwhadbmortqk.supabase.co";
 const sbKey = import.meta.env.VITE_SUPABASE_ANON_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR3ZHZoa3dybHdoYWRibW9ydHFrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkyMDM4OTAsImV4cCI6MjA5NDc3OTg5MH0.mvQkXjYR3YDChjbuGmmm006QOTjw6rQz6UdAKZYG-lQ";
 
-// Supabase client for auth only
 const GLOBAL_KEY = "__cost_supabase";
 export const supabase = (globalThis as any)[GLOBAL_KEY] || ((globalThis as any)[GLOBAL_KEY] = createClient(sbUrl, sbKey));
 
-// Direct REST API for DB operations (faster, no client overhead)
 const API = `${sbUrl}/rest/v1`;
 const HEADERS = { apikey: sbKey, Authorization: `Bearer ${sbKey}`, "Content-Type": "application/json" };
 
@@ -19,6 +17,7 @@ async function api(path: string, init?: RequestInit) {
   return text ? JSON.parse(text) : null;
 }
 
+/** Sincronizeaza datele utilizatorului autentificat in baza de date Supabase. */
 export async function syncUserToDB(authUser: { email: string; name: string; picture?: string }): Promise<DBUser | null> {
   const { data, error } = await supabase
     .from("users")
@@ -29,20 +28,24 @@ export async function syncUserToDB(authUser: { email: string; name: string; pict
   return data;
 }
 
+/** Returneaza utilizatorul dupa adresa de email. */
 export async function getUserByEmail(email: string): Promise<DBUser | null> {
   try { return (await api(`/users?email=eq.${encodeURIComponent(email)}&select=*`))[0] ?? null; }
   catch { return null; }
 }
 
+/** Returneaza toti utilizatorii inregistrati, ordonati alfabetic. */
 export async function getAllUsers(): Promise<DBUser[]> {
   try { return await api("/users?select=*&order=name.asc"); }
   catch (e) { console.error("getAllUsers error:", e); return []; }
 }
 
+/** Returneaza toate intrarile din clasament, ordonate descrescator dupa scor. */
 export async function getLeaderboardEntries(): Promise<DBLeaderboardEntry[]> {
   return api("/leaderboard?select=*&order=score.desc");
 }
 
+/** Salveaza o intrare noua in clasament. */
 export async function saveLeaderboardEntry(entry: { userId: string; username: string; score: number; months: number; scenario: string }): Promise<void> {
   await api("/leaderboard", {
     method: "POST",
@@ -50,14 +53,17 @@ export async function saveLeaderboardEntry(entry: { userId: string; username: st
   });
 }
 
+/** Sterge o intrare din clasament dupa ID. */
 export async function deleteLeaderboardEntry(id: string): Promise<void> {
   await api(`/leaderboard?id=eq.${id}`, { method: "DELETE" });
 }
 
+/** Sterge toate intrarile din clasament. */
 export async function clearLeaderboard(): Promise<void> {
   await api("/leaderboard?id=gte.00000000-0000-0000-0000-000000000000", { method: "DELETE" });
 }
 
+/** Returneaza lista de username-uri ale utilizatorilor banati. */
 export async function getBannedUsernames(): Promise<string[]> {
   try {
     const data: DBUser[] = await api("/users?select=name&is_banned=eq.true");
@@ -65,6 +71,7 @@ export async function getBannedUsernames(): Promise<string[]> {
   } catch (e) { console.error("getBannedUsernames error:", e); return []; }
 }
 
+/** Seteaza sau elimina statusul de ban pentru un utilizator. */
 export async function setBanStatus(username: string, banned: boolean): Promise<void> {
   try {
     await api(`/users?name=eq.${encodeURIComponent(username)}`, {
@@ -74,6 +81,7 @@ export async function setBanStatus(username: string, banned: boolean): Promise<v
   } catch (e) { console.error("setBanStatus error:", e); }
 }
 
+/** Calculeaza statistici per utilizator pe baza intrarilor din clasament (total intrari, cel mai bun scor, scor total). */
 export async function getLeaderboardStats(): Promise<{ username: string; totalEntries: number; bestScore: number; totalScore: number; isBanned: boolean }[]> {
   const [entries, banned] = await Promise.all([getLeaderboardEntries(), getBannedUsernames()]);
   const map = new Map<string, { totalEntries: number; bestScore: number; totalScore: number; isBanned: boolean }>();

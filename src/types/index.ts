@@ -31,6 +31,7 @@ export interface Optiune {
   text: string;
   bani: number;
   fericirePct: number;
+  reputatiePct?: number;
   lectie: string;
   bonusXP?: number;
 }
@@ -82,6 +83,7 @@ export interface DecizieIstorica {
   lectie: string;
   baniDelta: number;
   fericireDelta: number;
+  reputatieDelta?: number;
   timestamp: number;
 }
 
@@ -91,6 +93,7 @@ export interface GameState {
   dificultateKey: DifficultyKey;
   bani: number;
   fericire: number;
+  reputatie: number;
   venitLunar: number;
   saptamana: number;
   luna: number;
@@ -107,6 +110,37 @@ export interface GameState {
   isRecoveryMode: boolean;
   recoveryWeeksRemaining: number;
   originalScenarioId?: string;
+}
+
+export interface Investment {
+  id: string;
+  tip: "actiuni" | "fond_mutual" | "depozit";
+  nume: string;
+  sumaInvestita: number;
+  valoareCurenta: number;
+  randamentAnual: number;
+  dataCumpararii: number;
+  risc: "scazut" | "mediu" | "ridicat";
+}
+
+export interface ObiectivTermenLung {
+  id: string;
+  nume: string;
+  tip: "masina" | "casa" | "calatorie" | "educatie" | "personalizat";
+  sumaTinta: number;
+  sumaAcumulata: number;
+  termenLuni: number;
+  prioritate: "scazuta" | "medie" | "ridicata";
+}
+
+export interface MiniGameResult {
+  id: string;
+  tip: "quiz" | "bursa";
+  scor: number;
+  maxim: number;
+  xpCastigat: number;
+  baniCastigati: number;
+  timestamp: number;
 }
 
 // === FINANCE ===
@@ -169,6 +203,46 @@ export interface ThemePreset {
 export interface ThemeState {
   presetId: string;
   customColor: string | null;
+}
+
+// === CHALLENGES ===
+export interface ChallengeStats {
+  xpCastigat: number
+  baniEconomisiti: number
+  evenimenteCompletate: number
+  aiAnswersDate: number
+  fericireMedie: number
+  reputatieMedie: number
+  scenariiFinalizate: string[]
+  investitiiActive: number
+  saptamaniJucate: number
+}
+
+export interface Challenge {
+  id: string
+  titlu: string
+  descriere: string
+  tip: "saptamanala" | "lunara"
+  obiectiv: string
+  conditie: (stats: ChallengeStats) => boolean
+  recompensaXP: number
+  recompensaBani: number
+  emoji: string
+  dificultate: "usor" | "mediu" | "greu"
+  isPremium?: boolean
+}
+
+// === SHOP ===
+export interface ShopItem {
+  id: string
+  tip: "tema" | "avatar" | "booster" | "badge"
+  nume: string
+  descriere: string
+  pretXP: number
+  pretBani: number
+  emoji: string
+  durataZile?: number
+  efect?: string
 }
 
 // === DATABASE (Supabase) ===
@@ -257,6 +331,7 @@ export interface AiAnswerResult {
   corect: boolean;
   baniDelta: number;
   fericireDelta: number;
+  reputatieDelta?: number;
   explicatie: string;
 }
 
@@ -265,6 +340,8 @@ export interface AiQuestion {
   status: "generating" | "available" | "evaluating" | "evaluated";
   rezultat: AiAnswerResult | null;
 }
+
+export type SubscriptionTier = "free" | "premium_basic" | "premium_advanced";
 
 // Achievements
 export interface Achievement {

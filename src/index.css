@@ -145,6 +145,8 @@
 
   /* Backgrounds */
   .bg-overlay { background: rgba(0, 0, 0, 0.6); }
+  .bg-overlay-soft { background: rgba(0, 0, 0, 0.4); }
+  .bg-overlay-strong { background: rgba(0, 0, 0, 0.8); }
   .bg-card-strong { background: hsl(var(--card)); }
   .bg-card-hover { background: hsl(270 15% 14%); }
   .bg-card-soft { background: hsl(270 15% 11%); }

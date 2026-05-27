@@ -1,6 +1,6 @@
 import { Link, useLocation } from "wouter";
 import { motion } from "framer-motion";
-import { Clock, Star, Lock, Zap, TrendingUp, Users, Gamepad2, Crown, X, Calendar } from "lucide-react";
+import { Clock, Star, Lock, Zap, TrendingUp, Users, Gamepad2, Crown, X, Calendar, Brain, BarChart3 } from "lucide-react";
 import { OrbBackground } from "@/components/OrbBackground";
 import { Layout } from "@/components/Layout";
 import { useXP } from "@/context/XPContext";
@@ -10,6 +10,8 @@ import { getActiveLimitedEvents, getTimeRemaining, type LimitedEvent } from "@/d
 import { useState } from "react";
 import { AnimatePresence } from "framer-motion";
 import { LimitedEventModal } from "@/components/LimitedEventModal";
+import { OnboardingModal, isTutorialCompleted } from "@/components/OnboardingModal";
+import { GlossaryModal } from "@/components/GlossaryModal";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 24 },
@@ -88,12 +90,14 @@ function PremiumModal({ onClose }: { onClose: () => void }) {
 
 export default function Home() {
   const { xpState, isUnlocked, xpRequiredFor } = useXP();
-  const { isPremium, premiumTrialEndsAt } = useAuth();
+  const { isPremium, premiumTrialEndsAt, user } = useAuth();
   const limitedEvents = getActiveLimitedEvents();
   const [showPremiumModal, setShowPremiumModal] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState<LimitedEvent | null>(null);
   const [, navigate] = useLocation();
   const isPremiumActive = isPremium && premiumTrialEndsAt && premiumTrialEndsAt > Date.now();
+  const [showOnboarding, setShowOnboarding] = useState(() => user ? !isTutorialCompleted() : false);
+  const [showGlossary, setShowGlossary] = useState(false);
 
   const scenariiList = Object.values(SCENARII);
   const freeScenarii = scenariiList
@@ -139,6 +143,20 @@ export default function Home() {
             </Link>
             <Link href="/finance" className="px-8 py-3 border border-strong hover:border-strongest text-bright hover:text-main rounded-2xl font-bold text-lg transition-all hover:bg-card">
               Finanțele mele
+            </Link>
+            <button
+              onClick={() => setShowGlossary(true)}
+              className="px-8 py-3 border border-purple-500/40 hover:border-purple-500 bg-purple-500/10 text-purple-300 hover:text-purple-200 rounded-2xl font-bold text-lg transition-all hover:bg-purple-500/20"
+            >
+              Glosar
+            </button>
+            <Link href="/mini-game/quiz" className="px-5 py-3 border border-fuchsia-500/40 hover:border-fuchsia-500 bg-fuchsia-500/10 text-fuchsia-300 hover:text-fuchsia-200 rounded-2xl font-bold text-sm transition-all hover:bg-fuchsia-500/20 flex items-center gap-2">
+              <Brain size={16} />
+              Quiz
+            </Link>
+            <Link href="/mini-game/bursa" className="px-5 py-3 border border-emerald-500/40 hover:border-emerald-500 bg-emerald-500/10 text-emerald-300 hover:text-emerald-200 rounded-2xl font-bold text-sm transition-all hover:bg-emerald-500/20 flex items-center gap-2">
+              <BarChart3 size={16} />
+              Bursa
             </Link>
           </motion.div>
         </motion.section>
@@ -443,6 +461,12 @@ export default function Home() {
           <LimitedEventModal event={selectedEvent} onClose={() => setSelectedEvent(null)} />
         )}
       </AnimatePresence>
+      <AnimatePresence>
+        {showOnboarding && (
+          <OnboardingModal open={showOnboarding} onClose={() => setShowOnboarding(false)} />
+        )}
+      </AnimatePresence>
+      <GlossaryModal open={showGlossary} onClose={() => setShowGlossary(false)} />
     </Layout>
   );
 }

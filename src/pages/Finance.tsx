@@ -5,7 +5,8 @@ import { Layout } from "@/components/Layout";
 import { MentorChat } from "@/components/MentorChat";
 import { FinancialReport } from "@/components/FinancialReport";
 import { useFinance } from "@/context/FinanceContext";
-import { Plus, Trash2, TrendingUp, TrendingDown, PiggyBank, Target, BarChart3, Download } from "lucide-react";
+import { InvestmentsPanel } from "@/components/InvestmentsPanel";
+import { Plus, Trash2, TrendingUp, TrendingDown, PiggyBank, Target, BarChart3, Download, Briefcase } from "lucide-react";
 import type { TransactionType } from "@/types";
 
 const CATEGORII = ["Mâncare", "Transport", "Divertisment", "Îmbrăcăminte", "Sănătate", "Educație", "Utilități", "Altele"];
@@ -18,7 +19,7 @@ export default function Finance() {
     totalVenituri, totalCheltuieli, sold, cheltuieliPerCategorie,
   } = useFinance();
 
-  const [tab, setTab] = useState<"tranzactii" | "bugete" | "obiectiv">("tranzactii");
+  const [tab, setTab] = useState<"tranzactii" | "bugete" | "obiectiv" | "investitii">("tranzactii");
   const [form, setForm] = useState({ tip: "cheltuiala" as TransactionType, descriere: "", suma: "", categorie: "Mâncare", data: new Date().toISOString().slice(0, 10) });
   const [showForm, setShowForm] = useState(false);
   const [newObiectiv, setNewObiectiv] = useState(financeState.obiectivEconomii.toString());
@@ -261,7 +262,7 @@ export default function Finance() {
 
         {/* Tabs */}
         <div className="flex gap-1 mb-5 p-1 bg-card rounded-2xl border border-subtle">
-          {(["tranzactii", "bugete", "obiectiv"] as const).map((t) => (
+          {(["tranzactii", "bugete", "obiectiv", "investitii"] as const).map((t) => (
             <button
               key={t}
               onClick={() => setTab(t)}
@@ -269,7 +270,7 @@ export default function Finance() {
                 tab === t ? "bg-purple-600/30 text-purple-300 border border-purple-500/30" : "text-dim hover:text-main"
               }`}
             >
-              {t === "tranzactii" ? "Tranzacții" : t === "bugete" ? "Bugete" : "Obiectiv economii"}
+              {t === "tranzactii" ? "Tranzacții" : t === "bugete" ? "Bugete" : t === "obiectiv" ? "Obiectiv" : "Investiții"}
             </button>
           ))}
         </div>
@@ -424,6 +425,10 @@ export default function Finance() {
               </ul>
             </div>
           </div>
+        )}
+
+        {tab === "investitii" && (
+          <InvestmentsPanel baniDisponibili={sold} onInvest={() => {}} />
         )}
       </div>
       <MentorChat />

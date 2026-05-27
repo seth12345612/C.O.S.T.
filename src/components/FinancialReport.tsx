@@ -1,14 +1,17 @@
 import { useMemo } from "react";
 import { motion } from "framer-motion";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line, CartesianGrid } from "recharts";
-import { TrendingUp, TrendingDown, Download, Lightbulb, HeartPulse } from "lucide-react";
+import { TrendingUp, TrendingDown, Download, Lightbulb, HeartPulse, Crown, Lock } from "lucide-react";
 import { useFinance } from "@/context/FinanceContext";
+import { useAuth } from "@/context/AuthContext";
 import { generateReport, exportToCSV, exportReportToCSV } from "@/lib/export";
 
 const COLORS = ["#7c3aed", "#f59e0b", "#10b981", "#ef4444", "#3b82f6", "#ec4899", "#14b8a6", "#f97316"];
 
 export function FinancialReport({ onClose }: { onClose: () => void }) {
   const { financeState, totalVenituri, totalCheltuieli, cheltuieliPerCategorie } = useFinance();
+  const { subscriptionTier } = useAuth();
+  const isAdvanced = subscriptionTier === "premium_advanced";
 
   const report = useMemo(
     () => generateReport(financeState.tranzactii, totalVenituri, totalCheltuieli, cheltuieliPerCategorie),
@@ -70,7 +73,19 @@ export function FinancialReport({ onClose }: { onClose: () => void }) {
         </div>
       </div>
 
-      {pieData.length > 0 && (
+      {!isAdvanced && (
+        <div className="p-4 rounded-xl border border-purple-500/20 bg-purple-500/5 text-center mb-6">
+          <Lock size={20} className="text-purple-400 mx-auto mb-2" />
+          <p className="text-sm text-muted mb-1">Analize financiare detaliate</p>
+          <p className="text-xs text-dim mb-3">Diagrame, cash flow și sfaturi personalizate sunt disponibile în Premium Advanced.</p>
+          <a href="/premium" className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-gradient-to-r from-purple-600 to-pink-600 text-main text-xs font-bold transition-all hover:scale-105">
+            <Crown size={12} />
+            Upgrade la Premium Advanced
+          </a>
+        </div>
+      )}
+
+      {isAdvanced && pieData.length > 0 && (
         <div className="mb-6">
           <h3 className="text-sm font-semibold text-strong mb-3">Cheltuieli pe Categorii</h3>
           <div className="flex items-center gap-4">
@@ -97,7 +112,7 @@ export function FinancialReport({ onClose }: { onClose: () => void }) {
         </div>
       )}
 
-      {report.cashFlow.length > 1 && (
+      {isAdvanced && report.cashFlow.length > 1 && (
         <div className="mb-6">
           <h3 className="text-sm font-semibold text-strong mb-3">Cash Flow</h3>
           <div className="h-40">
@@ -114,19 +129,21 @@ export function FinancialReport({ onClose }: { onClose: () => void }) {
         </div>
       )}
 
-      <div>
-        <h3 className="text-sm font-semibold text-strong mb-3 flex items-center gap-1.5">
-          <Lightbulb size={14} className="text-yellow-400" />
-          Sfaturi Personalizate
-        </h3>
-        <div className="space-y-2">
-          {report.sfaturi.map((s, i) => (
-            <div key={i} className="p-3 rounded-xl bg-card border border-subtle text-sm text-strong leading-relaxed">
-              {s}
-            </div>
-          ))}
+      {isAdvanced && (
+        <div>
+          <h3 className="text-sm font-semibold text-strong mb-3 flex items-center gap-1.5">
+            <Lightbulb size={14} className="text-yellow-400" />
+            Sfaturi Personalizate
+          </h3>
+          <div className="space-y-2">
+            {report.sfaturi.map((s, i) => (
+              <div key={i} className="p-3 rounded-xl bg-card border border-subtle text-sm text-strong leading-relaxed">
+                {s}
+              </div>
+            ))}
+          </div>
         </div>
-      </div>
+      )}
 
       <button onClick={onClose} className="w-full mt-6 py-3 rounded-xl bg-card hover:bg-card-hover text-muted hover:text-main border border-subtle transition-all text-sm">
         Închide

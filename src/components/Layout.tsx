@@ -5,13 +5,15 @@ import { useTheme } from "@/context/ThemeContext";
 import { useAuth } from "@/context/AuthContext";
 import { ThemePicker } from "@/components/ThemePicker";
 import { SoundEffects } from "@/lib/sounds";
-import { Home, PhoneCall, Wallet, Trophy, Menu, X, Crown, Shield, ShieldCheck, Info, Award, Volume2, VolumeX, LogIn, UserCircle, LogOut } from "lucide-react";
+import { Home, PhoneCall, Wallet, Trophy, Menu, X, Crown, Shield, ShieldCheck, Info, Award, Volume2, VolumeX, LogIn, UserCircle, LogOut, Settings, CalendarCheck, Star, ShoppingBag } from "lucide-react";
 
 const NAV = [
   { href: "/", label: "Acasă", icon: Home },
   { href: "/finance", label: "Finanțe", icon: Wallet },
   { href: "/leaderboard", label: "Clasament", icon: Trophy },
+  { href: "/shop", label: "Magazin", icon: ShoppingBag },
   { href: "/achievements", label: "Achievements", icon: Award },
+  { href: "/challenges", label: "Provocări", icon: CalendarCheck },
   { href: "/despre", label: "Despre", icon: Info },
   { href: "/contact", label: "Contact", icon: PhoneCall },
 ];
@@ -19,7 +21,7 @@ const NAV = [
 export function Layout({ children }: { children: React.ReactNode }) {
   const { xpState } = useXP();
   const { themeState, currentPreset } = useTheme();
-  const { isPremium, premiumTrialEndsAt, isAdmin, user, logout } = useAuth();
+  const { isPremium, premiumTrialEndsAt, isAdmin, user, logout, subscriptionTier } = useAuth();
   const [location, setLocation] = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
@@ -109,7 +111,13 @@ export function Layout({ children }: { children: React.ReactNode }) {
                   A
                 </span>
               )}
-              {isPremiumActive && (
+              {isPremiumActive && subscriptionTier === "premium_advanced" && (
+                <span className="flex items-center gap-0.5 px-1.5 py-0.5 rounded-full bg-purple-500/20 border border-purple-500/40 text-purple-400 text-[10px] font-bold leading-none">
+                  <Shield size={8} />
+                  A
+                </span>
+              )}
+              {isPremiumActive && subscriptionTier === "premium_basic" && (
                 <span className="flex items-center gap-0.5 px-1.5 py-0.5 rounded-full bg-yellow-500/20 border border-yellow-500/40 text-yellow-400 text-[10px] font-bold leading-none">
                   <Crown size={8} />
                   P
@@ -142,6 +150,14 @@ export function Layout({ children }: { children: React.ReactNode }) {
                       <p className="text-xs font-medium text-main truncate">{user.name}</p>
                       <p className="text-[10px] text-subtle truncate">{user.email}</p>
                     </div>
+                    <Link
+                      href="/profile"
+                      onClick={() => setUserMenuOpen(false)}
+                      className="flex items-center gap-2 w-full px-3 py-2 text-xs text-muted hover:text-main hover:bg-card-hover transition-colors"
+                    >
+                      <Settings size={14} />
+                      Setări profil
+                    </Link>
                     <button
                       onClick={() => {
                         setUserMenuOpen(false);

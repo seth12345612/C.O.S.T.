@@ -1,5 +1,5 @@
 import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from "react";
-import type { AuthUser, DBUser } from "@/types";
+import type { AuthUser, DBUser, SubscriptionTier } from "@/types";
 import { supabase, syncUserToDB } from "@/lib/supabase";
 
 const CHECK_PREMIUM_FUNC = "https://twdvhkwrlwhadbmortqk.supabase.co/functions/v1/check-premium";
@@ -12,6 +12,8 @@ interface AuthContextType {
   isAdmin: boolean;
   isPremium: boolean;
   premiumTrialEndsAt: number | null;
+  subscriptionTier: SubscriptionTier;
+  setSubscriptionTier: (tier: SubscriptionTier) => void;
   showNicknameModal: boolean;
   login: () => void;
   loginManual: (nume: string, prenume: string, email: string) => void;
@@ -20,12 +22,14 @@ interface AuthContextType {
   closeNicknameModal: () => void;
   activateDemoPremium: () => void;
   activateFullPremium: (durationMs: number) => void;
+  activateAdvancedPremium: (durationMs: number) => void;
   deactivatePremium: () => void;
   getPremiumTimeRemaining: () => string;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
 const PREMIUM_KEY = "cost_premium";
+const TIER_KEY = "cost_subscription_tier";
 const MANUAL_USER_KEY = "cost_manual_user";
 const DISPLAY_NAME_KEY = "cost_display_name";
 
@@ -48,8 +52,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const premiumInit = useCallback(loadPremium, []);
   const [isPremium, setIsPremium] = useState(premiumInit().isPremium);
   const [premiumTrialEndsAt, setPremiumTrialEndsAt] = useState<number | null>(premiumInit().premiumTrialEndsAt);
+  const [subscriptionTier, setSubscriptionTierState] = useState<SubscriptionTier>(() => {
+    try {
+      const saved = localStorage.getItem(TIER_KEY);
+      if (saved === "premium_basic" || saved === "premium_advanced") return saved;
+    } catch {}
+    return "free";
+  });
   const [isAdmin, setIsAdmin] = useState(false);
   const [showNicknameModal, setShowNicknameModal] = useState(false);
+
+  const setSubscriptionTier = useCallback((tier: SubscriptionTier) => {
+    setSubscriptionTierState(tier);
+    localStorage.setItem(TIER_KEY, tier);
+  }, []);
 
   const restoreManualUser = useCallback(() => {
     try {
@@ -192,18 +208,28 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const endsAt = Date.now() + 7 * 24 * 60 * 60 * 1000;
     setIsPremium(true);
     setPremiumTrialEndsAt(endsAt);
-  }, []);
+    setSubscriptionTier("premium_basic");
+  }, [setSubscriptionTier]);
 
   const activateFullPremium = useCallback((durationMs: number) => {
     const endsAt = Date.now() + durationMs;
     setIsPremium(true);
     setPremiumTrialEndsAt(endsAt);
-  }, []);
+    setSubscriptionTier("premium_basic");
+  }, [setSubscriptionTier]);
+
+  const activateAdvancedPremium = useCallback((durationMs: number) => {
+    const endsAt = Date.now() + durationMs;
+    setIsPremium(true);
+    setPremiumTrialEndsAt(endsAt);
+    setSubscriptionTier("premium_advanced");
+  }, [setSubscriptionTier]);
 
   const deactivatePremium = useCallback(() => {
     setIsPremium(false);
     setPremiumTrialEndsAt(null);
-  }, []);
+    setSubscriptionTier("free");
+  }, [setSubscriptionTier]);
 
   const getPremiumTimeRemaining = useCallback(() => {
     if (!premiumTrialEndsAt) return "";
@@ -224,6 +250,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         isAdmin,
         isPremium,
         premiumTrialEndsAt,
+        subscriptionTier,
+        setSubscriptionTier,
         showNicknameModal,
         login,
         loginManual,
@@ -232,6 +260,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         closeNicknameModal,
         activateDemoPremium,
         activateFullPremium,
+        activateAdvancedPremium,
         deactivatePremium,
         getPremiumTimeRemaining,
       }}

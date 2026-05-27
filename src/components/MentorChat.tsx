@@ -44,7 +44,8 @@ export function MentorChat() {
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { state } = useGame();
-  const { isPremium } = useAuth();
+  const { isPremium, subscriptionTier } = useAuth();
+  const isAdvanced = subscriptionTier === "premium_advanced";
   const [, setLocation] = useLocation();
 
   const usage = getDailyUsage();
@@ -62,7 +63,9 @@ export function MentorChat() {
           dificultate: state.dificultateKey,
           bani: state.bani,
           fericire: state.fericire,
+          reputatie: state.reputatie,
           saptamana: state.saptamana,
+          personalized: isAdvanced,
         }
       : undefined;
 
@@ -150,7 +153,12 @@ export function MentorChat() {
                 <div>
                   <h3 className="text-sm font-bold text-main">Mentorul C.O.S.T.</h3>
                   <div className="flex items-center gap-1.5 mt-0.5">
-                    {isPremium ? (
+                    {isAdvanced ? (
+                      <span className="flex items-center gap-1 text-[10px] text-purple-400 font-medium">
+                        <Sparkles size={10} />
+        Mentor AI personalizat
+                      </span>
+                    ) : isPremium ? (
                       <span className="flex items-center gap-1 text-[10px] text-yellow-400 font-medium">
                         <Crown size={10} />
                         Acces nelimitat

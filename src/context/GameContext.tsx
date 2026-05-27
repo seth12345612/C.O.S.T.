@@ -1,5 +1,6 @@
-import { createContext, useContext, useState, useCallback, useRef, useEffect, useMemo, type ReactNode } from "react";
-import type { DifficultyKey, GameEvent, DecizieIstorica, GameState, AiQuestion, AiAnswerResult } from "@/types";
+import { createContext, useContext, useState, useCallback, useRef, useEffect, type ReactNode } from "react";
+import { toast } from "sonner";
+import type { DifficultyKey, GameEvent, DecizieIstorica, GameState, AiAnswerResult } from "@/types";
 import { SCENARII, DIFICULTATI, START_CONFIG } from "@/data/scenarios";
 import { GAME_EVENTS, shuffleArray } from "@/data/events";
 import { useAuth } from "./AuthContext";
@@ -21,20 +22,14 @@ const CAPITAL_KEY = "cost_capital";
 const FUNC_BASE = "https://twdvhkwrlwhadbmortqk.supabase.co";
 const ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR3ZHZoa3dybHdoYWRibW9ydHFrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkyMDM4OTAsImV4cCI6MjA5NDc3OTg5MH0.mvQkXjYR3YDChjbuGmmm006QOTjw6rQz6UdAKZYG-lQ";
 
-const WEEKLY_QUESTIONS = [
-  "Imaginează-ți că primești 50 de lei de la bunici de ziua ta. Un prieten îți spune să îi cheltuiești azi pe dulciuri și suc, iar altul îți spune să îi pui deoparte pentru ceva mai important mai târziu. Tu ce crezi că e mai bine să faci cu banii ăia? Explică de ce ai alege așa.",
-  "Dacă ai vrea să îți cumperi o tabletă care costă 400 de lei și primești 20 de lei pe săptămână de la părinți, câte săptămâni ar trebui să economisești ca s-o iei? Dar dacă cheltuiești jumătate din bani în fiecare săptămână pe alte chestii, cât timp ți-ar lua?",
-  "Te afli într-un magazin și vezi un super joc video la reducere cu 50% — costă 150 de lei în loc de 300. Tu ai doar 200 de lei strânși pentru o geantă nouă de școală. Ce faci: cumperi jocul sau iei geanta? De ce? Există vreo variantă prin care ai putea avea amândouă?",
-  "Hai să zicem că ai un cont de economii unde primești 5 lei în plus la fiecare 100 de lei pe an (asta e dobânda). Dacă pui 200 de lei anul ăsta și nu te atingi de ei, câți bani vei avea peste un an? Dar dacă mai pui încă 100 de lei anul următor?",
-  "Un prieten vrea să împrumute 30 de lei de la tine și zice că ți-i dă înapoi săptămâna viitoare. Tu știi că el mai are datorii și la alți colegi și nu și le-a plătit încă. Ce faci? Îi împrumuți banii sau nu? Cum i-ai spune politicos dacă nu vrei să îi dai?",
-  "Părinții tăi îți dau 100 de lei pe lună pentru cheltuieli. Tu vrei să îți cumperi un joc de 60 de lei, să mergi la film (20 de lei) și să îți iei și un tricou (30 de lei). Adună toate costurile. Îți ajung banii? Dacă nu, la ce ai putea renunța ca să îți încapă în buget?",
-  "De sărbători primești în total 300 de lei cadou de la toată familia. Un prieten îți spune să îi cheltuiești imediat, altul îți spune să îi împărți: o parte să cheltuiești, o parte să economisești, o parte să donezi. Tu ce crezi că e mai înțelept? Cum ai împărți cei 300 de lei?",
-  "La școală se organizează o tombolă: costă 5 lei biletul, iar premiul mare e o consolă de 1000 de lei. Un coleg cumpără 10 bilete și zice că „sigur câștigă”. Tu ce crezi, e sigur că va câștiga? Câți bilet ai cumpăra tu și de ce?",
-  "Ana primește 15 lei pe săptămână de la părinți. Ea își notează într-un caiet pe ce cheltuiește fiecare bănuț. După o lună, vede că a dat 30 de lei pe snacksuri și sucuri. Tu ții evidența cheltuielilor tale? Crezi că te-ar ajuta să îți dai seama pe ce se duc banii?",
-  "Vrei să strângi bani pentru un telefon care costă 600 de lei. Ai putea să faci mici slujbe prin cartier: să plimbi câini (20 de lei/plimbare), să ajuți la teme (15 lei/ședință) sau să speli mașini (30 de lei/masina). Alege o combinație de slujbe câștigi 600 de lei într-o lună (4 săptămâni). Câte slujbe ar trebui să faci pe săptămână?",
-];
-
 const GameContext = createContext<GameContextType | null>(null);
+
+function getRandomEventQuestion(scenariuId: string): string {
+  const events = GAME_EVENTS[scenariuId];
+  if (!events || events.length === 0) return "Ce ai face ca să îți îmbunătățești situația financiară? Explică alegerea ta.";
+  const event = events[Math.floor(Math.random() * events.length)];
+  return `${event.titlu}: ${event.descriere}\n\nTu ce faci în această situație? Explică alegerea ta.`;
+}
 
 export function GameProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<GameState | null>(null);
@@ -64,6 +59,18 @@ export function GameProvider({ children }: { children: ReactNode }) {
     return () => clearTimeout(saveTimer.current);
   }, [state, user?.email, user?.sub]);
 
+  useEffect(() => {
+    if (!state) return;
+    if (state.isGameOver) {
+      if (state.gameOverTitle?.includes("Felicitări")) {
+        toast.success("🎉 " + state.gameOverTitle, { description: state.gameOverReason });
+      } else {
+        toast.error("💀 " + state.gameOverTitle, { description: state.gameOverReason });
+      }
+    }
+  }, [state?.isGameOver, state?.gameOverTitle]);
+
+  /** Initializeaza o noua partida cu scenariul, sub-scenariul si dificultatea alese. */
   const initGame = useCallback((
     scenariuId: string,
     subScenariuId: string,
@@ -97,6 +104,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
       dificultateKey,
       bani: finalBani,
       fericire: Math.min(100, finalFericire),
+      reputatie: 50,
       venitLunar: venit,
       saptamana: 0,
       luna: 1,
@@ -115,10 +123,12 @@ export function GameProvider({ children }: { children: ReactNode }) {
     });
   }, []);
 
-  const checkGameOver = useCallback((bani: number, fericire: number, saptamana: number, isEndless: boolean, isRecoveryMode: boolean = false, recoveryWeeksRemaining: number = 0): { over: boolean; enterRecovery: boolean; title: string; reason: string } => {
+  /** Verifica daca jocul s-a terminat (bani sub 0 fara recuperare, fericire 0, reputatie 0, sau au trecut 48 saptamani). */
+  const checkGameOver = useCallback((bani: number, fericire: number, reputatie: number, saptamana: number, isEndless: boolean, isRecoveryMode: boolean = false, recoveryWeeksRemaining: number = 0): { over: boolean; enterRecovery: boolean; title: string; reason: string } => {
     if (bani < 0 && !isRecoveryMode) return { over: false, enterRecovery: true, title: "", reason: "" };
     if (bani < 0 && isRecoveryMode && recoveryWeeksRemaining <= 0) return { over: true, enterRecovery: false, title: "Game Over — Faliment", reason: "Nu ai reușit să te recuperezi din datorii în cele 8 săptămâni. Situația financiară a devenit ireversibilă." };
     if (fericire <= 0) return { over: true, enterRecovery: false, title: "Game Over — Epuizare", reason: "Energia ta a ajuns la 0. Burnout-ul te-a doborât." };
+    if (reputatie <= 0) return { over: true, enterRecovery: false, title: "Game Over — Reputație distrusă", reason: "Nimeni nu mai are încredere în tine după deciziile tale. Reputația ta e zero." };
     if (!isEndless && saptamana >= 48) return { over: false, enterRecovery: false, title: "Felicitări! Ai terminat cei 12 luni!", reason: "Ai reușit să supraviețuiești financiar un an întreg!" };
     return { over: false, enterRecovery: false, title: "", reason: "" };
   }, []);
@@ -131,6 +141,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
     return eventQueueRef.current.pop() ?? null;
   }, []);
 
+  /** Avanseaza o saptamana: aplica venituri/cheltuieli la sfarsit de luna si verifica starea jocului. */
   const nextWeek = useCallback(() => {
     setState((prev) => {
       if (!prev || prev.isGameOver || prev.evenimentCurent) return prev;
@@ -141,6 +152,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
 
       let newBani = prev.bani;
       let newFericire = prev.fericire;
+      let newReputatie = prev.reputatie;
       let newRecoveryWeeks = prev.recoveryWeeksRemaining;
       let isRecoveryMode = prev.isRecoveryMode;
       let originalScenarioId = prev.originalScenarioId;
@@ -167,7 +179,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
           newRecoveryWeeks = 0;
           originalScenarioId = undefined;
         } else if (newRecoveryWeeks <= 0) {
-          const go = checkGameOver(newBani, newFericire, newSaptamana, prev.isEndless, isRecoveryMode, newRecoveryWeeks);
+          const go = checkGameOver(newBani, newFericire, newReputatie, newSaptamana, prev.isEndless, isRecoveryMode, newRecoveryWeeks);
           return {
             ...prev,
             saptamana: newSaptamana, luna: newLuna, saptamanaInLuna: newSaptamanaInLuna,
@@ -177,7 +189,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
         }
       }
 
-      const go = checkGameOver(newBani, newFericire, newSaptamana, prev.isEndless, isRecoveryMode, newRecoveryWeeks);
+      const go = checkGameOver(newBani, newFericire, newReputatie, newSaptamana, prev.isEndless, isRecoveryMode, newRecoveryWeeks);
 
       if (go.enterRecovery && !prev.isRecoveryMode) {
         isRecoveryMode = true;
@@ -193,15 +205,17 @@ export function GameProvider({ children }: { children: ReactNode }) {
         scenariuId: newScenariuId,
         saptamana: newSaptamana, luna: newLuna, saptamanaInLuna: newSaptamanaInLuna,
         bani: newBani, fericire: Math.max(0, Math.min(100, newFericire)),
+        reputatie: Math.max(0, Math.min(100, newReputatie)),
         isGameOver: go.over || (newSaptamana >= 48 && !prev.isEndless),
         gameOverTitle: go.title, gameOverReason: go.reason,
         evenimentCurent: null,
-        aiQuestion: prev.aiQuestion ? prev.aiQuestion : { intrebare: WEEKLY_QUESTIONS[Math.floor(Math.random() * WEEKLY_QUESTIONS.length)], status: "available", rezultat: null },
+        aiQuestion: prev.aiQuestion ? prev.aiQuestion : { intrebare: getRandomEventQuestion(newScenariuId), status: "available", rezultat: null },
         isRecoveryMode, recoveryWeeksRemaining: originalScenarioId,
       };
     });
   }, [checkGameOver]);
 
+  /** Alege o optiune la un eveniment si aplica efectele (bani, fericire, lectie). */
   const chooseOption = useCallback((optionIndex: number) => {
     setState((prev) => {
       if (!prev || !prev.evenimentCurent) return prev;
@@ -210,6 +224,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
 
       let baniDelta = opt.bani;
       let fericireDelta = opt.fericirePct;
+      let reputatieDelta = opt.reputatiePct ?? 0;
 
       if (prev.dificultateKey === "usor") {
         baniDelta = baniDelta < 0 ? baniDelta * 0.8 : baniDelta * 1.1;
@@ -221,15 +236,16 @@ export function GameProvider({ children }: { children: ReactNode }) {
 
       const newBani = prev.bani + baniDelta;
       const newFericire = Math.max(0, Math.min(100, prev.fericire + fericireDelta));
+      const newReputatie = Math.max(0, Math.min(100, prev.reputatie + reputatieDelta));
 
       const decizie: DecizieIstorica = {
         id: `${prev.evenimentCurent.id}-${Date.now()}`,
         luna: prev.luna, saptamana: prev.saptamanaInLuna,
         titluEveniment: prev.evenimentCurent.titlu, alegere: opt.text,
-        lectie: opt.lectie, baniDelta, fericireDelta, timestamp: Date.now(),
+        lectie: opt.lectie, baniDelta, fericireDelta, reputatieDelta, timestamp: Date.now(),
       };
 
-      const go = checkGameOver(newBani, newFericire, prev.saptamana, prev.isEndless, prev.isRecoveryMode, prev.recoveryWeeksRemaining);
+      const go = checkGameOver(newBani, newFericire, newReputatie, prev.saptamana, prev.isEndless, prev.isRecoveryMode, prev.recoveryWeeksRemaining);
 
       let isRecoveryMode = prev.isRecoveryMode;
       let recoveryWeeksRemaining = prev.recoveryWeeksRemaining;
@@ -247,7 +263,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
       const randomQuestion = prev.aiQuestion
         ? prev.aiQuestion
         : {
-            intrebare: WEEKLY_QUESTIONS[Math.floor(Math.random() * WEEKLY_QUESTIONS.length)],
+            intrebare: getRandomEventQuestion(prev.scenariuId),
             status: "available" as const,
             rezultat: null,
           };
@@ -255,7 +271,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
       return {
         ...prev,
         scenariuId: newScenariuId,
-        bani: newBani, fericire: newFericire,
+        bani: newBani, fericire: newFericire, reputatie: newReputatie,
         istoricDecizii: [...prev.istoricDecizii, decizie],
         evenimentCurent: null,
         aiQuestion: randomQuestion,
@@ -266,6 +282,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
     });
   }, [checkGameOver]);
 
+  /** Activeaza modul infinit (jocul continua dupa 48 saptamani). */
   const startEndless = useCallback(() => {
     setState((prev) => {
       if (!prev) return prev;
@@ -275,6 +292,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
     });
   }, []);
 
+  /** Reseteaza jocul curent si sterge profilul salvat. */
   const resetGame = useCallback(() => {
     setState(null);
     if (user?.email) {
@@ -282,14 +300,17 @@ export function GameProvider({ children }: { children: ReactNode }) {
     }
   }, [user?.email, user?.sub]);
 
+  /** Returneaza capitalul salvat din jocul anterior (localStorage). */
   const savedCapital = useCallback(() => {
     return Number(localStorage.getItem(CAPITAL_KEY) ?? 0);
   }, []);
 
+  /** Trimite raspunsul la intrebarea AI spre evaluare si aplica bonusul/penalizarea. */
   const submitAiAnswer = useCallback(async (answer: string) => {
     let intrebare = "";
     let baniCurenti = 0;
     let fericireCurenta = 50;
+    let reputatieCurenta = 50;
     let saptamanaCurenta = 1;
     let scenariuId = "";
 
@@ -298,6 +319,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
       intrebare = prev.aiQuestion.intrebare;
       baniCurenti = prev.bani;
       fericireCurenta = prev.fericire;
+      reputatieCurenta = prev.reputatie;
       saptamanaCurenta = prev.saptamana;
       scenariuId = prev.scenariuId;
       return { ...prev, aiQuestion: { ...prev.aiQuestion, status: "evaluating" } };
@@ -310,15 +332,15 @@ export function GameProvider({ children }: { children: ReactNode }) {
         `Evaluează răspunsul unui elev la o întrebare de educație financiară (copii până în 20 de ani).\n\n` +
         `Întrebarea: "${intrebare}"\n` +
         `Răspunsul elevului: "${answer}"\n\n` +
-        `Context: bani=${baniCurenti} RON, fericire=${fericireCurenta}%, săptămâna ${saptamanaCurenta}/48.\n\n` +
+        `Context: bani=${baniCurenti} RON, fericire=${fericireCurenta}%, reputatie=${reputatieCurenta}%, săptămâna ${saptamanaCurenta}/48.\n\n` +
         `EXPLICAȚIE (maxim 3 propoziții): Explică prietenos, pe înțelesul unui copil, de ce răspunsul e bun sau greșit și ce putea face mai bine.\n\n` +
         `APOI, pe ultima linie, adaugă DOAR un JSON cu acest format:\n` +
-        `{"corect":true,"baniDelta":12,"fericireDelta":5}\n\n` +
+        `{"corect":true,"baniDelta":12,"fericireDelta":5,"reputatieDelta":3}\n\n` +
         `Reguli pentru delte (în funcție de cât de complet și corect e răspunsul):\n` +
-        `- complet, bine explicat, exemple → baniDelta 140-200, fericireDelta 10-15\n` +
-        `- corect dar incomplet (doar parțial) → baniDelta 50-80, fericireDelta 5-10\n` +
-        `- greșit dar a încercat → baniDelta -100 până la -200, fericireDelta -15 până la -20\n` +
-        `- greșit complet sau off-topic → baniDelta -300 până la -400, fericireDelta -30 până la -35`;
+        `- complet, bine explicat, exemple → baniDelta 140-200, fericireDelta 10-15, reputatieDelta 5-10\n` +
+        `- corect dar incomplet (doar parțial) → baniDelta 50-80, fericireDelta 5-10, reputatieDelta 2-5\n` +
+        `- greșit dar a încercat → baniDelta -100 până la -200, fericireDelta -15 până la -20, reputatieDelta -5 până la -10\n` +
+        `- greșit complet sau off-topic → baniDelta -300 până la -400, fericireDelta -30 până la -35, reputatieDelta -15 până la -25`;
 
       const res = await fetch(`${FUNC_BASE}/functions/v1/mentor`, {
         method: "POST",
@@ -332,18 +354,20 @@ export function GameProvider({ children }: { children: ReactNode }) {
       if (!res.ok) throw new Error(`API ${res.status}`);
       const data = await res.json();
       const reply = String(data.reply || "");
-      const jsonRegex = /\{"corect":(true|false),"baniDelta":(-?\d+),"fericireDelta":(-?\d+)\}/;
+      const jsonRegex = /\{"corect":(true|false),"baniDelta":(-?\d+),"fericireDelta":(-?\d+)(,"reputatieDelta":(-?\d+))?\}/;
       const jsonMatch = reply.match(jsonRegex);
 
       let corect = answer.trim().length > 20;
       let baniDelta = corect ? 120 : -200;
       let fericireDelta = corect ? 10 : -20;
+      let reputatieDelta = corect ? 5 : -10;
       let explicatie = reply;
 
       if (jsonMatch) {
         corect = jsonMatch[1] === "true";
         baniDelta = Math.round(Number(jsonMatch[2]) / 5) * 5;
         fericireDelta = Math.round(Number(jsonMatch[3]));
+        reputatieDelta = jsonMatch[5] ? Math.round(Number(jsonMatch[5])) : (corect ? 5 : -10);
         explicatie = reply.replace(jsonMatch[0], "").trim();
       }
 
@@ -358,14 +382,33 @@ export function GameProvider({ children }: { children: ReactNode }) {
           : "Mai încearcă! Gândește-te cum ai putea să răspunzi mai bine data viitoare.";
       }
 
-      const rezultat: AiAnswerResult = { corect, baniDelta, fericireDelta, explicatie };
+      const rezultat: AiAnswerResult = { corect, baniDelta, fericireDelta, reputatieDelta, explicatie };
+      if (corect) {
+        toast.success("Răspuns corect!", { description: `+${baniDelta} RON, +${fericireDelta} fericire, +${reputatieDelta} reputație` });
+      } else {
+        toast.error("Răspuns greșit", { description: `${baniDelta} RON, ${fericireDelta} fericire, ${reputatieDelta} reputație` });
+      }
       setState((prev) => {
         if (!prev?.aiQuestion) return prev;
+        const decizie: DecizieIstorica = {
+          id: `ai-${Date.now()}`,
+          luna: prev.luna,
+          saptamana: prev.saptamanaInLuna,
+          titluEveniment: intrebare,
+          alegere: answer,
+          lectie: rezultat.explicatie,
+          baniDelta: rezultat.baniDelta,
+          fericireDelta: rezultat.fericireDelta,
+          reputatieDelta: rezultat.reputatieDelta,
+          timestamp: Date.now(),
+        };
         return {
           ...prev,
           bani: Math.max(0, prev.bani + rezultat.baniDelta),
           fericire: Math.max(0, Math.min(100, prev.fericire + rezultat.fericireDelta)),
+          reputatie: Math.max(0, Math.min(100, prev.reputatie + (rezultat.reputatieDelta ?? 0))),
           aiQuestion: { ...prev.aiQuestion, status: "evaluated", rezultat },
+          istoricDecizii: [...prev.istoricDecizii, decizie],
         };
       });
     } catch {
@@ -373,19 +416,38 @@ export function GameProvider({ children }: { children: ReactNode }) {
       let corect = len > 15;
       let baniDelta = 0;
       let fericireDelta = 0;
+      let reputatieDelta = 0;
       let explicatie = "";
-      if (len > 120) { corect = true; baniDelta = 170; fericireDelta = 12; explicatie = "Răspuns excelent! Ai intrat în detalii și ai arătat că ai înțeles bine ideea. Bravo!"; }
-      else if (len > 60) { corect = true; baniDelta = 65; fericireDelta = 7; explicatie = "Răspuns corect! Data viitoare încearcă să adaugi mai multe detalii sau exemple."; }
-      else if (len > 20) { corect = true; baniDelta = 50; fericireDelta = 5; explicatie = "Ideea e corectă, dar e cam scurt. Ce ai putea adăuga ca să fie mai complet?"; }
-      else { baniDelta = -150; fericireDelta = -18; explicatie = "Răspunsul e prea scurt. Scrie măcar 2-3 propoziții ca să înveți ceva nou!"; }
-      const rezultat: AiAnswerResult = { corect, baniDelta, fericireDelta, explicatie };
+      if (len > 120) { corect = true; baniDelta = 170; fericireDelta = 12; reputatieDelta = 8; explicatie = "Răspuns excelent! Ai intrat în detalii și ai arătat că ai înțeles bine ideea. Bravo!"; }
+      else if (len > 60) { corect = true; baniDelta = 65; fericireDelta = 7; reputatieDelta = 4; explicatie = "Răspuns corect! Data viitoare încearcă să adaugi mai multe detalii sau exemple."; }
+      else if (len > 20) { corect = true; baniDelta = 50; fericireDelta = 5; reputatieDelta = 2; explicatie = "Ideea e corectă, dar e cam scurt. Ce ai putea adăuga ca să fie mai complet?"; }
+      else { baniDelta = -150; fericireDelta = -18; reputatieDelta = -12; explicatie = "Răspunsul e prea scurt. Scrie măcar 2-3 propoziții ca să înveți ceva nou!"; }
+      const rezultat: AiAnswerResult = { corect, baniDelta, fericireDelta, reputatieDelta, explicatie };
+      if (corect) {
+        toast.success("Răspuns corect!", { description: `+${baniDelta} RON, +${fericireDelta} fericire, +${reputatieDelta} reputație` });
+      } else {
+        toast.error("Răspuns greșit", { description: `${baniDelta} RON, ${fericireDelta} fericire, ${reputatieDelta} reputație` });
+      }
       setState((prev) => {
         if (!prev?.aiQuestion) return prev;
-        return { ...prev, bani: Math.max(0, prev.bani + rezultat.baniDelta), fericire: Math.max(0, Math.min(100, prev.fericire + rezultat.fericireDelta)), aiQuestion: { ...prev.aiQuestion, status: "evaluated", rezultat } };
+        const decizie: DecizieIstorica = {
+          id: `ai-${Date.now()}`,
+          luna: prev.luna,
+          saptamana: prev.saptamanaInLuna,
+          titluEveniment: intrebare,
+          alegere: answer,
+          lectie: rezultat.explicatie,
+          baniDelta: rezultat.baniDelta,
+          fericireDelta: rezultat.fericireDelta,
+          reputatieDelta: rezultat.reputatieDelta,
+          timestamp: Date.now(),
+        };
+        return { ...prev, bani: Math.max(0, prev.bani + rezultat.baniDelta), fericire: Math.max(0, Math.min(100, prev.fericire + rezultat.fericireDelta)), reputatie: Math.max(0, Math.min(100, prev.reputatie + (rezultat.reputatieDelta ?? 0))), aiQuestion: { ...prev.aiQuestion, status: "evaluated", rezultat }, istoricDecizii: [...prev.istoricDecizii, decizie] };
       });
     }
   }, []);
 
+  /** Inchide fereastra cu intrebarea AI dupa evaluare. */
   const dismissAiQuestion = useCallback(() => {
     setState((prev) => {
       if (!prev) return prev;
