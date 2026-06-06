@@ -1,14 +1,24 @@
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Palette, Check, X, Pipette } from "lucide-react";
-import { useTheme, THEME_PRESETS } from "@/context/ThemeContext";
+import { Link } from "wouter";
+import { Palette, Check, X, Pipette, Crown } from "lucide-react";
+import { useTheme, THEME_PRESETS, SHOP_PRESET_IDS } from "@/context/ThemeContext";
+import { useAuth } from "@/context/AuthContext";
 
 export function ThemePicker() {
   const { themeState, currentPreset, setPreset, setCustomColor, clearCustom } = useTheme();
+  const { isPremium, premiumTrialEndsAt } = useAuth();
   const [open, setOpen] = useState(false);
   const [customInput, setCustomInput] = useState(themeState.customColor ?? "#7828c8");
   const pickerRef = useRef<HTMLDivElement>(null);
   const colorInputRef = useRef<HTMLInputElement>(null);
+  const isPremiumActive = isPremium && premiumTrialEndsAt && premiumTrialEndsAt > Date.now();
+
+  useEffect(() => {
+    if (!isPremiumActive && themeState.customColor) {
+      clearCustom();
+    }
+  }, [isPremiumActive, themeState.customColor, clearCustom]);
 
   useEffect(() => {
     function onClickOutside(e: MouseEvent) {
@@ -22,9 +32,12 @@ export function ThemePicker() {
 
   const activeColor = themeState.customColor ?? currentPreset.primary;
 
-  function applyColor(hex: string) {
-    if (/^#[0-9a-fA-F]{6}$/.test(hex)) {
-      setCustomColor(hex);
+  function applyColor(val: string) {
+    if (!isPremiumActive) return;
+    const test = new Option().style;
+    test.color = val;
+    if (test.color) {
+      setCustomColor(val);
     }
   }
 
@@ -66,7 +79,7 @@ export function ThemePicker() {
               <div className="mb-4">
                 <p className="text-xs text-subtle font-semibold uppercase tracking-wider mb-2">Teme predefinite</p>
                 <div className="grid grid-cols-4 gap-2">
-                  {THEME_PRESETS.map((preset) => {
+                  {THEME_PRESETS.filter((p) => !SHOP_PRESET_IDS.includes(p.id)).map((preset) => {
                     const isActive = themeState.presetId === preset.id && !themeState.customColor;
                     return (
                       <button
@@ -98,42 +111,59 @@ export function ThemePicker() {
                 </div>
               </div>
 
-              {/* Custom color */}
+              {/* Custom color — premium only */}
               <div className="border-t border-subtle pt-4">
-                <p className="text-xs text-subtle font-semibold uppercase tracking-wider mb-2">Culoare personalizată</p>
-                <div className="flex items-center gap-2">
-                  <div
-                    className="w-10 h-10 rounded-xl border-2 border-strong cursor-pointer shrink-0 relative overflow-hidden"
-                    style={{ background: customInput }}
-                    onClick={() => colorInputRef.current?.click()}
-                  >
-                    <input
-                      ref={colorInputRef}
-                      type="color"
-                      value={customInput}
-                      onChange={(e) => { setCustomInput(e.target.value); applyColor(e.target.value); }}
-                      className="absolute inset-0 opacity-0 cursor-pointer w-full h-full"
-                    />
-                    <div className="absolute bottom-0 right-0 p-0.5">
-                      <Pipette size={10} className="text-main drop-shadow-md" />
+                <p className="text-xs text-subtle font-semibold uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                  <Pipette size={11} />
+                  Culoare personalizată
+                  {!isPremiumActive && <Crown size={11} className="text-yellow-400" />}
+                </p>
+                {isPremiumActive ? (
+                  <div className="flex items-center gap-2">
+                    <div
+                      className="w-10 h-10 rounded-xl border-2 border-strong cursor-pointer shrink-0 relative overflow-hidden"
+                      style={{ background: customInput }}
+                      onClick={() => colorInputRef.current?.click()}
+                    >
+                      <input
+                        ref={colorInputRef}
+                        type="color"
+                        value={/^#[0-9a-fA-F]{6}$/.test(customInput) ? customInput : "#7828c8"}
+                        onChange={(e) => { setCustomInput(e.target.value); applyColor(e.target.value); }}
+                        className="absolute inset-0 opacity-0 cursor-pointer w-full h-full"
+                      />
+                      <div className="absolute bottom-0 right-0 p-0.5">
+                        <Pipette size={10} className="text-main drop-shadow-md" />
+                      </div>
                     </div>
+                    <input
+                      type="text"
+                      value={customInput}
+                      onChange={(e) => setCustomInput(e.target.value)}
+                      onKeyDown={(e) => { if (e.key === "Enter") applyColor(customInput); }}
+                      placeholder="#7828c8"
+                      className="flex-1 px-2.5 py-2 rounded-xl border border-medium bg-card text-main text-xs font-mono focus:outline-none focus:border-strongest transition-all"
+                    />
+                    <button
+                      onClick={() => applyColor(customInput)}
+                      className="px-3 py-2 rounded-xl text-xs font-bold bg-primary text-primary-foreground transition-all hover:opacity-90"
+                    >
+                      Aplică
+                    </button>
                   </div>
-                  <input
-                    type="text"
-                    value={customInput}
-                    onChange={(e) => setCustomInput(e.target.value)}
-                    onKeyDown={(e) => { if (e.key === "Enter") applyColor(customInput); }}
-                    placeholder="#7828c8"
-                    className="flex-1 px-2.5 py-2 rounded-xl border border-medium bg-card text-main text-xs font-mono focus:outline-none focus:border-strongest transition-all"
-                  />
-                  <button
-                    onClick={() => applyColor(customInput)}
-                    className="px-3 py-2 rounded-xl text-xs font-bold bg-primary text-primary-foreground transition-all hover:opacity-90"
-                  >
-                    Aplică
-                  </button>
-                </div>
-                {themeState.customColor && (
+                ) : (
+                  <div className="rounded-xl bg-card border border-subtle p-3 text-center">
+                    <p className="text-xs text-muted mb-2">Disponibil doar în varianta Premium</p>
+                    <Link
+                      href="/premium"
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gradient-to-r from-yellow-500 to-orange-500 text-main text-xs font-bold transition-all hover:shadow-lg hover:shadow-yellow-500/30"
+                    >
+                      <Crown size={12} />
+                      Devino Premium
+                    </Link>
+                  </div>
+                )}
+                {isPremiumActive && themeState.customColor && (
                   <button
                     onClick={clearCustom}
                     className="mt-2 text-xs text-subtle hover:text-strong transition-colors flex items-center gap-1"

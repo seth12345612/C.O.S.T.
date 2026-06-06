@@ -46,6 +46,7 @@ Deno.serve(async (req) => {
     if (!payments?.length) return respond({ error: "Payment record not found" }, 404);
 
     const payment = payments[0];
+    const tier = session.metadata?.tier || "premium_basic";
     const premiumUntil = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
 
     await supabase.from("payments").update({
@@ -64,6 +65,7 @@ Deno.serve(async (req) => {
       verified: true,
       email: session.customer_email,
       premium_until: premiumUntil,
+      tier,
     });
   } catch (err) {
     const msg = err instanceof Error ? err.message : "Unknown error";

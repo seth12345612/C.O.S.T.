@@ -5,13 +5,19 @@ import { useTheme } from "@/context/ThemeContext";
 import { useAuth } from "@/context/AuthContext";
 import { ThemePicker } from "@/components/ThemePicker";
 import { SoundEffects } from "@/lib/sounds";
-import { Home, PhoneCall, Wallet, Trophy, Menu, X, Crown, Shield, ShieldCheck, Info, Award, Volume2, VolumeX, LogIn, UserCircle, LogOut, Settings, CalendarCheck, Star, ShoppingBag } from "lucide-react";
+import { SHOP_ITEMS } from "@/data/shop";
+import { loadEquipped } from "@/lib/shop-equip";
+import { useEquipped } from "@/lib/shop-equip";
+import { Home, PhoneCall, Wallet, Trophy, Menu, X, Crown, Shield, ShieldCheck, Info, Award, Volume2, VolumeX, LogIn, UserCircle, LogOut, Settings, CalendarCheck, Star, ShoppingBag, ChevronDown } from "lucide-react";
 
-const NAV = [
+const NAV_PRIMARY = [
   { href: "/", label: "Acasă", icon: Home },
   { href: "/finance", label: "Finanțe", icon: Wallet },
   { href: "/leaderboard", label: "Clasament", icon: Trophy },
   { href: "/shop", label: "Magazin", icon: ShoppingBag },
+];
+
+const NAV_MORE = [
   { href: "/achievements", label: "Achievements", icon: Award },
   { href: "/challenges", label: "Provocări", icon: CalendarCheck },
   { href: "/despre", label: "Despre", icon: Info },
@@ -22,10 +28,18 @@ export function Layout({ children }: { children: React.ReactNode }) {
   const { xpState } = useXP();
   const { themeState, currentPreset } = useTheme();
   const { isPremium, premiumTrialEndsAt, isAdmin, user, logout, subscriptionTier } = useAuth();
+  const { equipped } = useEquipped();
   const [location, setLocation] = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const userMenuRef = useRef<HTMLDivElement>(null);
+
+  const avatarItem = equipped.avatarId
+    ? SHOP_ITEMS.find((i) => i.id === equipped.avatarId)
+    : undefined;
+  const badgeItem = equipped.badgeId
+    ? SHOP_ITEMS.find((i) => i.id === equipped.badgeId)
+    : undefined;
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
@@ -65,12 +79,24 @@ export function Layout({ children }: { children: React.ReactNode }) {
                   color: activeColor,
                   border: `1px solid ${activeColor}55`,
                 } : { color: "rgba(255,255,255,0.5)" }}
+                onMouseEnter={(e) => {
+                  if (location !== "/admin") {
+                    (e.currentTarget as HTMLElement).style.color = activeColor;
+                    (e.currentTarget as HTMLElement).style.background = `${activeColor}15`;
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (location !== "/admin") {
+                    (e.currentTarget as HTMLElement).style.color = "";
+                    (e.currentTarget as HTMLElement).style.background = "";
+                  }
+                }}
               >
                 <ShieldCheck size={12} />
                 <span>Admin</span>
               </Link>
             )}
-            {NAV.map((item) => {
+            {NAV_PRIMARY.map((item) => {
               const active = location === item.href || (item.href !== "/" && location.startsWith(item.href));
               return (
                 <Link
@@ -84,8 +110,8 @@ export function Layout({ children }: { children: React.ReactNode }) {
                   } : undefined}
                   onMouseEnter={(e) => {
                     if (!active) {
-                      (e.currentTarget as HTMLElement).style.color = "white";
-                      (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.05)";
+                      (e.currentTarget as HTMLElement).style.color = activeColor;
+                      (e.currentTarget as HTMLElement).style.background = `${activeColor}15`;
                     }
                   }}
                   onMouseLeave={(e) => {
@@ -100,6 +126,40 @@ export function Layout({ children }: { children: React.ReactNode }) {
                 </Link>
               );
             })}
+            <div className="relative group">
+              <button className="flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-medium transition-all text-muted hover:text-main hover:bg-card-hover">
+                <span>Mai multe</span>
+                <ChevronDown size={10} />
+              </button>
+              <div className="absolute right-0 top-full mt-1 w-40 rounded-xl border border-subtle bg-card-strong shadow-2xl py-1 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
+                {NAV_MORE.map((item) => {
+                  const active = location === item.href;
+                  return (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      className="flex items-center gap-2 px-3 py-2 text-xs transition-colors"
+                      style={active ? { color: activeColor, background: `${activeColor}15` } : { color: "rgba(255,255,255,0.6)" }}
+                      onMouseEnter={(e) => {
+                        if (!active) {
+                          (e.currentTarget as HTMLElement).style.color = activeColor;
+                          (e.currentTarget as HTMLElement).style.background = `${activeColor}10`;
+                        }
+                      }}
+                      onMouseLeave={(e) => {
+                        if (!active) {
+                          (e.currentTarget as HTMLElement).style.color = "";
+                          (e.currentTarget as HTMLElement).style.background = "";
+                        }
+                      }}
+                    >
+                      <item.icon size={12} />
+                      {item.label}
+                    </Link>
+                  );
+                })}
+              </div>
+            </div>
           </nav>
 
           <div className="flex items-center gap-1.5 shrink-0">
@@ -123,6 +183,11 @@ export function Layout({ children }: { children: React.ReactNode }) {
                   P
                 </span>
               )}
+              {badgeItem && (
+                <span className="flex items-center gap-0.5 px-1.5 py-0.5 rounded-full bg-purple-500/20 border border-purple-500/40 text-purple-300 text-[10px] font-bold leading-none" title={badgeItem.nume}>
+                  {badgeItem.emoji}
+                </span>
+              )}
             </div>
 
             <button
@@ -138,8 +203,8 @@ export function Layout({ children }: { children: React.ReactNode }) {
                   onClick={() => setUserMenuOpen((v) => !v)}
                   className="flex items-center gap-1.5 cursor-pointer"
                 >
-                  <div className="w-6 h-6 rounded-full bg-card-hover flex items-center justify-center">
-                    <UserCircle size={14} className="text-muted" />
+                  <div className="w-6 h-6 rounded-full bg-card-hover flex items-center justify-center text-sm">
+                    {avatarItem ? avatarItem.emoji : <UserCircle size={14} className="text-muted" />}
                   </div>
                   <span className="hidden sm:block text-xs text-muted max-w-[80px] truncate">{user.name}</span>
                 </button>
@@ -210,7 +275,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
                   Admin
                 </Link>
               )}
-              {NAV.map((item) => {
+              {[...NAV_PRIMARY, ...NAV_MORE].map((item) => {
                 const active = location === item.href || (item.href !== "/" && location.startsWith(item.href));
                 return (
                   <Link

@@ -11,7 +11,7 @@ export function GlossaryButton() {
       <button
         onClick={() => setOpen(true)}
         className="fixed bottom-4 right-4 z-50 p-3 rounded-full bg-gradient-to-r from-purple-600 to-fuchsia-600 hover:from-purple-500 hover:to-fuchsia-500 text-main shadow-lg shadow-purple-900/40 transition-all hover:scale-105"
-        title="Glosar financiar"
+        title="Vocabular financiar"
       >
         <BookOpen size={20} />
       </button>

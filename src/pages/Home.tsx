@@ -148,7 +148,7 @@ export default function Home() {
               onClick={() => setShowGlossary(true)}
               className="px-8 py-3 border border-purple-500/40 hover:border-purple-500 bg-purple-500/10 text-purple-300 hover:text-purple-200 rounded-2xl font-bold text-lg transition-all hover:bg-purple-500/20"
             >
-              Glosar
+              Vocabular
             </button>
             <Link href="/mini-game/quiz" className="px-5 py-3 border border-fuchsia-500/40 hover:border-fuchsia-500 bg-fuchsia-500/10 text-fuchsia-300 hover:text-fuchsia-200 rounded-2xl font-bold text-sm transition-all hover:bg-fuchsia-500/20 flex items-center gap-2">
               <Brain size={16} />
@@ -311,12 +311,11 @@ export default function Home() {
           <div className="flex items-center gap-2 mb-6">
             <Crown size={18} className="text-yellow-400" />
             <h2 className="text-xl font-bold text-main">Scenarii Premium</h2>
-            <span className="ml-2 text-xs text-subtle">Necesită XP sau abonament PRO</span>
+            <span className="ml-2 text-xs text-subtle">Necesită abonament PRO</span>
           </div>
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
             {premiumScenarii.map((sc, i) => {
               const unlocked = isUnlocked(sc.id);
-              const xpNeeded = xpRequiredFor(sc.id);
               const inSeason = isInSeason(sc.seasonTag);
               const isPremiumLocked = !unlocked && !isPremiumActive;
 
@@ -369,7 +368,7 @@ export default function Home() {
                           <span className="text-xs text-yellow-300/60">·</span>
                           <span className="text-xs text-yellow-400 flex items-center gap-1">
                             <Lock size={10} />
-                            {xpNeeded} XP / PRO
+                            PRO
                           </span>
                         </>
                       )}

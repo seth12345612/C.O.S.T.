@@ -7,7 +7,6 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "start": "serve -s dist -l $PORT",
     "lint": "eslint .",
     "test": "vitest run",
     "test:watch": "vitest",
@@ -21,9 +20,9 @@
     "lucide-react": "^0.545.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
-    "serve": "^14.2.6",
     "stripe": "^22.1.1",
-    "wouter": "^3.3.5"
+    "wouter": "^3.3.5",
+    "zustand": "^5.0.14"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

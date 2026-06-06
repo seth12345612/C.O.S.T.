@@ -1,4 +1,4 @@
-import { Link, useSearchParams } from "wouter";
+import { Link, useSearchParams, useLocation } from "wouter";
 import { motion } from "framer-motion";
 import { Crown, Star, Shield, Sparkles, MessageCircle, Unlock, Calendar, Zap, BarChart3, Target, Check, Mail, Loader2, CreditCard, ArrowUp } from "lucide-react";
 import { OrbBackground } from "@/components/OrbBackground";
@@ -23,6 +23,7 @@ export default function Premium() {
   const [checkoutError, setCheckoutError] = useState("");
   const [selectedTier, setSelectedTier] = useState<SubscriptionTier>("premium_basic");
   const [searchParams] = useSearchParams();
+  const [, setLocation] = useLocation();
 
   useEffect(() => {
     if (searchParams.get("canceled")) {
@@ -31,8 +32,24 @@ export default function Premium() {
   }, [searchParams]);
 
   const handleBuyPremium = async (tier: SubscriptionTier) => {
+    // Dacă utilizatorul are deja un abonament activ și vrea Advanced, trimite-l la pagina de upgrade
+    if (isActive && tier === "premium_advanced" && subscriptionTier === "premium_basic") {
+      setLocation("/upgrade-advanced");
+      return;
+    }
+
+    setSelectedTier(tier);
     setCheckoutLoading(true);
     setCheckoutError("");
+
+    const emailToUse = user?.email ?? "";
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailToUse || !emailRegex.test(emailToUse)) {
+      setCheckoutError("Te rugăm să te conectezi cu un email valid (ex: nume@domeniu.com) pentru a procesa plata securizată.");
+      setCheckoutLoading(false);
+      return;
+    }
+
     try {
       const res = await fetch(CHECKOUT_FUNC, {
         method: "POST",
@@ -171,11 +188,7 @@ export default function Premium() {
                   </div>
                 ) : (
                   <button
-                    onClick={() => isActive ? (
-                      tier.id === "premium_advanced"
-                        ? activateAdvancedPremium(premiumTrialEndsAt! - Date.now() + 30 * 24 * 60 * 60 * 1000)
-                        : activateFullPremium(premiumTrialEndsAt! - Date.now() + 30 * 24 * 60 * 60 * 1000)
-                    ) : handleBuyPremium(tier.id)}
+                    onClick={() => handleBuyPremium(tier.id)}
                     disabled={checkoutLoading && selectedTier === tier.id}
                     className={`w-full py-2.5 rounded-xl font-bold text-sm transition-all ${
                       tier.popular
@@ -286,9 +299,9 @@ export default function Premium() {
             Plăți securizate prin Stripe. Nu stocăm datele cardului tău.
           </p>
           <p className="text-xs text-faint">
-            Ai întrebări? Contactează-ne la{" "}
-            <a href="mailto:contact@cost.ro" className="text-yellow-400 hover:underline">
-              contact@cost.ro
+            Ai întrebări?{" "}
+            <a href="https://mail.google.com/mail/?view=cm&fs=1&to=alexandruaoglagioaie@gmail.com" target="_blank" rel="noopener noreferrer" className="text-yellow-400 hover:underline">
+              Contactează-ne
             </a>
           </p>
         </motion.section>

@@ -28,7 +28,8 @@ export default function Login() {
       setError("Toate câmpurile sunt obligatorii");
       return;
     }
-    if (!email.includes("@")) {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email.trim())) {
       setError("Adresa de email nu este validă");
       return;
     }

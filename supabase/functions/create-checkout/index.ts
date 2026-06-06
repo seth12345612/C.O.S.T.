@@ -29,8 +29,12 @@ Deno.serve(async (req) => {
   if (!STRIPE_SECRET_KEY) return respond({ error: "STRIPE_SECRET_KEY not set" }, 500);
 
   try {
-    const { email, name } = await req.json();
+    const { email, name, tier } = await req.json();
     const baseUrl = req.headers.get("origin") ?? "http://localhost:3000";
+
+    const tierConfig = tier === "premium_advanced"
+      ? { amount: 1900, name: "C.O.S.T. Premium Advanced — 30 de zile", desc: "Toate funcțiile avansate premium" }
+      : { amount: 900, name: "C.O.S.T. Premium — 30 de zile", desc: "Acces complet la toate funcțiile premium" };
 
     let userId: string | null = null;
     if (email) {
@@ -40,7 +44,7 @@ Deno.serve(async (req) => {
 
     const { data: order, error: orderErr } = await supabase
       .from("orders")
-      .insert({ user_id: userId, email: email || "", amount: 900, currency: "ron", status: "pending", duration_days: 30 })
+      .insert({ user_id: userId, email: email || "", amount: tierConfig.amount, currency: "ron", status: "pending", duration_days: 30 })
       .select("id")
       .single();
 
@@ -51,15 +55,15 @@ Deno.serve(async (req) => {
       line_items: [{
         price_data: {
           currency: "ron",
-          product_data: { name: "C.O.S.T. Premium — 30 de zile", description: "Acces complet la toate funcțiile premium" },
-          unit_amount: 900,
+          product_data: { name: tierConfig.name, description: tierConfig.desc },
+          unit_amount: tierConfig.amount,
         },
         quantity: 1,
       }],
       success_url: `${baseUrl}/payment/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${baseUrl}/premium?canceled=1`,
       customer_email: email,
-      metadata: { order_id: order.id },
+      metadata: { order_id: order.id, tier: tier || "premium_basic" },
     });
 
     const { error: payErr } = await supabase.from("payments").insert({
@@ -67,7 +71,7 @@ Deno.serve(async (req) => {
       user_id: userId,
       provider: "stripe",
       provider_session_id: session.id,
-      amount: 900,
+      amount: tierConfig.amount,
       currency: "ron",
       status: "pending",
     });

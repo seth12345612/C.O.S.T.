@@ -17,6 +17,7 @@ import {
 import type { LeaderboardEntry } from "@/types";
 import { loadLeaderboardEntries, loadLocalScores, getBannedUsers } from "@/lib/leaderboard";
 import ShareButton from "@/components/ShareButton";
+import { useQuery } from "@tanstack/react-query";
 
 const RANK_ICONS = [
   { icon: Trophy, color: "text-yellow-400" },
@@ -108,32 +109,24 @@ const FILTERS: { key: Filter; label: string; icon: typeof Globe }[] = [
 ];
 
 export default function Leaderboard() {
-  const [userScores, setUserScores] = useState<LeaderboardEntry[]>([]);
-  const [sortedAll, setSortedAll] = useState<LeaderboardEntry[]>([]);
-  const [isLoaded, setIsLoaded] = useState(false);
+  const [userScores, setUserScores] = useState<LeaderboardEntry[]>(() => loadLocalScores());
   const [category, setCategory] = useState<Category>("economii");
   const [filter, setFilter] = useState<Filter>("global");
+
+  const { data: sortedAll = [], isLoading } = useQuery({
+    queryKey: ["leaderboard"],
+    queryFn: async () => {
+      const [banned, loaded] = await Promise.all([getBannedUsers(), loadLeaderboardEntries()]);
+      const filtered = loaded.filter((e) => !banned.includes(e.username));
+      setUserScores(filtered);
+      return filtered.sort((a, b) => b.score - a.score).slice(0, 10);
+    },
+    staleTime: 1000 * 60 * 5,
+  });
 
   useEffect(() => {
     const local = loadLocalScores();
     setUserScores(local);
-    setSortedAll(local.sort((a, b) => b.score - a.score).slice(0, 10));
-    setIsLoaded(true);
-
-    let cancelled = false;
-    (async () => {
-      try {
-        const [banned, loaded] = await Promise.all([getBannedUsers(), loadLeaderboardEntries()]);
-        if (!cancelled) {
-          const filtered = loaded.filter((e) => !banned.includes(e.username));
-          setUserScores(filtered);
-          setSortedAll(filtered.sort((a, b) => b.score - a.score).slice(0, 10));
-        }
-      } catch (e) {
-        console.warn("Leaderboard sync failed:", e);
-      }
-    })();
-    return () => { cancelled = true; };
   }, []);
 
   const sortFn = (a: LeaderboardEntry, b: LeaderboardEntry) => {
@@ -153,7 +146,7 @@ export default function Leaderboard() {
 
   const mockNote = filter !== "global" ? "funcționalitate în curând" : null;
 
-  if (!isLoaded) {
+  if (isLoading) {
     return (
       <Layout>
         <OrbBackground />

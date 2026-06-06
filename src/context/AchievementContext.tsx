@@ -2,9 +2,11 @@ import { createContext, useContext, useState, useCallback, useEffect, useRef, ty
 import type { Achievement, AchievementStats } from "@/types";
 import { ACHIEVEMENTS, checkAchievements } from "@/data/achievements";
 import { useAuth } from "@/context/AuthContext";
+import { useXP } from "@/context/XPContext";
 import { loadProfile, saveProfile } from "@/lib/syncProfile";
 
 const STORAGE_KEY = "cost_achievements";
+const TUTORIAL_KEY = "cost_tutorial_completed";
 
 interface AchievementContextType {
   deblocate: string[];
@@ -29,9 +31,13 @@ export function AchievementProvider({ children: copii, statsInitiale }: { childr
     premiumActiv: false, utilizatorConectat: false, limitedEventsCompletate: 0, achievementIds: [],
     ...statsInitiale,
   });
-  const { user } = useAuth();
+  const { user, isPremium, premiumTrialEndsAt } = useAuth();
+  const { xpState } = useXP();
   const dbSynced = useRef(false);
   const saveTimer = useRef<ReturnType<typeof setTimeout>>();
+  const lastLevel = useRef(0);
+  const lastLogin = useRef(false);
+  const lastPremium = useRef(false);
 
   useEffect(() => {
     if (!user?.email || dbSynced.current) return;
@@ -67,6 +73,41 @@ export function AchievementProvider({ children: copii, statsInitiale }: { childr
   }, [deblocate]);
 
   const reseteazaNotificari = useCallback(() => setNotificari([]), []);
+
+  useEffect(() => {
+    const loggedIn = !!user;
+    if (loggedIn && !lastLogin.current) {
+      lastLogin.current = true;
+      actualizeazaStats({ utilizatorConectat: true });
+    }
+    if (!loggedIn) lastLogin.current = false;
+  }, [user, actualizeazaStats]);
+
+  const isPremiumActive = isPremium && premiumTrialEndsAt && premiumTrialEndsAt > Date.now();
+  useEffect(() => {
+    if (isPremiumActive && !lastPremium.current) {
+      lastPremium.current = true;
+      actualizeazaStats({ premiumActiv: true });
+    }
+    if (!isPremiumActive) lastPremium.current = false;
+  }, [isPremiumActive, actualizeazaStats]);
+
+  useEffect(() => {
+    if (xpState.level !== lastLevel.current) {
+      lastLevel.current = xpState.level;
+      actualizeazaStats({
+        nivelCurent: xpState.level,
+        scenariiDeblocate: xpState.scenariiDeblocate.length,
+      });
+    }
+  }, [xpState.level, xpState.scenariiDeblocate.length, actualizeazaStats]);
+
+  useEffect(() => {
+    const completed = localStorage.getItem(TUTORIAL_KEY) === "true";
+    if (completed) {
+      actualizeazaStats({ tutorialCompletat: true });
+    }
+  }, [actualizeazaStats]);
 
   return (
     <AchievementContext.Provider value={{ deblocate, notificari, stats: { ...stats, achievementIds: deblocate }, actualizeazaStats, reseteazaNotificari }}>

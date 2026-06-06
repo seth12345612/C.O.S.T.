@@ -29,6 +29,7 @@ import PaymentSuccess from "@/pages/PaymentSuccess";
 import Profile from "@/pages/Profile";
 import QuizGame from "@/pages/QuizGame";
 import StockGame from "@/pages/StockGame";
+import UpgradeAdvanced from "@/pages/UpgradeAdvanced";
 import { useEffect } from "react";
 
 const queryClient = new QueryClient();
@@ -66,6 +67,7 @@ function Router() {
       <Route path="/profile" component={Profile} />
       <Route path="/mini-game/quiz" component={QuizGame} />
       <Route path="/mini-game/bursa" component={StockGame} />
+      <Route path="/upgrade-advanced" component={UpgradeAdvanced} />
       <Route component={NotFound} />
     </Switch>
   );

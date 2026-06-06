@@ -95,7 +95,9 @@ export default function Achievements() {
                           {deblocat && <Trophy size={12} className="text-yellow-400 shrink-0" />}
                           {!deblocat && <Lock size={10} className="text-faint shrink-0" />}
                         </div>
-                        <p className="text-xs text-subtle mt-0.5">{a.descriere}</p>
+                        {a.categorie !== "ascuns" && (
+                          <p className="text-xs text-subtle mt-0.5">{a.descriere}</p>
+                        )}
                         {deblocat && (
                           <span className="text-xs text-yellow-400/70 mt-1 inline-block">+{a.xpReward} XP</span>
                         )}

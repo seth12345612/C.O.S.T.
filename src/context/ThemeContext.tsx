@@ -1,6 +1,8 @@
 import { createContext, useContext, useState, useCallback, useEffect, type ReactNode } from "react";
 import type { ThemePreset, ThemeState } from "@/types";
 
+export const SHOP_PRESET_IDS = ["polar", "neon", "gold", "green"];
+
 export const THEME_PRESETS: ThemePreset[] = [
   {
     id: "purple",
@@ -9,8 +11,8 @@ export const THEME_PRESETS: ThemePreset[] = [
     primaryH: 270, primaryS: 70, primaryL: 47,
     secondary: "#ff7828",
     secondaryH: 25, secondaryS: 100, secondaryL: 57,
-    bg: "#0d0615",
-    bgH: 270, bgS: 15, bgL: 6,
+    bg: "#1a0f2e",
+    bgH: 270, bgS: 30, bgL: 12,
   },
   {
     id: "blue",
@@ -19,8 +21,8 @@ export const THEME_PRESETS: ThemePreset[] = [
     primaryH: 221, primaryS: 83, primaryL: 53,
     secondary: "#f59e0b",
     secondaryH: 38, secondaryS: 92, secondaryL: 50,
-    bg: "#020b18",
-    bgH: 221, bgS: 50, bgL: 6,
+    bg: "#0a1628",
+    bgH: 221, bgS: 50, bgL: 10,
   },
   {
     id: "green",
@@ -29,8 +31,8 @@ export const THEME_PRESETS: ThemePreset[] = [
     primaryH: 161, primaryS: 94, primaryL: 30,
     secondary: "#f97316",
     secondaryH: 21, secondaryS: 96, secondaryL: 52,
-    bg: "#021108",
-    bgH: 161, bgS: 40, bgL: 4,
+    bg: "#061a10",
+    bgH: 161, bgS: 40, bgL: 8,
   },
   {
     id: "rose",
@@ -39,8 +41,8 @@ export const THEME_PRESETS: ThemePreset[] = [
     primaryH: 347, primaryS: 77, primaryL: 50,
     secondary: "#f59e0b",
     secondaryH: 38, secondaryS: 92, secondaryL: 50,
-    bg: "#120208",
-    bgH: 347, bgS: 40, bgL: 4,
+    bg: "#1a0810",
+    bgH: 347, bgS: 40, bgL: 8,
   },
   {
     id: "orange",
@@ -49,8 +51,8 @@ export const THEME_PRESETS: ThemePreset[] = [
     primaryH: 21, primaryS: 90, primaryL: 48,
     secondary: "#7c3aed",
     secondaryH: 263, secondaryS: 70, secondaryL: 58,
-    bg: "#120800",
-    bgH: 21, bgS: 60, bgL: 4,
+    bg: "#1a0c04",
+    bgH: 21, bgS: 50, bgL: 8,
   },
   {
     id: "cyan",
@@ -59,8 +61,8 @@ export const THEME_PRESETS: ThemePreset[] = [
     primaryH: 192, primaryS: 91, primaryL: 36,
     secondary: "#f59e0b",
     secondaryH: 38, secondaryS: 92, secondaryL: 50,
-    bg: "#010f14",
-    bgH: 192, bgS: 60, bgL: 4,
+    bg: "#041820",
+    bgH: 192, bgS: 50, bgL: 8,
   },
   {
     id: "gold",
@@ -69,8 +71,8 @@ export const THEME_PRESETS: ThemePreset[] = [
     primaryH: 32, primaryS: 95, primaryL: 44,
     secondary: "#7c3aed",
     secondaryH: 263, secondaryS: 70, secondaryL: 58,
-    bg: "#100800",
-    bgH: 32, bgS: 50, bgL: 4,
+    bg: "#1a1004",
+    bgH: 32, bgS: 50, bgL: 8,
   },
   {
     id: "pink",
@@ -79,10 +81,40 @@ export const THEME_PRESETS: ThemePreset[] = [
     primaryH: 330, primaryS: 71, primaryL: 51,
     secondary: "#6366f1",
     secondaryH: 239, secondaryS: 84, secondaryL: 67,
-    bg: "#120009",
-    bgH: 330, bgS: 40, bgL: 4,
+    bg: "#1a0812",
+    bgH: 330, bgS: 40, bgL: 8,
+  },
+  {
+    id: "polar",
+    label: "Noapte polară",
+    primary: "#1e3a5f",
+    primaryH: 210, primaryS: 80, primaryL: 25,
+    secondary: "#60a5fa",
+    secondaryH: 210, secondaryS: 60, secondaryL: 60,
+    bg: "#060e1a",
+    bgH: 210, bgS: 50, bgL: 6,
+  },
+  {
+    id: "neon",
+    label: "Roz neon",
+    primary: "#f43f5e",
+    primaryH: 346, primaryS: 77, primaryL: 50,
+    secondary: "#d946ef",
+    secondaryH: 300, secondaryS: 60, secondaryL: 54,
+    bg: "#1a040e",
+    bgH: 346, bgS: 40, bgL: 8,
   },
 ];
+
+function toHex(color: string): string {
+  const test = new Option().style;
+  test.color = color;
+  if (!test.color) return "#7828c8";
+  const ctx = document.createElement("canvas").getContext("2d")!;
+  ctx.fillStyle = test.color;
+  const hex = ctx.fillStyle;
+  return hex === "transparent" ? "#7828c8" : hex;
+}
 
 function hexToHSL(hex: string): { h: number; s: number; l: number } {
   const r = parseInt(hex.slice(1, 3), 16) / 255;
@@ -118,18 +150,31 @@ function save(state: ThemeState) {
 function applyTheme(preset: ThemePreset, customPrimary?: string | null) {
   const root = document.documentElement;
   let h = preset.primaryH, s = preset.primaryS, l = preset.primaryL;
+  let bgH = preset.bgH, bgS = preset.bgS, bgL = preset.bgL;
   if (customPrimary) {
-    const hsl = hexToHSL(customPrimary);
+    const hex = toHex(customPrimary);
+    const hsl = hexToHSL(hex);
     h = hsl.h; s = hsl.s; l = hsl.l;
+    bgH = hsl.h;
+    bgS = Math.max(10, Math.round(hsl.s * 0.35));
+    bgL = Math.max(6, Math.min(14, Math.round(hsl.l * 0.15)));
   }
+  const cardL = Math.min(100, bgL + 5);
+  const mutedL = Math.min(100, bgL + 12);
+  const borderL = Math.min(100, bgL + 18);
+  const fgL = Math.min(100, bgL + 65);
   root.style.setProperty("--primary", `${h} ${s}% ${l}%`);
   root.style.setProperty("--ring", `${h} ${s}% ${l}%`);
   root.style.setProperty("--sidebar-primary", `${h} ${s}% ${l}%`);
+  root.style.setProperty("--primary-foreground", `${h} ${Math.max(0, s - 20)}% ${l > 60 ? 10 : 92}%`);
   root.style.setProperty("--secondary", `${preset.secondaryH} ${preset.secondaryS}% ${preset.secondaryL}%`);
-  root.style.setProperty("--background", `${preset.bgH} ${preset.bgS}% ${preset.bgL}%`);
-  root.style.setProperty("--card", `${preset.bgH} ${preset.bgS}% ${Math.min(100, preset.bgL + 4)}%`);
-  root.style.setProperty("--muted", `${preset.bgH} ${Math.max(0, preset.bgS - 5)}% ${Math.min(100, preset.bgL + 10)}%`);
-  root.style.setProperty("--border", `${preset.bgH} ${Math.min(100, preset.bgS + 5)}% ${Math.min(100, preset.bgL + 14)}%`);
+  root.style.setProperty("--background", `${bgH} ${bgS}% ${bgL}%`);
+  root.style.setProperty("--card", `${bgH} ${bgS}% ${cardL}%`);
+  root.style.setProperty("--card-foreground", `${bgH} ${Math.max(0, bgS - 10)}% ${fgL}%`);
+  root.style.setProperty("--card-border", `${bgH} ${Math.min(100, bgS + 10)}% ${Math.min(100, borderL + 4)}%`);
+  root.style.setProperty("--muted", `${bgH} ${Math.max(0, bgS - 5)}% ${mutedL}%`);
+  root.style.setProperty("--muted-foreground", `${bgH} ${Math.max(0, bgS - 10)}% ${Math.min(100, bgL + 45)}%`);
+  root.style.setProperty("--border", `${bgH} ${Math.min(100, bgS + 5)}% ${borderL}%`);
 }
 
 interface ThemeContextType {

@@ -11,7 +11,7 @@ const ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || "eyJhbGciOiJIUzI1NiIs
 
 export default function PaymentSuccess() {
   const [searchParams] = useSearchParams();
-  const { activateFullPremium, isPremium } = useAuth();
+  const { activateFullPremium, activateAdvancedPremium, isPremium } = useAuth();
   const [status, setStatus] = useState<"verifying" | "success" | "error">("verifying");
   const [errorMsg, setErrorMsg] = useState("");
 
@@ -38,7 +38,11 @@ export default function PaymentSuccess() {
         if (!res.ok || data.error) throw new Error(data.error || `HTTP ${res.status}`);
 
         if (data.verified) {
-          activateFullPremium(30 * 24 * 60 * 60 * 1000);
+          if (data.tier === "premium_advanced") {
+            activateAdvancedPremium(30 * 24 * 60 * 60 * 1000);
+          } else {
+            activateFullPremium(30 * 24 * 60 * 60 * 1000);
+          }
           setStatus("success");
         } else {
           setStatus("error");

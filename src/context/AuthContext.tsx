@@ -151,9 +151,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (data.isPremium && data.premiumUntil) {
         setIsPremium(true);
         setPremiumTrialEndsAt(data.premiumUntil);
+        if (data.tier) setSubscriptionTier(data.tier);
       }
     } catch {}
-  }, []);
+  }, [setSubscriptionTier]);
 
   useEffect(() => {
     if (user?.email) {
@@ -208,7 +209,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const endsAt = Date.now() + 7 * 24 * 60 * 60 * 1000;
     setIsPremium(true);
     setPremiumTrialEndsAt(endsAt);
-    setSubscriptionTier("premium_basic");
+    setSubscriptionTier("premium_advanced");
   }, [setSubscriptionTier]);
 
   const activateFullPremium = useCallback((durationMs: number) => {

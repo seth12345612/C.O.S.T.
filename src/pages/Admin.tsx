@@ -9,6 +9,7 @@ import {
 } from "@/lib/leaderboard";
 import { getAllUsers as getDBUsers, getLeaderboardStats } from "@/lib/supabase";
 import { Trash2, Shield, ShieldOff, Search, AlertTriangle, Users, Trophy, User } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
 
 interface UserRow {
   dbUser?: DBUser;
@@ -22,25 +23,18 @@ interface UserRow {
 
 export default function Admin() {
   const { isAdmin, user, dbUser: adminDbUser } = useAuth();
-  const [entries, setEntries] = useState<LeaderboardEntry[]>([]);
-  const [users, setUsers] = useState<UserRow[]>([]);
-  const [banned, setBanned] = useState<string[]>([]);
   const [banInput, setBanInput] = useState("");
   const [tab, setTab] = useState<"users" | "leaderboard" | "bans">("users");
-  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    if (!isAdmin) return;
-    (async () => {
-      setLoading(true);
+  const { data, isLoading: loading, refetch } = useQuery({
+    queryKey: ["adminData"],
+    queryFn: async () => {
       const [loadedEntries, dbUsers, stats, bannedList] = await Promise.all([
         loadLeaderboardEntries(),
         getDBUsers(),
         getLeaderboardStats(),
         getBannedUsers(),
       ]);
-      setEntries(loadedEntries);
-      setBanned(bannedList);
       const userRows: UserRow[] = dbUsers.map((db) => {
         const stat = stats.find((s) => s.username === db.name);
         return {
@@ -54,10 +48,14 @@ export default function Admin() {
         };
       });
       userRows.sort((a, b) => b.bestScore - a.bestScore);
-      setUsers(userRows);
-      setLoading(false);
-    })();
-  }, [isAdmin]);
+      return { entries: loadedEntries, users: userRows, banned: bannedList };
+    },
+    enabled: !!isAdmin,
+  });
+
+  const entries = data?.entries ?? [];
+  const users = data?.users ?? [];
+  const banned = data?.banned ?? [];
 
   if (!isAdmin) {
     return (
@@ -74,21 +72,19 @@ export default function Admin() {
 
   async function handleDelete(id: string) {
     await deleteLeaderboardEntry(id);
-    setEntries((prev) => prev.filter((e) => e.id !== id));
+    refetch();
   }
 
   async function handleBan(name: string) {
     if (!name.trim()) return;
     await banUser(name.trim());
-    setBanned(await getBannedUsers());
-    setUsers((prev) => prev.map((u) => u.username === name.trim() ? { ...u, isBanned: true } : u));
     setBanInput("");
+    refetch();
   }
 
   async function handleUnban(name: string) {
     await unbanUser(name);
-    setBanned(await getBannedUsers());
-    setUsers((prev) => prev.map((u) => u.username === name ? { ...u, isBanned: false } : u));
+    refetch();
   }
 
   const sorted = [...entries].sort((a, b) => b.score - a.score);
@@ -206,7 +202,7 @@ export default function Admin() {
         {tab === "leaderboard" && (
           <div className="space-y-2">
             <div className="flex justify-end">
-              <button onClick={async () => { if (confirm("Stergi TOATE intrarile din clasament?")) { await clearLeaderboard(); setEntries([]); } }}
+              <button onClick={async () => { if (confirm("Stergi TOATE intrarile din clasament?")) { await clearLeaderboard(); refetch(); } }}
                 className="px-3 py-1.5 rounded-lg bg-red-600/20 border border-red-500/30 text-red-400 hover:bg-red-600/30 text-xs font-semibold transition-colors">
                 <Trash2 size={12} className="inline mr-1" /> Sterge tot clasamentul
               </button>
