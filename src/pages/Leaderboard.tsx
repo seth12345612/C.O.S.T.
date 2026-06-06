@@ -224,11 +224,23 @@ export default function Leaderboard() {
         )}
 
         {!hasScores ? (
-          <div className="text-center py-12">
-            <User size={48} className="text-faintest mx-auto mb-4" />
-            <p className="text-dim text-lg font-medium">Nu exista scoruri inca</p>
-            <p className="text-faint text-sm mt-2">Joaca un joc pentru a aparea in clasament!</p>
-          </div>
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="text-center py-16 px-4"
+          >
+            <div className="w-20 h-20 mx-auto mb-5 rounded-3xl bg-gradient-to-br from-amber-500/10 to-yellow-500/5 border border-amber-500/20 flex items-center justify-center">
+              <Trophy size={36} className="text-amber-400" />
+            </div>
+            <h2 className="text-xl font-bold text-main mb-2">Nimeni pe podium... încă!</h2>
+            <p className="text-muted text-sm max-w-xs mx-auto leading-relaxed">
+              Clasamentul se golește când nu mai sunt jucători activi. Joacă un scenariu și fii primul care apare!
+            </p>
+            <div className="mt-6 flex items-center justify-center gap-2 text-xs text-faint">
+              <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
+              Tu poți fi nr. 1
+            </div>
+          </motion.div>
         ) : (
           <div className="space-y-4">
             {userScores.length > 0 && (
