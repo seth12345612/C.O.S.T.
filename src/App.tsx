@@ -16,7 +16,7 @@ import GamePage from "@/pages/Game";
 import Tutorial from "@/pages/Tutorial";
 import Contact from "@/pages/Contact";
 import Finance from "@/pages/Finance";
-import Leaderboard from "@/pages/Leaderboard";
+
 import Premium from "@/pages/Premium";
 import Shop from "@/pages/Shop";
 import Admin from "@/pages/Admin";
@@ -56,7 +56,6 @@ function Router() {
       <Route path="/finance" component={Finance} />
       <Route path="/premium" component={Premium} />
       <Route path="/shop" component={Shop} />
-      <Route path="/leaderboard" component={Leaderboard} />
       <Route path="/admin" component={Admin} />
       <Route path="/despre" component={Despre} />
       <Route path="/achievements" component={Achievements} />
