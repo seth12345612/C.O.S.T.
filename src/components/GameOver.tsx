@@ -8,7 +8,7 @@ import { useAchievements } from "@/context/AchievementContext";
 import { SoundEffects } from "@/lib/sounds";
 import { Trophy, RotateCcw, TrendingUp, Coins, Smile } from "lucide-react";
 import { useEffect, useRef } from "react";
-import { getScenarioLabel } from "@/data/scenarios";
+import { saveLeaderboardEntry, getScenarioLabel } from "@/lib/leaderboard";
 import { DIFICULTATI } from "@/data/scenarios";
 
 export function GameOver() {
@@ -18,6 +18,7 @@ export function GameOver() {
   const { user, dbUser } = useAuth();
   const { actualizeazaStats, stats } = useAchievements();
   const xpAdded = useRef(false);
+  const scoreSaved = useRef(false);
   const moneyTransferred = useRef(false);
   const capitalSaved = useRef(false);
 
@@ -26,6 +27,7 @@ export function GameOver() {
   useEffect(() => {
     if (!state?.isGameOver) {
       xpAdded.current = false;
+      scoreSaved.current = false;
       capitalSaved.current = false;
       return;
     }
@@ -68,11 +70,25 @@ export function GameOver() {
       });
     }
 
+    if (!scoreSaved.current) {
+      scoreSaved.current = true;
+      const months = Math.max(1, Math.ceil(state.saptamana / 4));
+      const username = user?.name || "Anonim";
+      const uid = dbUser?.id;
+      saveLeaderboardEntry({
+        userId: uid ?? "",
+        username,
+        score: Math.round(state.bani),
+        months,
+        scenario: getScenarioLabel(state.scenariuId, state.subScenariuId),
+      });
+    }
+
     if (!capitalSaved.current) {
       capitalSaved.current = true;
       localStorage.setItem("cost_capital", JSON.stringify(Math.round(state.bani)));
     }
-  }, [state, addXP, addTransaction, deleteTransaction, financeState.tranzactii, user]);
+  }, [state, addXP, addTransaction, deleteTransaction, financeState.tranzactii, user, dbUser]);
 
   if (!state || !state.isGameOver) return null;
 

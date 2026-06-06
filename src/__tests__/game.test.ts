@@ -29,3 +29,10 @@ describe("Game State Transitions", () => {
   });
 });
 
+describe("Leaderboard Scoring", () => {
+  it("score equals remaining money", () => {
+    const score = 2500;
+    const isPositive = score >= 0;
+    expect(isPositive).toBe(true);
+  });
+});

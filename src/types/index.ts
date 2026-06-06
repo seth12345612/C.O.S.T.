@@ -256,6 +256,26 @@ export interface DBUser {
   created_at: string;
 }
 
+export interface DBLeaderboardEntry {
+  id: string;
+  user_id: string;
+  username: string;
+  score: number;
+  months: number;
+  scenario: string;
+  created_at: string;
+}
+
+// === LEADERBOARD ===
+export interface LeaderboardEntry {
+  id: string;
+  username: string;
+  score: number;
+  months: number;
+  scenario: string;
+  date: number;
+}
+
 // === TUTORIAL ===
 export interface TutorialEvent {
   id: string;

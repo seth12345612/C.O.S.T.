@@ -616,11 +616,4 @@ export const START_CONFIG: Record<string, Record<DifficultyKey, { bani: number; 
   vacanta: { usor: { bani: 5000, fericire: 100 }, mediu: { bani: 3500, fericire: 95 }, greu: { bani: 2500, fericire: 88 } },
 };
 
-export function getScenarioLabel(scenarioId: string, subScenarioId?: string) {
-  const scenario = SCENARII[scenarioId];
-  if (!scenario) return scenarioId;
-  const sub = scenario.subScenarii.find((item) => item.id === subScenarioId);
-  return sub ? `${scenario.nume} — ${sub.label}` : scenario.nume;
-}
-
 export type { DifficultyKey, SubScenario, Scenario } from "@/types";

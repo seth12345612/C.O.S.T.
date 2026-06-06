@@ -8,11 +8,12 @@ import { SoundEffects } from "@/lib/sounds";
 import { SHOP_ITEMS } from "@/data/shop";
 import { loadEquipped } from "@/lib/shop-equip";
 import { useEquipped } from "@/lib/shop-equip";
-import { Home, PhoneCall, Wallet, Menu, X, Crown, Shield, ShieldCheck, Info, Award, Volume2, VolumeX, LogIn, UserCircle, LogOut, Settings, CalendarCheck, Star, ShoppingBag, ChevronDown } from "lucide-react";
+import { Home, PhoneCall, Wallet, Trophy, Menu, X, Crown, Shield, ShieldCheck, Info, Award, Volume2, VolumeX, LogIn, UserCircle, LogOut, Settings, CalendarCheck, Star, ShoppingBag, ChevronDown } from "lucide-react";
 
 const NAV_PRIMARY = [
   { href: "/", label: "Acasă", icon: Home },
   { href: "/finance", label: "Finanțe", icon: Wallet },
+  { href: "/leaderboard", label: "Clasament", icon: Trophy },
   { href: "/shop", label: "Magazin", icon: ShoppingBag },
 ];
 
