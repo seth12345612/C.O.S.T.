@@ -4,6 +4,8 @@ import { useXP } from "@/context/XPContext";
 import { useTheme } from "@/context/ThemeContext";
 import { useAuth } from "@/context/AuthContext";
 import { ThemePicker } from "@/components/ThemePicker";
+import { useTranslation } from "@/context/TranslationContext";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { SoundEffects } from "@/lib/sounds";
 import { SHOP_ITEMS } from "@/data/shop";
 import { loadEquipped } from "@/lib/shop-equip";
@@ -25,6 +27,7 @@ const NAV_MORE = [
 ];
 
 export function Layout({ children }: { children: React.ReactNode }) {
+  const { t } = useTranslation();
   const { xpState } = useXP();
   const { themeState, currentPreset } = useTheme();
   const { isPremium, premiumTrialEndsAt, isAdmin, user, logout, subscriptionTier } = useAuth();
@@ -66,7 +69,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
             >
               C.O.S.T.
             </span>
-            <span className="hidden lg:block text-[11px] text-subtle font-medium">Educație Financiară</span>
+            <span className="hidden lg:block text-[11px] text-subtle font-medium">{t("Educație Financiară")}</span>
           </Link>
 
           <nav className="hidden md:flex items-center gap-0.5">
@@ -93,7 +96,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
                 }}
               >
                 <ShieldCheck size={12} />
-                <span>Admin</span>
+                  <span>{t("Admin")}</span>
               </Link>
             )}
             {NAV_PRIMARY.map((item) => {
@@ -122,13 +125,13 @@ export function Layout({ children }: { children: React.ReactNode }) {
                   }}
                 >
                   <item.icon size={12} style={active ? { color: activeColor } : { color: "rgba(255,255,255,0.5)" }} />
-                  <span style={!active ? { color: "rgba(255,255,255,0.6)" } : undefined}>{item.label}</span>
+                  <span style={!active ? { color: "rgba(255,255,255,0.6)" } : undefined}>{t(item.label)}</span>
                 </Link>
               );
             })}
             <div className="relative group">
               <button className="flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-medium transition-all text-muted hover:text-main hover:bg-card-hover">
-                <span>Mai multe</span>
+                <span>{t("Mai multe")}</span>
                 <ChevronDown size={10} />
               </button>
               <div className="absolute right-0 top-full mt-1 w-40 rounded-xl border border-subtle bg-card-strong shadow-2xl py-1 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
@@ -154,7 +157,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
                       }}
                     >
                       <item.icon size={12} />
-                      {item.label}
+                      {t(item.label)}
                     </Link>
                   );
                 })}
@@ -193,7 +196,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
             <button
               onClick={() => SoundEffects.setEnabled(!SoundEffects.enabled)}
               className="p-1.5 rounded-lg text-subtle hover:text-main hover:bg-card transition-colors"
-              title={SoundEffects.enabled ? "Sunete activate" : "Sunete dezactivate"}
+              title={t(SoundEffects.enabled ? "Sunete activate" : "Sunete dezactivate")}
             >
               {SoundEffects.enabled ? <Volume2 size={15} /> : <VolumeX size={15} />}
             </button>
@@ -221,7 +224,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
                       className="flex items-center gap-2 w-full px-3 py-2 text-xs text-muted hover:text-main hover:bg-card-hover transition-colors"
                     >
                       <Settings size={14} />
-                      Setări profil
+                      {t("Setări profil")}
                     </Link>
                     <button
                       onClick={() => {
@@ -232,7 +235,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
                       className="flex items-center gap-2 w-full px-3 py-2 text-xs text-red-400 hover:bg-red-500/10 transition-colors"
                     >
                       <LogOut size={14} />
-                      Deloghează-te
+                      {t("Deloghează-te")}
                     </button>
                   </div>
                 )}
@@ -241,11 +244,12 @@ export function Layout({ children }: { children: React.ReactNode }) {
               <Link
                 href="/login"
                 className="p-1.5 rounded-lg text-subtle hover:text-main hover:bg-card transition-colors"
-                title="Conectare"
+                title={t("Conectare")}
               >
                 <LogIn size={15} />
               </Link>
             )}
+            <LanguageSwitcher />
             <ThemePicker />
 
             <button
@@ -272,7 +276,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
                   } : { color: "rgba(255,255,255,0.6)" }}
                 >
                   <ShieldCheck size={16} />
-                  Admin
+                  {t("Admin")}
                 </Link>
               )}
               {[...NAV_PRIMARY, ...NAV_MORE].map((item) => {
@@ -290,7 +294,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
                     } : { color: "rgba(255,255,255,0.6)" }}
                   >
                     <item.icon size={16} />
-                    {item.label}
+                    {t(item.label)}
                   </Link>
                 );
               })}
@@ -311,7 +315,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
       <footer className="border-t border-subtle py-4 text-center text-xs text-faint relative z-10">
         <div className="max-w-6xl mx-auto px-4">
-          C.O.S.T. — College Operating &amp; Survival Tactics &copy; 2025 · Educație financiară pentru studenți
+          C.O.S.T. — College Operating &amp; Survival Tactics &copy; 2025 · {t("Educație financiară pentru studenți")}
         </div>
       </footer>
     </div>
