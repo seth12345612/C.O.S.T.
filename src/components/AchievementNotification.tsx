@@ -2,8 +2,10 @@ import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
 import { useAchievements } from "@/context/AchievementContext";
+import { useTranslation } from "@/context/TranslationContext";
 
 export function AchievementNotification() {
+  const { t } = useTranslation();
   const { notificari, reseteazaNotificari } = useAchievements();
   const [current, setCurrent] = useState(0);
 
@@ -31,9 +33,9 @@ export function AchievementNotification() {
           <div className="flex items-start gap-3">
             <span className="text-3xl">{notificari[current]?.icon}</span>
             <div className="flex-1 min-w-0">
-              <p className="text-xs text-yellow-200/70 font-medium uppercase tracking-wider">Achievement Deblocat!</p>
-              <p className="text-main font-bold text-sm mt-0.5">{notificari[current]?.titlu}</p>
-              <p className="text-yellow-100/80 text-xs mt-0.5">{notificari[current]?.descriere}</p>
+              <p className="text-xs text-yellow-200/70 font-medium uppercase tracking-wider">{t("Achievement Deblocat!")}</p>
+              <p className="text-main font-bold text-sm mt-0.5">{t(notificari[current]?.titlu ?? "")}</p>
+              <p className="text-yellow-100/80 text-xs mt-0.5">{t(notificari[current]?.descriere ?? "")}</p>
               <p className="text-yellow-300 text-xs mt-1">+{notificari[current]?.xpReward} XP</p>
             </div>
             <button onClick={reseteazaNotificari} className="text-dim hover:text-main shrink-0"><X size={14} /></button>

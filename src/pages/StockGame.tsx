@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { Layout } from "@/components/Layout";
 import { OrbBackground } from "@/components/OrbBackground";
 import { useXP } from "@/context/XPContext";
+import { useTranslation } from "@/context/TranslationContext";
 
 interface Stock {
   name: string;
@@ -67,6 +68,7 @@ function MiniSparkline({ history }: { history: number[] }) {
 }
 
 function PortfolioChart({ history }: { history: number[] }) {
+  const { t } = useTranslation();
   const maxVal = Math.max(...history, 1);
 
   return (
@@ -81,7 +83,7 @@ function PortfolioChart({ history }: { history: number[] }) {
               className={`w-full rounded-t-md transition-all duration-300 ${isUp ? "bg-green-500/70" : "bg-red-500/70"}`}
               style={{ height: `${Math.max(height, 4)}%` }}
             />
-            <span className="text-[8px] text-faint">R{i + 1}</span>
+            <span className="text-[8px] text-faint">{t("R")}{i + 1}</span>
           </div>
         );
       })}
@@ -90,6 +92,7 @@ function PortfolioChart({ history }: { history: number[] }) {
 }
 
 function GameScreen({ onEnd }: { onEnd: () => void }) {
+  const { t } = useTranslation();
   const [stocks, setStocks] = useState<Stock[]>(INITIAL_STOCKS.map((s) => ({ ...s, priceHistory: [s.price] })));
   const [cash, setCash] = useState(1000);
   const [round, setRound] = useState(1);
@@ -142,13 +145,13 @@ function GameScreen({ onEnd }: { onEnd: () => void }) {
       const stock = prev[index];
       const price = stock.price;
       if (cash < price) {
-        toast.error("Fonduri insuficiente!");
+        toast.error(t("Fonduri insuficiente!"));
         return prev;
       }
       const updated = [...prev];
       updated[index] = { ...stock, owned: stock.owned + 1 };
       setCash((c) => c - price);
-      toast.success(`Ai cumpărat 1 acțiune ${stock.name} pentru ${price} RON`);
+      toast.success(t(`Ai cumpărat 1 acțiune ${stock.name} pentru ${price} RON`));
       return updated;
     });
   }
@@ -157,13 +160,13 @@ function GameScreen({ onEnd }: { onEnd: () => void }) {
     setStocks((prev) => {
       const stock = prev[index];
       if (stock.owned <= 0) {
-        toast.error("Nu deții acțiuni din această companie!");
+        toast.error(t("Nu deții acțiuni din această companie!"));
         return prev;
       }
       const updated = [...prev];
       updated[index] = { ...stock, owned: stock.owned - 1 };
       setCash((c) => c + stock.price);
-      toast.success(`Ai vândut 1 acțiune ${stock.name} pentru ${stock.price} RON`);
+      toast.success(t(`Ai vândut 1 acțiune ${stock.name} pentru ${stock.price} RON`));
       return updated;
     });
   }
@@ -175,50 +178,50 @@ function GameScreen({ onEnd }: { onEnd: () => void }) {
   return (
     <div className="max-w-6xl mx-auto px-4 py-6">
       <Link href="/" className="inline-flex items-center gap-1.5 text-dim hover:text-main text-sm mb-6 transition-colors">
-        <ArrowLeft size={14} /> Înapoi
+        <ArrowLeft size={14} /> {t("Înapoi")}
       </Link>
 
       <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="mb-6">
-        <h1 className="text-3xl font-black text-main mb-1">Simulator Bursă</h1>
-        <p className="text-sm text-muted">Investește în acțiuni și maximizează-ți portofoliul în 10 runde!</p>
+        <h1 className="text-3xl font-black text-main mb-1">{t("Simulator Bursă")}</h1>
+        <p className="text-sm text-muted">{t("Investește în acțiuni și maximizează-ți portofoliul în 10 runde!")}</p>
       </motion.div>
 
       <div className="grid lg:grid-cols-4 gap-4 mb-6">
         <div className="p-4 rounded-2xl border border-subtle bg-card">
           <div className="flex items-center gap-2 mb-1">
             <DollarSign size={16} className="text-yellow-400" />
-            <span className="text-xs font-bold text-muted uppercase tracking-wider">Numerar</span>
+            <span className="text-xs font-bold text-muted uppercase tracking-wider">{t("Numerar")}</span>
           </div>
-          <span className="text-2xl font-black text-main">{cash.toLocaleString("ro-RO")} RON</span>
+          <span className="text-2xl font-black text-main">{cash.toLocaleString("ro-RO")} {t("RON")}</span>
         </div>
         <div className="p-4 rounded-2xl border border-subtle bg-card">
           <div className="flex items-center gap-2 mb-1">
             <BarChart3 size={16} className="text-blue-400" />
-            <span className="text-xs font-bold text-muted uppercase tracking-wider">Portofoliu</span>
+            <span className="text-xs font-bold text-muted uppercase tracking-wider">{t("Portofoliu")}</span>
           </div>
-          <span className="text-2xl font-black text-main">{totalValue.toLocaleString("ro-RO")} RON</span>
+          <span className="text-2xl font-black text-main">{totalValue.toLocaleString("ro-RO")} {t("RON")}</span>
         </div>
         <div className="p-4 rounded-2xl border border-subtle bg-card">
           <div className="flex items-center gap-2 mb-1">
             <RefreshCw size={16} className="text-purple-400" />
-            <span className="text-xs font-bold text-muted uppercase tracking-wider">Runda</span>
+            <span className="text-xs font-bold text-muted uppercase tracking-wider">{t("Runda")}</span>
           </div>
           <span className="text-2xl font-black text-main">{round} / 10</span>
         </div>
         <div className="p-4 rounded-2xl border border-subtle bg-card">
           <div className="flex items-center gap-2 mb-1">
             <TrendingUp size={16} className="text-emerald-400" />
-            <span className="text-xs font-bold text-muted uppercase tracking-wider">Profit</span>
+            <span className="text-xs font-bold text-muted uppercase tracking-wider">{t("Profit")}</span>
           </div>
           <span className={`text-2xl font-black ${totalValue >= 1000 ? "text-green-400" : "text-red-400"}`}>
-            {totalValue >= 1000 ? "+" : ""}{Math.round(totalValue - 1000).toLocaleString("ro-RO")} RON
+            {totalValue >= 1000 ? "+" : ""}{Math.round(totalValue - 1000).toLocaleString("ro-RO")} {t("RON")}
           </span>
         </div>
       </div>
 
       <div className="grid lg:grid-cols-2 gap-6 mb-6">
         <div className="space-y-3">
-          <h2 className="text-sm font-bold text-muted uppercase tracking-wider mb-1">Acțiuni disponibile</h2>
+          <h2 className="text-sm font-bold text-muted uppercase tracking-wider mb-1">{t("Acțiuni disponibile")}</h2>
           {stocks.map((stock, i) => {
             const change = lastRoundChange[i];
             const changePct = change ? (change * 100).toFixed(1) : null;
@@ -235,10 +238,10 @@ function GameScreen({ onEnd }: { onEnd: () => void }) {
                 <div className="flex items-center justify-between mb-2">
                   <div>
                     <span className="text-sm font-bold text-main">{stock.name}</span>
-                    <span className="text-[10px] text-muted ml-2 uppercase">{stock.sector}</span>
+                    <span className="text-[10px] text-muted ml-2 uppercase">{t(stock.sector)}</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="text-lg font-black text-main">{stock.price} RON</span>
+                    <span className="text-lg font-black text-main">{stock.price} {t("RON")}</span>
                     {changePct && (
                       <span className={`flex items-center gap-0.5 text-xs font-bold ${change! >= 0 ? "text-green-400" : "text-red-400"}`}>
                         {change! >= 0 ? <TrendingUp size={12} /> : <TrendingDown size={12} />}
@@ -256,7 +259,7 @@ function GameScreen({ onEnd }: { onEnd: () => void }) {
                       disabled={stock.owned <= 0}
                       className="px-2.5 py-1 rounded-lg bg-red-500/20 border border-red-500/30 text-red-300 text-xs font-bold hover:bg-red-500/30 transition-all disabled:opacity-30 disabled:cursor-not-allowed"
                     >
-                      Vinde
+                      {t("Vinde")}
                     </button>
                     <span className="text-xs font-bold text-muted min-w-[20px] text-center">{stock.owned}</span>
                     <button
@@ -264,7 +267,7 @@ function GameScreen({ onEnd }: { onEnd: () => void }) {
                       disabled={cash < stock.price}
                       className="px-2.5 py-1 rounded-lg bg-green-500/20 border border-green-500/30 text-green-300 text-xs font-bold hover:bg-green-500/30 transition-all disabled:opacity-30 disabled:cursor-not-allowed"
                     >
-                      Cumpără
+                      {t("Cumpără")}
                     </button>
                   </div>
                 </div>
@@ -275,17 +278,17 @@ function GameScreen({ onEnd }: { onEnd: () => void }) {
 
         <div>
           <div className="p-4 rounded-2xl border border-subtle bg-card mb-4">
-            <h2 className="text-sm font-bold text-muted uppercase tracking-wider mb-3">Evoluția portofoliului</h2>
+            <h2 className="text-sm font-bold text-muted uppercase tracking-wider mb-3">{t("Evoluția portofoliului")}</h2>
             <PortfolioChart history={portfolioHistory} />
           </div>
 
           <div className="p-4 rounded-2xl border border-subtle bg-card">
-            <h2 className="text-sm font-bold text-muted uppercase tracking-wider mb-2">Sfaturi</h2>
+            <h2 className="text-sm font-bold text-muted uppercase tracking-wider mb-2">{t("Sfaturi")}</h2>
             <ul className="space-y-1 text-xs text-dim list-disc list-inside">
-              <li>Diversifică-ți investițiile pentru a reduce riscul</li>
-              <li>Prețurile se schimbă aleator cu ±10-25% pe rundă</li>
-              <li>Poți cumpăra și vinde oricând în runda curentă</li>
-              <li>După 10 runde, jocul se termină și primești XP</li>
+              <li>{t("Diversifică-ți investițiile pentru a reduce riscul")}</li>
+              <li>{t("Prețurile se schimbă aleator cu ±10-25% pe rundă")}</li>
+              <li>{t("Poți cumpăra și vinde oricând în runda curentă")}</li>
+              <li>{t("După 10 runde, jocul se termină și primești XP")}</li>
             </ul>
           </div>
         </div>
@@ -298,7 +301,7 @@ function GameScreen({ onEnd }: { onEnd: () => void }) {
         className="w-full py-4 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-main font-black text-base transition-all shadow-lg shadow-emerald-900/30 flex items-center justify-center gap-2"
       >
         <RefreshCw size={18} />
-        Încheie runda {round} → Runda {round + 1}
+        {t(`Încheie runda ${round} → Runda ${round + 1}`)}
       </motion.button>
     </div>
   );
@@ -315,6 +318,7 @@ function GameOverScreen({
   cash: number;
   onEnd: () => void;
 }) {
+  const { t } = useTranslation();
   const { addXP } = useXP();
   const xpAwarded = Math.round((totalValue / 1000) * 30);
 
@@ -332,7 +336,7 @@ function GameOverScreen({
       existing.push(result);
       localStorage.setItem("cost_stock_results", JSON.stringify(existing));
     } catch {}
-    toast.success(`🎉 Ai câștigat ${xpAwarded} XP!`);
+    toast.success(t(`🎉 Ai câștigat ${xpAwarded} XP!`));
   }, []);
 
   const maxDrawdown = useMemo(() => {
@@ -350,8 +354,8 @@ function GameOverScreen({
     <div className="max-w-2xl mx-auto px-4 py-8">
       <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="text-center mb-8">
         <div className="text-6xl mb-4">{totalValue >= 1500 ? "🏆" : totalValue >= 1000 ? "👍" : "📉"}</div>
-        <h1 className="text-3xl font-black text-main mb-2">Joc terminat!</h1>
-        <p className="text-sm text-muted">Ai completat toate cele 10 runde. Iată rezumatul final:</p>
+        <h1 className="text-3xl font-black text-main mb-2">{t("Joc terminat!")}</h1>
+        <p className="text-sm text-muted">{t("Ai completat toate cele 10 runde. Iată rezumatul final:")}</p>
       </motion.div>
 
       <motion.div
@@ -362,25 +366,25 @@ function GameOverScreen({
       >
         <div className="grid grid-cols-2 gap-4 mb-4">
           <div className="text-center">
-            <span className="text-xs font-bold text-muted uppercase tracking-wider block mb-1">Valoare finală</span>
+            <span className="text-xs font-bold text-muted uppercase tracking-wider block mb-1">{t("Valoare finală")}</span>
             <span className={`text-3xl font-black ${totalValue >= 1000 ? "text-green-400" : "text-red-400"}`}>
-              {Math.round(totalValue).toLocaleString("ro-RO")} RON
+              {Math.round(totalValue).toLocaleString("ro-RO")} {t("RON")}
             </span>
           </div>
           <div className="text-center">
-            <span className="text-xs font-bold text-muted uppercase tracking-wider block mb-1">Numerar rămas</span>
-            <span className="text-3xl font-black text-main">{Math.round(cash).toLocaleString("ro-RO")} RON</span>
+            <span className="text-xs font-bold text-muted uppercase tracking-wider block mb-1">{t("Numerar rămas")}</span>
+            <span className="text-3xl font-black text-main">{Math.round(cash).toLocaleString("ro-RO")} {t("RON")}</span>
           </div>
         </div>
         <div className="grid grid-cols-2 gap-4">
           <div className="text-center">
-            <span className="text-xs font-bold text-muted uppercase tracking-wider block mb-1">Profit total</span>
+            <span className="text-xs font-bold text-muted uppercase tracking-wider block mb-1">{t("Profit total")}</span>
             <span className={`text-xl font-black ${totalValue >= 1000 ? "text-green-400" : "text-red-400"}`}>
-              {totalValue >= 1000 ? "+" : ""}{Math.round(totalValue - 1000).toLocaleString("ro-RO")} RON
+              {totalValue >= 1000 ? "+" : ""}{Math.round(totalValue - 1000).toLocaleString("ro-RO")} {t("RON")}
             </span>
           </div>
           <div className="text-center">
-            <span className="text-xs font-bold text-muted uppercase tracking-wider block mb-1">Max Drawdown</span>
+            <span className="text-xs font-bold text-muted uppercase tracking-wider block mb-1">{t("Max Drawdown")}</span>
             <span className="text-xl font-black text-orange-400">{(maxDrawdown * 100).toFixed(1)}%</span>
           </div>
         </div>
@@ -392,7 +396,7 @@ function GameOverScreen({
         transition={{ delay: 0.4 }}
         className="p-6 rounded-2xl border border-subtle bg-card mb-6"
       >
-        <h2 className="text-sm font-bold text-muted uppercase tracking-wider mb-3">Evoluția portofoliului</h2>
+        <h2 className="text-sm font-bold text-muted uppercase tracking-wider mb-3">{t("Evoluția portofoliului")}</h2>
         <PortfolioChart history={portfolioHistory} />
       </motion.div>
 
@@ -402,12 +406,12 @@ function GameOverScreen({
         transition={{ delay: 0.5 }}
         className="p-6 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 text-center mb-6"
       >
-        <span className="text-xs font-bold text-muted uppercase tracking-wider block mb-1">XP CÂȘTIGAT</span>
+        <span className="text-xs font-bold text-muted uppercase tracking-wider block mb-1">{t("XP CÂȘTIGAT")}</span>
         <span className="text-4xl font-black text-emerald-400">+{xpAwarded} XP</span>
         <p className="text-xs text-dim mt-1">
-          {totalValue >= 1500 ? "Performanță excepțională! Ai un talent pentru investiții!" :
-           totalValue >= 1000 ? "Rezultat solid! Ai încheiat pe plus." :
-           "Nu ai făcut profit de data asta. Mai încearcă!"}
+          {totalValue >= 1500 ? t("Performanță excepțională! Ai un talent pentru investiții!") :
+           totalValue >= 1000 ? t("Rezultat solid! Ai încheiat pe plus.") :
+           t("Nu ai făcut profit de data asta. Mai încearcă!")}
         </p>
       </motion.div>
 
@@ -416,13 +420,13 @@ function GameOverScreen({
           onClick={onEnd}
           className="flex-1 py-3.5 rounded-2xl bg-gradient-to-r from-purple-600 to-fuchsia-600 hover:from-purple-500 hover:to-fuchsia-500 text-main font-black text-base transition-all shadow-lg shadow-purple-900/30"
         >
-          Joacă din nou
+          {t("Joacă din nou")}
         </button>
         <Link
           href="/"
           className="flex-1 py-3.5 rounded-2xl border border-subtle bg-card text-main font-black text-base text-center hover:bg-card-soft8 transition-all"
         >
-          Pagina principală
+          {t("Pagina principală")}
         </Link>
       </div>
     </div>

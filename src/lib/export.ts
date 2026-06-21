@@ -89,3 +89,114 @@ function download(content: string, filename: string, mime: string) {
   a.click();
   URL.revokeObjectURL(url);
 }
+
+export function exportReportToHTML(
+  report: FinancialReport,
+  filename = "cost_raport_financiar.html"
+) {
+  const { totalVenituri, totalCheltuieli, balanta, cheltuieliPeCategorii, venituriPeCategorii, cashFlow, sfaturi, scorSanatateFinanciara } = report;
+
+  const pieRows = Object.entries(cheltuieliPeCategorii)
+    .map(([cat, val]) => `<tr><td style="padding:4px 8px">${cat}</td><td style="padding:4px 8px;text-align:right">${val} RON</td></tr>`)
+    .join("");
+
+  const cfRows = cashFlow
+    .map((cf) => `<tr><td style="padding:4px 8px">Săptămâna ${cf.saptamana}</td><td style="padding:4px 8px;text-align:right">${cf.valoare} RON</td></tr>`)
+    .join("");
+
+  const sfaturiList = sfaturi.map((s) => `<li style="margin-bottom:6px;padding:8px 12px;background:#1a1035;border-radius:8px;border:1px solid rgba(255,255,255,0.06)">${s}</li>`).join("");
+
+  const html = `<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Raport Financiar C.O.S.T.</title>
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif; background:#0f0a1e; color:#e8e0f0; padding:20px; }
+    .container { max-width:700px; margin:0 auto; }
+    h1 { font-size:24px; text-align:center; margin-bottom:24px; background:linear-gradient(135deg,#7c3aed,#f59e0b); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+    .score-card { background:linear-gradient(135deg,rgba(16,185,129,0.15),rgba(5,150,105,0.1)); border:1px solid rgba(16,185,129,0.25); border-radius:12px; padding:16px; text-align:center; margin-bottom:24px; }
+    .score-card h2 { font-size:12px; color:rgba(255,255,255,0.4); margin-bottom:4px; }
+    .score-card .value { font-size:36px; font-weight:900; color:#34d399; }
+    .grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; margin-bottom:24px; }
+    .card { border-radius:12px; padding:12px; text-align:center; }
+    .card.venituri { background:rgba(16,185,129,0.1); border:1px solid rgba(16,185,129,0.2); }
+    .card.cheltuieli { background:rgba(239,68,68,0.1); border:1px solid rgba(239,68,68,0.2); }
+    .card.balanta { background:rgba(59,130,246,0.1); border:1px solid rgba(59,130,246,0.2); }
+    .card .icon { font-size:16px; margin-bottom:4px; }
+    .card .val { font-size:18px; font-weight:700; }
+    .card .label { font-size:10px; color:rgba(255,255,255,0.35); }
+    .section { margin-bottom:24px; }
+    .section h3 { font-size:14px; font-weight:600; color:#c8c0d8; margin-bottom:12px; }
+    table { width:100%; border-collapse:collapse; }
+    th { text-align:left; padding:4px 8px; color:rgba(255,255,255,0.35); font-size:11px; font-weight:400; border-bottom:1px solid rgba(255,255,255,0.06); }
+    td { padding:4px 8px; font-size:13px; }
+    ul { list-style:none; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>📊 Raport Financiar C.O.S.T.</h1>
+
+    <div class="score-card">
+      <h2>Scor Sănătate Financiară</h2>
+      <div class="value">${scorSanatateFinanciara}/100</div>
+    </div>
+
+    <div class="grid">
+      <div class="card venituri">
+        <div class="icon" style="color:#34d399">📈</div>
+        <div class="val" style="color:#6ee7b7">${totalVenituri} RON</div>
+        <div class="label">Venituri</div>
+      </div>
+      <div class="card cheltuieli">
+        <div class="icon" style="color:#f87171">📉</div>
+        <div class="val" style="color:#fca5a5">${totalCheltuieli} RON</div>
+        <div class="label">Cheltuieli</div>
+      </div>
+      <div class="card balanta">
+        <div class="icon" style="color:${balanta >= 0 ? "#60a5fa" : "#f87171"}">⚖️</div>
+        <div class="val" style="color:${balanta >= 0 ? "#93c5fd" : "#fca5a5"}">${balanta >= 0 ? "+" : ""}${balanta} RON</div>
+        <div class="label">Balanta</div>
+      </div>
+    </div>
+
+    ${Object.keys(cheltuieliPeCategorii).length > 0 ? `
+    <div class="section">
+      <h3>💰 Cheltuieli pe Categorii</h3>
+      <table>
+        <tr><th>Categorie</th><th style="text-align:right">Suma (RON)</th></tr>
+        ${pieRows}
+      </table>
+    </div>` : ""}
+
+    ${cashFlow.length > 1 ? `
+    <div class="section">
+      <h3>📆 Cash Flow (Săptămânal)</h3>
+      <table>
+        <tr><th>Săptămâna</th><th style="text-align:right">Valoare (RON)</th></tr>
+        ${cfRows}
+      </table>
+    </div>` : ""}
+
+    ${sfaturi.length > 0 ? `
+    <div class="section">
+      <h3>💡 Sfaturi Personalizate</h3>
+      <ul>${sfaturiList}</ul>
+    </div>` : ""}
+
+    <p style="text-align:center;font-size:10px;color:rgba(255,255,255,0.2);margin-top:32px">Generat de C.O.S.T. — Financial Literacy Game</p>
+  </div>
+</body>
+</html>`;
+
+  const blob = new Blob([html], { type: "text/html;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
+}

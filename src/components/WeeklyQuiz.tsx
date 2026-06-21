@@ -2,8 +2,10 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useGame } from "@/context/GameContext";
 import { Coins, Smile, Send, Loader2, CheckCircle, XCircle } from "lucide-react";
+import { useTranslation } from "@/context/TranslationContext";
 
 export function WeeklyQuiz() {
+  const { t } = useTranslation();
   const { state, submitAiAnswer, dismissAiQuestion } = useGame();
   const [answer, setAnswer] = useState("");
 
@@ -48,24 +50,24 @@ export function WeeklyQuiz() {
               <Smile size={14} className="text-green-400" />
               <span className="font-bold text-main">{Math.round(state.fericire)}%</span>
             </div>
-            <span className="ml-auto text-xs text-subtle">Săpt. {state.saptamana}</span>
+            <span className="ml-auto text-xs text-subtle">{t("Săpt.")} {state.saptamana}</span>
           </div>
 
           <div className="p-5 overflow-y-auto max-h-[calc(90vh-4rem)]">
-            <h3 className="text-xl font-black text-main mb-2">Întrebarea săptămânii</h3>
-            <p className="text-strong text-sm mb-5 leading-relaxed">{intrebare}</p>
+            <h3 className="text-xl font-black text-main mb-2">{t("Întrebarea săptămânii")}</h3>
+            <p className="text-strong text-sm mb-5 leading-relaxed">{t(intrebare)}</p>
 
             {isEvaluating ? (
               <div className="flex flex-col items-center justify-center py-8">
                 <Loader2 size={32} className="animate-spin text-purple-400 mb-3" />
-                <p className="text-muted text-sm">Se evaluează răspunsul...</p>
+                <p className="text-muted text-sm">{t("Se evaluează răspunsul...")}</p>
               </div>
             ) : !isEvaluated ? (
               <>
                 <textarea
                   value={answer}
                   onChange={(e) => setAnswer(e.target.value)}
-                  placeholder="Scrie răspunsul tău..."
+                  placeholder={t("Scrie răspunsul tău...")}
                   className="w-full p-3 rounded-xl border border-medium bg-card text-main text-sm placeholder:text-faintest focus:outline-none focus:border-purple-500/50 resize-none"
                   rows={3}
                   disabled={isEvaluating}
@@ -75,7 +77,7 @@ export function WeeklyQuiz() {
                   disabled={!canSubmit}
                   className="w-full mt-3 py-3 rounded-xl bg-gradient-to-r from-purple-600 to-fuchsia-600 hover:from-purple-500 hover:to-fuchsia-500 disabled:opacity-50 disabled:cursor-not-allowed text-main font-bold text-sm transition-all shadow-lg shadow-purple-900/30 flex items-center justify-center gap-2"
                 >
-                  <Send size={16} /> Trimite răspunsul
+                  <Send size={16} /> {t("Trimite răspunsul")}
                 </button>
               </>
             ) : result ? (
@@ -88,7 +90,7 @@ export function WeeklyQuiz() {
                       <XCircle size={20} className="text-red-400" />
                     )}
                     <span className={`font-black text-lg ${result.corect ? "text-green-400" : "text-red-400"}`}>
-                      {result.corect ? "Corect!" : "Greșit"}
+                      {result.corect ? t("Corect!") : t("Greșit")}
                     </span>
                   </div>
                   <div className="flex items-center gap-4 mb-2">
@@ -105,14 +107,14 @@ export function WeeklyQuiz() {
                       </span>
                     )}
                   </div>
-                  <p className="text-muted text-sm">{result.explicatie}</p>
+                  <p className="text-muted text-sm">{t(result.explicatie)}</p>
                 </div>
 
                 <button
                   onClick={dismissAiQuestion}
                   className="w-full mt-4 py-3 rounded-xl bg-gradient-to-r from-purple-600 to-fuchsia-600 hover:from-purple-500 hover:to-fuchsia-500 text-main font-bold text-sm transition-all shadow-lg shadow-purple-900/30"
                 >
-                  Continuă
+                  {t("Continuă")}
                 </button>
               </>
             ) : null}

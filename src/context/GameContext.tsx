@@ -41,8 +41,8 @@ export function useGame() {
 
   return {
     state: store.state,
-    initGame: (scenariuId: string, subScenariuId: string, dificultateKey: any, venitLunar?: number, limitedEventBonus?: any) => 
-      store.initGame(scenariuId, subScenariuId, dificultateKey, venitLunar, limitedEventBonus, isPremium),
+    initGame: (scenariuId: string, subScenariuId: string, dificultateKey: any, venitLunar?: number) => 
+      store.initGame(scenariuId, subScenariuId, dificultateKey, venitLunar, isPremium),
     nextWeek: () => store.nextWeek(isPremium),
     chooseOption: (optionIndex: number) => store.chooseOption(optionIndex, isPremium),
     startEndless: () => store.startEndless(isPremium),

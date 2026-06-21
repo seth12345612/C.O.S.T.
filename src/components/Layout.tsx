@@ -30,7 +30,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
   const { t } = useTranslation();
   const { xpState } = useXP();
   const { themeState, currentPreset } = useTheme();
-  const { isPremium, premiumTrialEndsAt, isAdmin, user, logout, subscriptionTier } = useAuth();
+  const { isPremium, premiumTrialEndsAt, user, logout, subscriptionTier } = useAuth();
   const { equipped } = useEquipped();
   const [location, setLocation] = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
@@ -73,32 +73,30 @@ export function Layout({ children }: { children: React.ReactNode }) {
           </Link>
 
           <nav className="hidden md:flex items-center gap-0.5">
-            {isAdmin && (
-              <Link
-                href="/admin"
-                className="flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-medium transition-all"
-                style={location === "/admin" ? {
-                  background: `${activeColor}22`,
-                  color: activeColor,
-                  border: `1px solid ${activeColor}55`,
-                } : { color: "rgba(255,255,255,0.5)" }}
-                onMouseEnter={(e) => {
-                  if (location !== "/admin") {
-                    (e.currentTarget as HTMLElement).style.color = activeColor;
-                    (e.currentTarget as HTMLElement).style.background = `${activeColor}15`;
-                  }
-                }}
-                onMouseLeave={(e) => {
-                  if (location !== "/admin") {
-                    (e.currentTarget as HTMLElement).style.color = "";
-                    (e.currentTarget as HTMLElement).style.background = "";
-                  }
-                }}
-              >
-                <ShieldCheck size={12} />
-                  <span>{t("Admin")}</span>
-              </Link>
-            )}
+            <Link
+              href="/admin"
+              className="flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-medium transition-all"
+              style={location === "/admin" ? {
+                background: `${activeColor}22`,
+                color: activeColor,
+                border: `1px solid ${activeColor}55`,
+              } : { color: "rgba(255,255,255,0.5)" }}
+              onMouseEnter={(e) => {
+                if (location !== "/admin") {
+                  (e.currentTarget as HTMLElement).style.color = activeColor;
+                  (e.currentTarget as HTMLElement).style.background = `${activeColor}15`;
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (location !== "/admin") {
+                  (e.currentTarget as HTMLElement).style.color = "";
+                  (e.currentTarget as HTMLElement).style.background = "";
+                }
+              }}
+            >
+              <ShieldCheck size={12} />
+                <span>{t("Admin")}</span>
+            </Link>
             {NAV_PRIMARY.map((item) => {
               const active = location === item.href || (item.href !== "/" && location.startsWith(item.href));
               return (
@@ -168,12 +166,10 @@ export function Layout({ children }: { children: React.ReactNode }) {
           <div className="flex items-center gap-1.5 shrink-0">
             <div className="hidden sm:flex items-center gap-1.5">
               <span className="text-[11px] font-bold" style={{ color: activeColor }}>Lv.{xpState.level}</span>
-              {isAdmin && (
-                <span className="flex items-center gap-0.5 px-1.5 py-0.5 rounded-full bg-red-500/20 border border-red-500/40 text-red-400 text-[10px] font-bold leading-none">
-                  <Shield size={8} />
-                  A
-                </span>
-              )}
+              <span className="flex items-center gap-0.5 px-1.5 py-0.5 rounded-full bg-red-500/20 border border-red-500/40 text-red-400 text-[10px] font-bold leading-none">
+                <Shield size={8} />
+                A
+              </span>
               {isPremiumActive && subscriptionTier === "premium_advanced" && (
                 <span className="flex items-center gap-0.5 px-1.5 py-0.5 rounded-full bg-purple-500/20 border border-purple-500/40 text-purple-400 text-[10px] font-bold leading-none">
                   <Shield size={8} />
@@ -187,7 +183,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
                 </span>
               )}
               {badgeItem && (
-                <span className="flex items-center gap-0.5 px-1.5 py-0.5 rounded-full bg-purple-500/20 border border-purple-500/40 text-purple-300 text-[10px] font-bold leading-none" title={badgeItem.nume}>
+                <span className="flex items-center gap-0.5 px-1.5 py-0.5 rounded-full bg-purple-500/20 border border-purple-500/40 text-purple-300 text-[10px] font-bold leading-none" title={t(badgeItem.nume)}>
                   {badgeItem.emoji}
                 </span>
               )}
@@ -235,7 +231,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
                       className="flex items-center gap-2 w-full px-3 py-2 text-xs text-red-400 hover:bg-red-500/10 transition-colors"
                     >
                       <LogOut size={14} />
-                      {t("Deloghează-te")}
+                      {t("Deconectare")}
                     </button>
                   </div>
                 )}
@@ -264,21 +260,19 @@ export function Layout({ children }: { children: React.ReactNode }) {
         {menuOpen && (
           <div className="md:hidden border-t border-subtle bg-overlay backdrop-blur-xl">
             <nav className="max-w-6xl mx-auto px-4 py-3 flex flex-col gap-1">
-              {isAdmin && (
-                <Link
-                  href="/admin"
-                  onClick={() => setMenuOpen(false)}
-                  className="flex items-center gap-2 px-3 py-2.5 rounded-lg text-sm font-medium transition-all"
-                  style={location === "/admin" ? {
-                    background: `${activeColor}22`,
-                    color: activeColor,
-                    border: `1px solid ${activeColor}55`,
-                  } : { color: "rgba(255,255,255,0.6)" }}
-                >
-                  <ShieldCheck size={16} />
-                  {t("Admin")}
-                </Link>
-              )}
+              <Link
+                href="/admin"
+                onClick={() => setMenuOpen(false)}
+                className="flex items-center gap-2 px-3 py-2.5 rounded-lg text-sm font-medium transition-all"
+                style={location === "/admin" ? {
+                  background: `${activeColor}22`,
+                  color: activeColor,
+                  border: `1px solid ${activeColor}55`,
+                } : { color: "rgba(255,255,255,0.6)" }}
+              >
+                <ShieldCheck size={16} />
+                {t("Admin")}
+              </Link>
               {[...NAV_PRIMARY, ...NAV_MORE].map((item) => {
                 const active = location === item.href || (item.href !== "/" && location.startsWith(item.href));
                 return (

@@ -34,6 +34,7 @@ interface XPStore {
   premiumOverride: boolean;
   setXPState: (state: XPState) => void;
   addXP: (amount: number, subscriptionTier?: string) => void;
+  setXP: (amount: number) => void;
   setPremiumOverride: (active: boolean) => void;
   isUnlocked: (scenariuId: string) => boolean;
   xpRequiredFor: (scenariuId: string) => number;
@@ -50,16 +51,26 @@ export const useXPStore = create<XPStore>((set, get) => ({
   setPremiumOverride: (active) => set({ premiumOverride: active }),
 
   addXP: (amount, subscriptionTier) => {
-    let boost = subscriptionTier === "premium_advanced" ? 1.2 : 1;
-    const active = loadActiveBooster();
-    if (active?.itemId === "booster_xp") boost *= 1.5;
-    const finalAmount = Math.round(amount * boost);
+    const isGain = amount > 0;
+    let finalAmount = amount;
+    if (isGain) {
+      let boost = subscriptionTier === "premium_advanced" ? 1.2 : 1;
+      const active = loadActiveBooster();
+      if (active?.itemId === "booster_xp") boost *= 1.5;
+      finalAmount = Math.round(amount * boost);
+    }
     set((s) => {
       const newXP = s.xpState.xp + finalAmount;
       const newLevel = computeLevel(newXP);
-      const newUnlocked = computeUnlocked(newXP);
+      const newUnlocked = isGain ? computeUnlocked(newXP) : s.xpState.scenariiDeblocate;
       return { xpState: { xp: newXP, level: newLevel, scenariiDeblocate: newUnlocked } };
     });
+  },
+
+  setXP: (amount) => {
+    const newLevel = computeLevel(amount);
+    const newUnlocked = computeUnlocked(amount);
+    set({ xpState: { xp: amount, level: newLevel, scenariiDeblocate: newUnlocked } });
   },
 
   isUnlocked: (id) => {

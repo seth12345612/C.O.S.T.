@@ -1,6 +1,7 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { useLocation } from "wouter";
 import { GraduationCap, X } from "lucide-react";
+import { useTranslation } from "@/context/TranslationContext";
 
 const TUTORIAL_KEY = "cost_tutorial_completed";
 
@@ -17,6 +18,7 @@ export function skipTutorial() {
 }
 
 export function OnboardingModal({ open, onClose }: { open: boolean; onClose: () => void }) {
+  const { t } = useTranslation();
   const [, navigate] = useLocation();
 
   return (
@@ -47,10 +49,9 @@ export function OnboardingModal({ open, onClose }: { open: boolean; onClose: () 
                 <GraduationCap size={32} className="text-purple-400" />
               </div>
 
-              <h2 className="text-xl font-black text-main mb-2">Bun venit în C.O.S.T.!</h2>
+              <h2 className="text-xl font-black text-main mb-2">{t("Bun venit în C.O.S.T.!")}</h2>
               <p className="text-muted text-sm leading-relaxed mb-6">
-                Înveți să îți gestionezi banii printr-un joc interactiv. Înainte să începi, 
-                îți recomandăm să parcurgi tutorialul pentru a înțelege mecanica jocului.
+                {t("Înveți să îți gestionezi banii printr-un joc interactiv. Înainte să începi, îți recomandăm să parcurgi tutorialul pentru a înțelege mecanica jocului.")}
               </p>
 
               <div className="space-y-3">
@@ -58,13 +59,13 @@ export function OnboardingModal({ open, onClose }: { open: boolean; onClose: () 
                   onClick={() => { markTutorialCompleted(); navigate("/tutorial"); }}
                   className="w-full py-3 rounded-xl bg-gradient-to-r from-purple-600 to-fuchsia-600 hover:from-purple-500 hover:to-fuchsia-500 text-main font-bold text-sm transition-all shadow-lg shadow-purple-900/30"
                 >
-                  Începe tutorialul
+                  {t("Începe tutorialul")}
                 </button>
                 <button
                   onClick={() => { skipTutorial(); onClose(); }}
                   className="w-full py-2.5 rounded-xl bg-card border border-subtle text-muted hover:text-main hover:border-stronger text-sm font-medium transition-all"
                 >
-                  Sari peste, am experiență
+                  {t("Sari peste, am experiență")}
                 </button>
               </div>
             </div>

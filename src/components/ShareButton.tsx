@@ -1,5 +1,6 @@
 import { Share2 } from "lucide-react"
 import { toast } from "sonner"
+import { useTranslation } from "@/context/TranslationContext"
 
 interface ShareButtonProps {
   title: string
@@ -8,6 +9,7 @@ interface ShareButtonProps {
 }
 
 export default function ShareButton({ title, text, className = "" }: ShareButtonProps) {
+  const { t } = useTranslation()
   const handleShare = async () => {
     if (navigator.share) {
       try {
@@ -17,7 +19,7 @@ export default function ShareButton({ title, text, className = "" }: ShareButton
       }
     } else {
       await navigator.clipboard.writeText(text)
-      toast.success("Text copiat în clipboard")
+      toast.success(t("Text copiat în clipboard"))
     }
   }
 
@@ -30,7 +32,7 @@ export default function ShareButton({ title, text, className = "" }: ShareButton
       }
     >
       <Share2 size={16} />
-      Distribuie
+      {t("Distribuie")}
     </button>
   )
 }

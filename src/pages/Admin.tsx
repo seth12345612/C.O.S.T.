@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "@/context/TranslationContext";
 import { OrbBackground } from "@/components/OrbBackground";
 import { Layout } from "@/components/Layout";
 import { useAuth } from "@/context/AuthContext";
@@ -8,8 +9,16 @@ import {
   getBannedUsers, banUser, unbanUser,
 } from "@/lib/leaderboard";
 import { getAllUsers as getDBUsers, getLeaderboardStats } from "@/lib/supabase";
-import { Trash2, Shield, ShieldOff, Search, AlertTriangle, Users, Trophy, User } from "lucide-react";
+import { Trash2, Shield, ShieldOff, Search, AlertTriangle, Users, Trophy, User, Zap } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
+import { useXPStore } from "@/store/xpStore";
+
+function withFallback<T>(promise: Promise<T>, fallback: T, ms = 10000): Promise<T> {
+  return Promise.race([
+    promise,
+    new Promise<T>((resolve) => setTimeout(() => resolve(fallback), ms)),
+  ]);
+}
 
 interface UserRow {
   dbUser?: DBUser;
@@ -22,18 +31,22 @@ interface UserRow {
 }
 
 export default function Admin() {
-  const { isAdmin, user, dbUser: adminDbUser } = useAuth();
+  const { t } = useTranslation();
+  const { user, dbUser: adminDbUser } = useAuth();
+  const xpState = useXPStore((s) => s.xpState);
+  const setXP = useXPStore((s) => s.setXP);
   const [banInput, setBanInput] = useState("");
   const [tab, setTab] = useState<"users" | "leaderboard" | "bans">("users");
+  const [xpInput, setXpInput] = useState("");
 
   const { data, isLoading: loading, refetch } = useQuery({
     queryKey: ["adminData"],
     queryFn: async () => {
       const [loadedEntries, dbUsers, stats, bannedList] = await Promise.all([
-        loadLeaderboardEntries(),
-        getDBUsers(),
-        getLeaderboardStats(),
-        getBannedUsers(),
+        withFallback(loadLeaderboardEntries(), []),
+        withFallback(getDBUsers(), []),
+        withFallback(getLeaderboardStats(), []),
+        withFallback(getBannedUsers(), []),
       ]);
       const userRows: UserRow[] = dbUsers.map((db) => {
         const stat = stats.find((s) => s.username === db.name);
@@ -50,25 +63,12 @@ export default function Admin() {
       userRows.sort((a, b) => b.bestScore - a.bestScore);
       return { entries: loadedEntries, users: userRows, banned: bannedList };
     },
-    enabled: !!isAdmin,
+    retry: false,
   });
 
   const entries = data?.entries ?? [];
   const users = data?.users ?? [];
   const banned = data?.banned ?? [];
-
-  if (!isAdmin) {
-    return (
-      <Layout>
-        <OrbBackground />
-        <div className="max-w-2xl mx-auto px-4 py-20 text-center">
-          <Shield size={48} className="text-red-500/40 mx-auto mb-4" />
-          <h1 className="text-2xl font-black text-main mb-2">Acces interzis</h1>
-          <p className="text-dim">Nu ai permisiuni de administrator.</p>
-        </div>
-      </Layout>
-    );
-  }
 
   async function handleDelete(id: string) {
     await deleteLeaderboardEntry(id);
@@ -94,18 +94,18 @@ export default function Admin() {
       <Layout>
         <OrbBackground />
         <div className="max-w-3xl mx-auto px-4 py-20 text-center">
-          <p className="text-dim">Se incarca...</p>
+          <p className="text-dim">{t("Se incarca...")}</p>
         </div>
       </Layout>
     );
   }
 
-  const tabClass = (t: string) =>
+  const tabClass = (key: string) =>
     "px-4 py-2 rounded-xl text-sm font-semibold transition-all " +
-    (tab === t ? "bg-purple-600 text-main" : "bg-card text-muted hover:bg-card-hover");
-  const banTabClass = (t: string) =>
+    (tab === key ? "bg-purple-600 text-main" : "bg-card text-muted hover:bg-card-hover");
+  const banTabClass = (key: string) =>
     "px-4 py-2 rounded-xl text-sm font-semibold transition-all " +
-    (tab === t ? "bg-red-600 text-main" : "bg-card text-muted hover:bg-card-hover");
+    (tab === key ? "bg-red-600 text-main" : "bg-card text-muted hover:bg-card-hover");
 
   return (
     <Layout>
@@ -113,13 +113,43 @@ export default function Admin() {
       <div className="max-w-3xl mx-auto px-4 py-8">
         <div className="flex items-center gap-3 mb-6">
           <Shield size={24} className="text-red-400" />
-          <h1 className="text-2xl font-black text-main">Panou Admin</h1>
+          <h1 className="text-2xl font-black text-main">{t("Panou Admin")}</h1>
+        </div>
+
+        {/* XP Management */}
+        <div className="p-4 rounded-2xl border border-purple-500/30 bg-purple-500/10 mb-6">
+          <div className="flex items-center gap-2 mb-3">
+            <Zap size={16} className="text-yellow-400" />
+            <span className="text-sm font-bold text-main">{t("Gestionează XP")}</span>
+            <span className="text-xs text-muted">({t("Actual:")} {xpState.xp} XP)</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <input
+              type="number"
+              min={0}
+              value={xpInput}
+              onChange={(e) => setXpInput(e.target.value)}
+              placeholder={t("Valoare XP")}
+              className="flex-1 px-3 py-2 rounded-xl bg-card border border-subtle text-main text-sm placeholder:text-faint focus:outline-none focus:border-purple-500/50"
+            />
+            <button
+              onClick={() => {
+                const val = Number(xpInput);
+                if (isNaN(val) || val < 0) return;
+                setXP(val);
+                setXpInput("");
+              }}
+              className="px-4 py-2 rounded-xl bg-gradient-to-r from-purple-600 to-fuchsia-600 hover:from-purple-500 hover:to-fuchsia-500 text-main font-semibold text-sm transition-all"
+            >
+              {t("Setează XP")}
+            </button>
+          </div>
         </div>
 
         <div className="flex gap-2 mb-6 flex-wrap">
           <button onClick={() => setTab("users")} className={tabClass("users")}>
             <Users size={14} className="inline mr-1" />
-            Utilizatori ({users.length})
+            {t("Utilizatori")} ({users.length})
           </button>
           <button onClick={() => setTab("leaderboard")} className={tabClass("leaderboard")}>
             <Trophy size={14} className="inline mr-1" />
@@ -127,7 +157,7 @@ export default function Admin() {
           </button>
           <button onClick={() => setTab("bans")} className={banTabClass("bans")}>
             <ShieldOff size={14} className="inline mr-1" />
-            Banati ({banned.length})
+            {t("Banati")} ({banned.length})
           </button>
         </div>
 
@@ -145,7 +175,7 @@ export default function Admin() {
                     <div className="font-bold text-main text-sm">{user.name}</div>
                     <div className="text-xs text-dim">{user.email}</div>
                   </div>
-                  <span className="ml-auto text-[10px] px-2 py-1 rounded-full bg-purple-500/30 text-purple-300 font-medium">TU (admin)</span>
+                  <span className="ml-auto text-[10px] px-2 py-1 rounded-full bg-purple-500/30 text-purple-300 font-medium">{t("TU (admin)")}</span>
                 </div>
               </div>
             )}
@@ -153,7 +183,7 @@ export default function Admin() {
             {users.length === 0 ? (
               <div className="text-center py-12 text-subtle">
                 <Users size={36} className="mx-auto mb-3 opacity-40" />
-                <p>Niciun utilizator inregistrat.</p>
+                <p>{t("Niciun utilizator inregistrat.")}</p>
               </div>
             ) : (
               users.map((u) => (
@@ -168,27 +198,27 @@ export default function Admin() {
                       </span>
                       <span className="text-xs text-subtle">{u.email}</span>
                       {u.isBanned && (
-                        <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-red-500/30 text-red-300 font-medium">BANAT</span>
+                        <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-red-500/30 text-red-300 font-medium">{t("BANAT")}</span>
                       )}
                       {u.email === adminDbUser?.email && (
-                        <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-purple-500/30 text-purple-300 font-medium">ADMIN</span>
+                        <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-purple-500/30 text-purple-300 font-medium">{t("ADMIN")}</span>
                       )}
                     </div>
                     <div className="text-xs text-subtle">
-                      {u.totalEntries} intrari . Cel mai bun: {u.bestScore.toLocaleString("ro-RO")} RON . Total: {u.totalScore.toLocaleString("ro-RO")} RON
+                      {u.totalEntries} {t("intrari")} . {t("Cel mai bun:")} {u.bestScore.toLocaleString("ro-RO")} RON . {t("Total:")} {u.totalScore.toLocaleString("ro-RO")} RON
                     </div>
                   </div>
                   <div className="flex items-center gap-1.5 shrink-0">
                     {!u.isBanned ? (
                       <button onClick={() => handleBan(u.username)}
                         className="p-2 rounded-lg bg-orange-500/20 border border-orange-500/30 text-orange-400 hover:bg-orange-500/30 transition-colors"
-                        title="Ban">
+                        title={t("Ban")}>
                         <Shield size={14} />
                       </button>
                     ) : (
                       <button onClick={() => handleUnban(u.username)}
                         className="p-2 rounded-lg bg-green-500/20 border border-green-500/30 text-green-400 hover:bg-green-500/30 transition-colors"
-                        title="Unban">
+                        title={t("Unban")}>
                         <ShieldOff size={14} />
                       </button>
                     )}
@@ -202,15 +232,15 @@ export default function Admin() {
         {tab === "leaderboard" && (
           <div className="space-y-2">
             <div className="flex justify-end">
-              <button onClick={async () => { if (confirm("Stergi TOATE intrarile din clasament?")) { await clearLeaderboard(); refetch(); } }}
+              <button onClick={async () => { if (confirm(t("Stergi TOATE intrarile din clasament?"))) { await clearLeaderboard(); refetch(); } }}
                 className="px-3 py-1.5 rounded-lg bg-red-600/20 border border-red-500/30 text-red-400 hover:bg-red-600/30 text-xs font-semibold transition-colors">
-                <Trash2 size={12} className="inline mr-1" /> Sterge tot clasamentul
+                <Trash2 size={12} className="inline mr-1" /> {t("Sterge tot clasamentul")}
               </button>
             </div>
             {sorted.length === 0 ? (
               <div className="text-center py-12 text-subtle">
                 <Search size={36} className="mx-auto mb-3 opacity-40" />
-                <p>Nicio intrare in clasament.</p>
+                <p>{t("Nicio intrare in clasament.")}</p>
               </div>
             ) : (
               sorted.map((e) => {
@@ -223,29 +253,29 @@ export default function Admin() {
                         <span className={"font-bold text-sm " + (ib ? "text-red-400 line-through" : "text-main")}>
                           {e.username}
                         </span>
-                        {ib && <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-red-500/30 text-red-300 font-medium">BANAT</span>}
+                        {ib && <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-red-500/30 text-red-300 font-medium">{t("BANAT")}</span>}
                       </div>
                       <div className="text-xs text-subtle">
-                        {e.score.toLocaleString("ro-RO")} RON . {e.months} luni . {e.scenario}
+                        {e.score.toLocaleString("ro-RO")} RON . {e.months} {t("luni")} . {e.scenario}
                       </div>
                     </div>
                     <div className="flex items-center gap-1.5 shrink-0">
                       {!ib ? (
                         <button onClick={() => handleBan(e.username)}
                           className="p-2 rounded-lg bg-orange-500/20 border border-orange-500/30 text-orange-400 hover:bg-orange-500/30 transition-colors"
-                          title="Ban">
+                          title={t("Ban")}>
                           <Shield size={14} />
                         </button>
                       ) : (
                         <button onClick={() => handleUnban(e.username)}
                           className="p-2 rounded-lg bg-green-500/20 border border-green-500/30 text-green-400 hover:bg-green-500/30 transition-colors"
-                          title="Unban">
+                          title={t("Unban")}>
                           <ShieldOff size={14} />
                         </button>
                       )}
                       <button onClick={() => handleDelete(e.id)}
                         className="p-2 rounded-lg bg-red-500/20 border border-red-500/30 text-red-400 hover:bg-red-500/30 transition-colors"
-                        title="Sterge">
+                        title={t("Sterge")}>
                         <Trash2 size={14} />
                       </button>
                     </div>
@@ -260,19 +290,19 @@ export default function Admin() {
           <div>
             <div className="flex items-center gap-2 mb-4">
               <input value={banInput} onChange={(e) => setBanInput(e.target.value)}
-                placeholder="Nume utilizator de banat..."
+                placeholder={t("Nume utilizator de banat...")}
                 className="flex-1 px-4 py-2.5 rounded-xl bg-card border border-subtle text-main text-sm placeholder:text-faint focus:outline-none focus:border-red-500/50"
                 onKeyDown={(e) => e.key === "Enter" && handleBan(banInput)} />
               <button onClick={() => handleBan(banInput)}
                 className="px-4 py-2.5 rounded-xl bg-red-600 hover:bg-red-500 text-main font-semibold text-sm transition-colors">
-                <Shield size={14} className="inline mr-1" /> Ban
+                <Shield size={14} className="inline mr-1" /> {t("Ban")}
               </button>
             </div>
 
             {banned.length === 0 ? (
               <div className="text-center py-12 text-subtle">
                 <ShieldOff size={36} className="mx-auto mb-3 opacity-40" />
-                <p>Niciun jucator banat.</p>
+                <p>{t("Niciun jucator banat.")}</p>
               </div>
             ) : (
               <div className="space-y-2">
@@ -283,7 +313,7 @@ export default function Admin() {
                     <span className="flex-1 text-sm font-medium text-main">{name}</span>
                     <button onClick={() => handleUnban(name)}
                       className="px-3 py-1.5 rounded-lg bg-green-500/20 border border-green-500/30 text-green-400 hover:bg-green-500/30 text-xs font-semibold transition-colors">
-                      Unban
+                      {t("Unban")}
                     </button>
                   </div>
                 ))}

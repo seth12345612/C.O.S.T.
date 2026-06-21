@@ -4,10 +4,12 @@ import { Link } from "wouter";
 import { Palette, Check, X, Pipette, Crown } from "lucide-react";
 import { useTheme, THEME_PRESETS, SHOP_PRESET_IDS } from "@/context/ThemeContext";
 import { useAuth } from "@/context/AuthContext";
+import { useTranslation } from "@/context/TranslationContext";
 
 export function ThemePicker() {
   const { themeState, currentPreset, setPreset, setCustomColor, clearCustom } = useTheme();
   const { isPremium, premiumTrialEndsAt } = useAuth();
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const [customInput, setCustomInput] = useState(themeState.customColor ?? "#7828c8");
   const pickerRef = useRef<HTMLDivElement>(null);
@@ -46,7 +48,7 @@ export function ThemePicker() {
       <button
         onClick={() => setOpen((v) => !v)}
         className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border border-medium bg-card hover:bg-card-hover hover:border-stronger transition-all"
-        title="Personalizează culoarea"
+        title={t("Personalizează culoarea")}
       >
         <div
           className="w-4 h-4 rounded-full border-2 border-stronger shrink-0"
@@ -68,7 +70,7 @@ export function ThemePicker() {
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2">
                   <Palette size={14} className="text-primary" style={{ color: activeColor }} />
-                  <span className="text-sm font-bold text-main">Tema interfeței</span>
+                  <span className="text-sm font-bold text-main">{t("Tema interfeței")}</span>
                 </div>
                 <button onClick={() => setOpen(false)} className="p-1 rounded-lg text-subtle hover:text-main hover:bg-card-hover transition-all">
                   <X size={14} />
@@ -77,7 +79,7 @@ export function ThemePicker() {
 
               {/* Preset grid */}
               <div className="mb-4">
-                <p className="text-xs text-subtle font-semibold uppercase tracking-wider mb-2">Teme predefinite</p>
+                <p className="text-xs text-subtle font-semibold uppercase tracking-wider mb-2">{t("Teme predefinite")}</p>
                 <div className="grid grid-cols-4 gap-2">
                   {THEME_PRESETS.filter((p) => !SHOP_PRESET_IDS.includes(p.id)).map((preset) => {
                     const isActive = themeState.presetId === preset.id && !themeState.customColor;
@@ -86,7 +88,7 @@ export function ThemePicker() {
                         key={preset.id}
                         onClick={() => { setPreset(preset.id); setCustomInput(preset.primary); }}
                         className="group flex flex-col items-center gap-1.5"
-                        title={preset.label}
+                        title={t(preset.label)}
                       >
                         <div
                           className="relative w-10 h-10 rounded-xl border-2 transition-all"
@@ -103,7 +105,7 @@ export function ThemePicker() {
                           )}
                         </div>
                         <span className="text-xs text-dim group-hover:text-bright transition-colors text-center leading-tight" style={{ fontSize: "10px" }}>
-                          {preset.label.split(" ")[0]}
+                          {t(preset.label).split(" ")[0]}
                         </span>
                       </button>
                     );
@@ -115,7 +117,7 @@ export function ThemePicker() {
               <div className="border-t border-subtle pt-4">
                 <p className="text-xs text-subtle font-semibold uppercase tracking-wider mb-2 flex items-center gap-1.5">
                   <Pipette size={11} />
-                  Culoare personalizată
+                  {t("Culoare personalizată")}
                   {!isPremiumActive && <Crown size={11} className="text-yellow-400" />}
                 </p>
                 {isPremiumActive ? (
@@ -148,18 +150,18 @@ export function ThemePicker() {
                       onClick={() => applyColor(customInput)}
                       className="px-3 py-2 rounded-xl text-xs font-bold bg-primary text-primary-foreground transition-all hover:opacity-90"
                     >
-                      Aplică
+                      {t("Aplică")}
                     </button>
                   </div>
                 ) : (
                   <div className="rounded-xl bg-card border border-subtle p-3 text-center">
-                    <p className="text-xs text-muted mb-2">Disponibil doar în varianta Premium</p>
+                    <p className="text-xs text-muted mb-2">{t("Disponibil doar în varianta Premium")}</p>
                     <Link
                       href="/premium"
                       className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gradient-to-r from-yellow-500 to-orange-500 text-main text-xs font-bold transition-all hover:shadow-lg hover:shadow-yellow-500/30"
                     >
                       <Crown size={12} />
-                      Devino Premium
+                      {t("Devino Premium")}
                     </Link>
                   </div>
                 )}
@@ -169,7 +171,7 @@ export function ThemePicker() {
                     className="mt-2 text-xs text-subtle hover:text-strong transition-colors flex items-center gap-1"
                   >
                     <X size={11} />
-                    Elimină culoarea personalizată
+                    {t("Elimină culoarea personalizată")}
                   </button>
                 )}
               </div>
@@ -181,7 +183,7 @@ export function ThemePicker() {
                   C
                 </div>
                 <div>
-                  <div className="text-xs font-bold text-main">{themeState.customColor ? "Culoare personalizată" : currentPreset.label}</div>
+                  <div className="text-xs font-bold text-main">{themeState.customColor ? t("Culoare personalizată") : t(currentPreset.label)}</div>
                   <div className="text-xs text-subtle font-mono">{activeColor}</div>
                 </div>
               </div>

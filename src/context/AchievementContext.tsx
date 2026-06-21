@@ -28,7 +28,7 @@ export function AchievementProvider({ children: copii, statsInitiale }: { childr
   const [stats, setStats] = useState<AchievementStats>({
     totalJocuri: 0, totalVictorii: 0, scenariiDeblocate: 0, scenariiJucate: [],
     nivelCurent: 0, baniTotaliCastigati: 0, evenimenteCompletate: 0, tutorialCompletat: false,
-    premiumActiv: false, utilizatorConectat: false, limitedEventsCompletate: 0, achievementIds: [],
+    premiumActiv: false, utilizatorConectat: false, achievementIds: [],
     ...statsInitiale,
   });
   const { user, isPremium, premiumTrialEndsAt } = useAuth();

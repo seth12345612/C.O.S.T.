@@ -1,10 +1,13 @@
 import { Component, type ReactNode, type ErrorInfo } from "react";
+import { TranslationContext } from "@/context/TranslationContext";
 
 interface Props { children: ReactNode }
 interface State { hasError: boolean; error?: Error }
 
 export class ErrorBoundary extends Component<Props, State> {
   state: State = { hasError: false };
+  static contextType = TranslationContext;
+  declare context: React.ContextType<typeof TranslationContext>;
 
   static getDerivedStateFromError(error: Error): State {
     return { hasError: true, error };
@@ -15,6 +18,7 @@ export class ErrorBoundary extends Component<Props, State> {
   }
 
   render() {
+    const t = this.context?.t ?? ((s: string) => s);
     if (this.state.hasError) {
       return (
         <div style={{
@@ -29,9 +33,9 @@ export class ErrorBoundary extends Component<Props, State> {
           padding: "2rem",
           textAlign: "center",
         }}>
-          <h1 style={{ fontSize: "1.5rem", marginBottom: "0.5rem", color: "var(--text-main)" }}>A apărut o eroare</h1>
+          <h1 style={{ fontSize: "1.5rem", marginBottom: "0.5rem", color: "var(--text-main)" }}>{t("A apărut o eroare")}</h1>
           <p style={{ color: "var(--text-muted)", marginBottom: "1rem", maxWidth: "500px" }}>
-            {this.state.error?.message || "Eroare necunoscută"}
+            {this.state.error?.message || t("Eroare necunoscută")}
           </p>
           <button
             onClick={() => window.location.reload()}
@@ -45,7 +49,7 @@ export class ErrorBoundary extends Component<Props, State> {
               fontSize: "0.9rem",
             }}
           >
-            Reîncarcă pagina
+            {t("Reîncarcă pagina")}
           </button>
         </div>
       );

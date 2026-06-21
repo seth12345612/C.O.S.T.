@@ -5,6 +5,7 @@ import { useXP } from "@/context/XPContext";
 import { useFinance } from "@/context/FinanceContext";
 import { useAuth } from "@/context/AuthContext";
 import { useAchievements } from "@/context/AchievementContext";
+import { useTranslation } from "@/context/TranslationContext";
 import { SoundEffects } from "@/lib/sounds";
 import { Trophy, RotateCcw, TrendingUp, Coins, Smile } from "lucide-react";
 import { useEffect, useRef } from "react";
@@ -12,6 +13,7 @@ import { saveLeaderboardEntry, getScenarioLabel } from "@/lib/leaderboard";
 import { DIFICULTATI } from "@/data/scenarios";
 
 export function GameOver() {
+  const { t } = useTranslation();
   const { state, startEndless, resetGame } = useGame();
   const { addXP } = useXP();
   const { financeState, addTransaction, deleteTransaction } = useFinance();
@@ -49,9 +51,7 @@ export function GameOver() {
       xpAdded.current = true;
       const diffXP = { usor: 50, mediu: 75, greu: 100 };
       const baseXP = diffXP[state.dificultateKey] ?? 50;
-      const bonusXP = state.limitedEventBonus?.xp ?? 0;
-      const totalXP = baseXP + bonusXP;
-      addXP(totalXP);
+      addXP(baseXP);
     }
 
     if (isWin && !moneyTransferred.current) {
@@ -73,7 +73,7 @@ export function GameOver() {
     if (!scoreSaved.current) {
       scoreSaved.current = true;
       const months = Math.max(1, Math.ceil(state.saptamana / 4));
-      const username = user?.name || "Anonim";
+      const username = user?.name || t("Anonim");
       const uid = dbUser?.id;
       saveLeaderboardEntry({
         userId: uid ?? "",
@@ -93,8 +93,8 @@ export function GameOver() {
   if (!state || !state.isGameOver) return null;
 
   const diffXP = { usor: 50, mediu: 75, greu: 100 };
-  const xpEarned = diffXP[state.dificultateKey] ?? 50 + (state.limitedEventBonus?.xp ?? 0);
-  const difficultyName = DIFICULTATI[state.dificultateKey]?.nume ?? "Ușor";
+  const xpEarned = diffXP[state.dificultateKey] ?? 50;
+  const difficultyName = t(DIFICULTATI[state.dificultateKey]?.nume ?? "Ușor");
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
@@ -122,21 +122,21 @@ export function GameOver() {
             <div className="p-2.5 rounded-2xl bg-card border border-subtle text-center">
               <Coins size={14} className="text-yellow-400 mx-auto mb-1" />
               <div className="font-black text-main text-xs">{Math.round(state.bani)} RON</div>
-              <div className="text-[10px] text-subtle">Bani finali</div>
+              <div className="text-[10px] text-subtle">{t("Bani finali")}</div>
             </div>
             <div className="p-2.5 rounded-2xl bg-card border border-subtle text-center">
               <Smile size={14} className="text-green-400 mx-auto mb-1" />
               <div className="font-black text-main text-xs">{Math.round(state.fericire)}%</div>
-              <div className="text-[10px] text-subtle">Fericire</div>
+              <div className="text-[10px] text-subtle">{t("Fericire")}</div>
             </div>
             <div className="p-2.5 rounded-2xl bg-purple-600/20 border border-purple-500/30 text-center">
               <TrendingUp size={14} className="text-purple-400 mx-auto mb-1" />
               <div className="font-black text-purple-300 text-xs">+{xpEarned} XP</div>
-              <div className="text-[10px] text-subtle">Câștigat</div>
+              <div className="text-[10px] text-subtle">{t("Câștigat")}</div>
             </div>
             <div className="p-2.5 rounded-2xl bg-orange-600/20 border border-orange-500/30 text-center">
               <div className="font-black text-orange-300 text-xs">{difficultyName}</div>
-              <div className="text-[10px] text-subtle">Dificultate</div>
+              <div className="text-[10px] text-subtle">{t("Dificultate")}</div>
             </div>
           </div>
 
@@ -144,7 +144,7 @@ export function GameOver() {
             <div className="mb-5">
               <h3 className="text-sm font-bold text-bright mb-2 flex items-center gap-1.5">
                 <Trophy size={14} className="text-yellow-400" />
-                Istoricul deciziilor tale
+                {t("Istoricul deciziilor tale")}
               </h3>
               <div className="max-h-48 overflow-y-auto space-y-1.5 pr-1">
                 {state.istoricDecizii.map((d) => (
@@ -167,7 +167,7 @@ export function GameOver() {
                 onClick={startEndless}
                 className="w-full py-3 rounded-2xl bg-gradient-to-r from-purple-600 to-fuchsia-600 hover:from-purple-500 hover:to-fuchsia-500 text-main font-bold transition-all"
               >
-                Continuă în Mod Endless
+                {t("Continuă în Mod Endless")}
               </button>
             )}
             <button
@@ -175,14 +175,14 @@ export function GameOver() {
               className="w-full py-3 rounded-2xl border border-strong hover:border-strongest text-bright hover:text-main font-semibold transition-all flex items-center justify-center gap-2"
             >
               <RotateCcw size={16} />
-              Joc nou
+              {t("Joc nou")}
             </button>
             <Link
               href="/"
               onClick={resetGame}
               className="w-full py-3 rounded-2xl bg-card hover:bg-card-hover text-muted hover:text-main text-center font-medium transition-all text-sm"
             >
-              Înapoi la meniu
+              {t("Înapoi la meniu")}
             </Link>
           </div>
         </div>

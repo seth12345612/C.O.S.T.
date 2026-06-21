@@ -2,8 +2,10 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { BookOpen, Search, X } from "lucide-react";
 import { FINANCIAL_TERMS, TERMS_BY_CATEGORY, type FinancialTerm } from "@/data/financial-terms";
+import { useTranslation } from "@/context/TranslationContext";
 
 export function GlossaryButton() {
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
 
   return (
@@ -11,7 +13,7 @@ export function GlossaryButton() {
       <button
         onClick={() => setOpen(true)}
         className="fixed bottom-4 right-4 z-50 p-3 rounded-full bg-gradient-to-r from-purple-600 to-fuchsia-600 hover:from-purple-500 hover:to-fuchsia-500 text-main shadow-lg shadow-purple-900/40 transition-all hover:scale-105"
-        title="Vocabular financiar"
+        title={t("Vocabular financiar")}
       >
         <BookOpen size={20} />
       </button>
@@ -21,6 +23,7 @@ export function GlossaryButton() {
 }
 
 export function GlossaryModal({ open, onClose }: { open: boolean; onClose: () => void }) {
+  const { t } = useTranslation();
   const [search, setSearch] = useState("");
   const [selected, setSelected] = useState<FinancialTerm | null>(null);
 
@@ -53,7 +56,7 @@ export function GlossaryModal({ open, onClose }: { open: boolean; onClose: () =>
             <div className="flex items-center justify-between px-5 pt-5 pb-3 border-b border-subtle">
               <h2 className="text-lg font-black text-main flex items-center gap-2">
                 <BookOpen size={18} className="text-purple-400" />
-                Glosar financiar
+                {t("Glosar financiar")}
               </h2>
               <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-card-hover text-muted hover:text-main transition-colors">
                 <X size={18} />
@@ -66,7 +69,7 @@ export function GlossaryModal({ open, onClose }: { open: boolean; onClose: () =>
                 <input
                   value={search}
                   onChange={(e) => { setSearch(e.target.value); setSelected(null); }}
-                  placeholder="Caută un termen..."
+                  placeholder={t("Caută un termen...")}
                   className="w-full pl-9 pr-3 py-2 rounded-xl bg-card border border-medium text-main text-sm placeholder:text-faintest focus:outline-none focus:border-purple-500/50"
                 />
               </div>
@@ -79,19 +82,19 @@ export function GlossaryModal({ open, onClose }: { open: boolean; onClose: () =>
                     onClick={() => setSelected(null)}
                     className="text-xs text-muted hover:text-main mb-3 transition-colors"
                   >
-                    &larr; Înapoi la listă
+                    &larr; {t("Înapoi la listă")}
                   </button>
                   <h3 className="text-xl font-black text-main mb-2">{selected.term}</h3>
                   <p className="text-muted text-sm leading-relaxed mb-3">{selected.definition}</p>
                   {selected.example && (
                     <div className="p-3 rounded-xl bg-purple-500/10 border border-purple-500/20">
-                      <p className="text-xs text-purple-300 font-semibold mb-1">EXEMPLU</p>
+                      <p className="text-xs text-purple-300 font-semibold mb-1">{t("EXEMPLU")}</p>
                       <p className="text-sm text-muted">{selected.example}</p>
                     </div>
                   )}
                 </div>
               ) : filtered.length === 0 ? (
-                <p className="text-center text-muted py-8">Niciun termen găsit.</p>
+                <p className="text-center text-muted py-8">{t("Niciun termen găsit.")}</p>
               ) : (
                 <div className="space-y-1">
                   {filtered.map((term) => (

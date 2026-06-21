@@ -1,6 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from "react";
 import type { AuthUser, DBUser, SubscriptionTier } from "@/types";
 import { supabase, syncUserToDB } from "@/lib/supabase";
+import { useTranslation } from "@/context/TranslationContext";
 
 const CHECK_PREMIUM_FUNC = "https://twdvhkwrlwhadbmortqk.supabase.co/functions/v1/check-premium";
 const ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || "";
@@ -232,10 +233,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setSubscriptionTier("free");
   }, [setSubscriptionTier]);
 
+  const { t } = useTranslation();
   const getPremiumTimeRemaining = useCallback(() => {
     if (!premiumTrialEndsAt) return "";
     const diff = premiumTrialEndsAt - Date.now();
-    if (diff <= 0) return "Expirat";
+    if (diff <= 0) return t("Expirat");
     const days = Math.floor(diff / (1000 * 60 * 60 * 24));
     const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
     if (days > 0) return `${days}z ${hours}h`;

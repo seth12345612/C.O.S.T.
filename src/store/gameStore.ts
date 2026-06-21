@@ -19,7 +19,7 @@ interface GameStore {
   state: GameState | null;
   eventQueue: GameEvent[];
   setState: (state: GameState | null) => void;
-  initGame: (scenariuId: string, subScenariuId: string, dificultate: DifficultyKey, venitLunar?: number, limitedEventBonus?: GameState["limitedEventBonus"], isPremium?: boolean) => void;
+  initGame: (scenariuId: string, subScenariuId: string, dificultate: DifficultyKey, venitLunar?: number, isPremium?: boolean) => void;
   nextWeek: (isPremium?: boolean) => void;
   chooseOption: (optionIndex: number, isPremium?: boolean) => void;
   startEndless: (isPremium?: boolean) => void;
@@ -44,7 +44,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
   
   setState: (state) => set({ state }),
 
-  initGame: (scenariuId, subScenariuId, dificultateKey, venitLunar = 0, limitedEventBonus, isPremium = false) => {
+  initGame: (scenariuId, subScenariuId, dificultateKey, venitLunar = 0, isPremium = false) => {
     const scenario = SCENARII[scenariuId];
     const startCfg = (START_CONFIG[scenariuId] ?? START_CONFIG.camin)[dificultateKey];
     const subScenariu = scenario.subScenarii.find((s) => s.id === subScenariuId) ?? scenario.subScenarii[0];
@@ -55,11 +55,6 @@ export const useGameStore = create<GameStore>((set, get) => ({
     const startBani = savedCapital + venitLunar - cheltuieliExtra;
 
     const rawEvents = (GAME_EVENTS[scenariuId] ?? []).filter((e) => !e.isPremium || isPremium);
-    
-    let finalBani = startBani;
-    if (limitedEventBonus?.bani) finalBani += limitedEventBonus.bani;
-    let finalFericire = startCfg.fericire;
-    if (limitedEventBonus?.fericire) finalFericire = Math.min(100, finalFericire + limitedEventBonus.fericire);
 
     set({
       eventQueue: shuffleArray(rawEvents),
@@ -67,8 +62,8 @@ export const useGameStore = create<GameStore>((set, get) => ({
         scenariuId,
         subScenariuId,
         dificultateKey,
-        bani: finalBani,
-        fericire: Math.min(100, finalFericire),
+        bani: startBani,
+        fericire: Math.min(100, startCfg.fericire),
         reputatie: 50,
         venitLunar,
         saptamana: 0,
@@ -81,7 +76,6 @@ export const useGameStore = create<GameStore>((set, get) => ({
         isEndless: false,
         evenimentCurent: null,
         evenimenteRamase: [],
-        limitedEventBonus,
         aiQuestion: null,
         isRecoveryMode: false,
         recoveryWeeksRemaining: 0,

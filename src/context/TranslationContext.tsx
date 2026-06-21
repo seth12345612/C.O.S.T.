@@ -8,7 +8,7 @@ interface TranslationContextType {
   ready: boolean;
 }
 
-const TranslationContext = createContext<TranslationContextType | null>(null);
+export const TranslationContext = createContext<TranslationContextType | null>(null);
 
 const LANGUAGES = [
   { code: "ro", label: "Română", flag: "🇷🇴" },

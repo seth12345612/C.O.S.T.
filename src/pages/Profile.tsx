@@ -5,6 +5,7 @@ import { OrbBackground } from "@/components/OrbBackground";
 import { useAuth } from "@/context/AuthContext";
 import { UserCircle, Save, School, Heart, Smartphone, MapPin, Hash } from "lucide-react";
 import { toast } from "sonner";
+import { useTranslation } from "@/context/TranslationContext";
 
 const PROFILE_KEY = "cost_profile_custom";
 
@@ -37,6 +38,7 @@ const FIELDS: { key: keyof ProfileCustom; label: string; icon: typeof School; pl
 ];
 
 export default function ProfilePage() {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const [profile, setProfile] = useState<ProfileCustom>(loadProfile);
   const [saved, setSaved] = useState(false);
@@ -46,11 +48,11 @@ export default function ProfilePage() {
   const handleSave = () => {
     saveProfile(profile);
     setSaved(true);
-    toast.success("Profil salvat!");
+    toast.success(t("Profil salvat!"));
     setTimeout(() => setSaved(false), 2000);
   };
 
-  const greeting = user?.name?.split(" ")[0] || "Student";
+  const greeting = user?.name?.split(" ")[0] || t("Student");
 
   return (
     <Layout>
@@ -66,8 +68,8 @@ export default function ProfilePage() {
             <div className="w-20 h-20 rounded-full bg-gradient-to-br from-purple-500/30 to-fuchsia-500/30 flex items-center justify-center mx-auto mb-3 border-2 border-purple-500/40">
               <UserCircle size={48} className="text-purple-400" />
             </div>
-            <h1 className="text-2xl font-black text-main">Salut, {greeting}!</h1>
-            <p className="text-sm text-muted mt-1">Personalizează-ți profilul</p>
+            <h1 className="text-2xl font-black text-main">{t(`Salut, ${greeting}!`)}</h1>
+            <p className="text-sm text-muted mt-1">{t("Personalizează-ți profilul")}</p>
           </div>
 
           {/* Fields */}
@@ -76,12 +78,12 @@ export default function ProfilePage() {
               <div key={key}>
                 <label className="flex items-center gap-1.5 text-xs font-semibold text-muted mb-1.5">
                   <Icon size={12} />
-                  {label}
+                  {t(label)}
                 </label>
                 <input
                   value={profile[key]}
                   onChange={(e) => setProfile({ ...profile, [key]: e.target.value })}
-                  placeholder={placeholder}
+                  placeholder={t(placeholder)}
                   className="w-full px-3 py-2.5 rounded-xl bg-card border border-medium text-main text-sm placeholder:text-faintest focus:outline-none focus:border-purple-500/50 transition-colors"
                 />
               </div>
@@ -94,12 +96,12 @@ export default function ProfilePage() {
             className="w-full py-3 rounded-xl bg-gradient-to-r from-purple-600 to-fuchsia-600 hover:from-purple-500 hover:to-fuchsia-500 text-main font-bold text-sm transition-all shadow-lg shadow-purple-900/30 flex items-center justify-center gap-2"
           >
             <Save size={16} />
-            {saved ? "Salvat!" : "Salvează profilul"}
+            {saved ? t("Salvat!") : t("Salvează profilul")}
           </button>
 
           {/* Info */}
           <p className="text-xs text-faint text-center">
-            Informațiile sunt stocate local și nu sunt partajate.
+            {t("Informațiile sunt stocate local și nu sunt partajate.")}
           </p>
         </motion.div>
       </div>

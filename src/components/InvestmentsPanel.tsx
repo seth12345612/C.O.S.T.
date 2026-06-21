@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { TrendingUp, TrendingDown, PiggyBank, Target, Plus, Minus, BarChart3, Coins, Building2, Leaf, Landmark, Wallet, Timer, Rocket, Plane, GraduationCap, Home, Car } from "lucide-react"
+import { useTranslation } from "@/context/TranslationContext"
 import type { Investment, ObiectivTermenLung } from "@/types"
 import {
   ACTIUNI,
@@ -30,6 +31,7 @@ const GOAL_ICONS: Record<string, React.ElementType> = {
 }
 
 function PortfolioChart({ data }: { data: PortfolioSnapshot[] }) {
+  const { t } = useTranslation();
   if (data.length < 2) return null
 
   const values = data.map((d) => d.value)
@@ -64,7 +66,7 @@ function PortfolioChart({ data }: { data: PortfolioSnapshot[] }) {
       <div className="flex items-center justify-between mb-3">
         <h3 className="text-sm font-semibold text-main flex items-center gap-1.5">
           <BarChart3 size={14} className={isUp ? "text-green-400" : "text-red-400"} />
-          Evoluția portofoliului
+          {t("Evoluția portofoliului")}
         </h3>
         <motion.span
           key={trendPct}
@@ -127,6 +129,7 @@ interface InvestmentsPanelProps {
 }
 
 export function InvestmentsPanel({ baniDisponibili, onInvest }: InvestmentsPanelProps) {
+  const { t } = useTranslation();
   const [investitii, setInvestitii] = useState<Investment[]>([])
   const [obiective, setObiective] = useState<ObiectivTermenLung[]>([])
   const [unitati, setUnitati] = useState<Record<string, number>>({})
@@ -232,20 +235,20 @@ export function InvestmentsPanel({ baniDisponibili, onInvest }: InvestmentsPanel
               <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg shadow-indigo-500/20">
                 <PiggyBank size={16} className="text-white" />
               </div>
-              Portofoliu de Investiții
+              {t("Portofoliu de Investiții")}
             </h2>
             <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-emerald-500/10 to-emerald-500/5 border border-emerald-500/20">
               <Wallet size={13} className="text-emerald-400" />
-              <span className="text-xs text-muted">Disponibil:</span>
+              <span className="text-xs text-muted">{t("Disponibil:")}</span>
               <span className="text-sm font-bold text-emerald-400">{baniDisponibili} RON</span>
             </div>
           </div>
 
           <div className="grid grid-cols-3 gap-3 mb-4">
             {[
-              { label: "Valoare Totală", value: totalPortofoliu, icon: Coins, gradient: "from-blue-500 to-indigo-600" },
-              { label: "Investit", value: totalInvestit, icon: BarChart3, gradient: "from-violet-500 to-purple-600" },
-              { label: "Randament", value: randamentProcentual, isPct: true, icon: TrendingUp, gradient: diferenta >= 0 ? "from-emerald-500 to-green-600" : "from-rose-500 to-red-600" },
+              { label: t("Valoare Totală"), value: totalPortofoliu, icon: Coins, gradient: "from-blue-500 to-indigo-600" },
+              { label: t("Investit"), value: totalInvestit, icon: BarChart3, gradient: "from-violet-500 to-purple-600" },
+              { label: t("Randament"), value: randamentProcentual, isPct: true, icon: TrendingUp, gradient: diferenta >= 0 ? "from-emerald-500 to-green-600" : "from-rose-500 to-red-600" },
             ].map((card, i) => (
               <motion.div
                 key={card.label}
@@ -286,8 +289,8 @@ export function InvestmentsPanel({ baniDisponibili, onInvest }: InvestmentsPanel
                 <div className="w-14 h-14 mx-auto mb-3 rounded-2xl bg-gradient-to-br from-indigo-500/10 to-purple-500/10 border border-indigo-500/20 flex items-center justify-center">
                   <Coins size={22} className="text-indigo-400" />
                 </div>
-                <p className="text-sm text-muted mb-1">Nu ai investiții active</p>
-                <p className="text-xs text-muted/60">Cumpără acțiuni sau fonduri mutuale mai jos</p>
+                <p className="text-sm text-muted mb-1">{t("Nu ai investiții active")}</p>
+                <p className="text-xs text-muted/60">{t("Cumpără acțiuni sau fonduri mutuale mai jos")}</p>
               </motion.div>
             ) : (
               <motion.div layout className="space-y-2 mt-4">
@@ -308,14 +311,14 @@ export function InvestmentsPanel({ baniDisponibili, onInvest }: InvestmentsPanel
                       <div className={`absolute left-0 top-2 bottom-2 w-1 rounded-full ${profit >= 0 ? "bg-emerald-500" : "bg-rose-500"}`} />
                       <div className="flex-1 min-w-0 pl-2">
                         <div className="flex items-center gap-2 mb-1">
-                          <span className="text-sm font-semibold text-main truncate">{inv.nume}</span>
+                          <span className="text-sm font-semibold text-main truncate">{t(inv.nume)}</span>
                           <span className={`shrink-0 text-[10px] font-medium px-2 py-0.5 rounded-full ${risk.bg} ${risk.border} ${risk.color}`}>
-                            {risk.label}
+                            {t(risk.label)}
                           </span>
                         </div>
                         <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted">
-                          <span>Investit: <span className="text-main font-medium">{inv.sumaInvestita} RON</span></span>
-                          <span>Actual: <span className="text-main font-medium">{inv.valoareCurenta} RON</span></span>
+                          <span>{t("Investit:")} <span className="text-main font-medium">{inv.sumaInvestita} RON</span></span>
+                          <span>{t("Actual:")} <span className="text-main font-medium">{inv.valoareCurenta} RON</span></span>
                           <motion.span
                             key={profit}
                             initial={{ opacity: 0, scale: 0.8 }}
@@ -333,7 +336,7 @@ export function InvestmentsPanel({ baniDisponibili, onInvest }: InvestmentsPanel
                         onClick={() => handleSell(inv)}
                         className="shrink-0 px-3.5 py-2 text-xs font-medium rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-400 hover:bg-rose-500/20 hover:shadow-lg hover:shadow-rose-500/10 transition-all"
                       >
-                        Vinde
+                        {t("Vinde")}
                       </motion.button>
                     </motion.div>
                   )
@@ -353,7 +356,7 @@ export function InvestmentsPanel({ baniDisponibili, onInvest }: InvestmentsPanel
             <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shadow-lg shadow-emerald-500/20">
               <TrendingUp size={16} className="text-white" />
             </div>
-            <h2 className="text-lg font-bold text-main">Cumpără Investiții</h2>
+            <h2 className="text-lg font-bold text-main">{t("Cumpără Investiții")}</h2>
           </div>
 
           <div className="space-y-5">
@@ -363,7 +366,7 @@ export function InvestmentsPanel({ baniDisponibili, onInvest }: InvestmentsPanel
                 <div className="h-5 w-1 rounded-full bg-gradient-to-b from-sky-400 to-blue-500" />
                 <h3 className="text-sm font-semibold text-strong flex items-center gap-1.5">
                   <Building2 size={14} className="text-sky-400" />
-                  Acțiuni
+                  {t("Acțiuni")}
                 </h3>
               </div>
               <div className="grid sm:grid-cols-3 gap-3">
@@ -380,23 +383,23 @@ export function InvestmentsPanel({ baniDisponibili, onInvest }: InvestmentsPanel
                         <div className="flex items-center gap-2">
                           <span className="text-xl">{INVEST_EMOJIS[a.id]}</span>
                           <div>
-                            <p className="text-sm font-semibold text-main leading-tight">{a.nume.replace(/\(.*\)/, "").trim()}</p>
-                            <p className="text-[10px] text-muted">{a.nume.match(/\((.*?)\)/)?.[1]}</p>
+                            <p className="text-sm font-semibold text-main leading-tight">{t(a.nume.replace(/\(.*\)/, "").trim())}</p>
+                            <p className="text-[10px] text-muted">{t(a.nume.match(/\((.*?)\)/)?.[1] ?? "")}</p>
                           </div>
                         </div>
                       </div>
 
                       <div className="flex items-center gap-2 mb-3">
-                        <div className="text-xs text-muted">Preț:</div>
+                        <div className="text-xs text-muted">{t("Preț:")}</div>
                         <div className="text-sm font-bold text-main">{a.valoareCurenta} RON</div>
                         <div className="ml-auto flex items-center gap-1">
-                          <span className="text-[10px] font-medium text-emerald-400">{(a.randamentAnual * 100).toFixed(0)}%/an</span>
+                          <span className="text-[10px] font-medium text-emerald-400">{(a.randamentAnual * 100).toFixed(0)}{t("%/an")}</span>
                         </div>
                       </div>
 
                       <div className="flex items-center gap-1.5 mb-3">
                         <span className={`w-1.5 h-1.5 rounded-full ${risk.dot}`} />
-                        <span className={`text-[10px] font-medium ${risk.color}`}>{risk.label}</span>
+                        <span className={`text-[10px] font-medium ${risk.color}`}>{t(risk.label)}</span>
                       </div>
 
                       <div className="flex items-center justify-between">
@@ -428,7 +431,7 @@ export function InvestmentsPanel({ baniDisponibili, onInvest }: InvestmentsPanel
                               : "bg-gradient-to-r from-emerald-500/15 to-emerald-500/5 border border-emerald-500/25 text-emerald-400 hover:from-emerald-500/25 hover:shadow-lg hover:shadow-emerald-500/10"
                           }`}
                         >
-                          {cost > baniDisponibili ? `${cost} RON` : "Cumpără"}
+                          {cost > baniDisponibili ? `${cost} RON` : t("Cumpără")}
                         </motion.button>
                       </div>
                     </motion.div>
@@ -443,7 +446,7 @@ export function InvestmentsPanel({ baniDisponibili, onInvest }: InvestmentsPanel
                 <div className="h-5 w-1 rounded-full bg-gradient-to-b from-amber-400 to-orange-500" />
                 <h3 className="text-sm font-semibold text-strong flex items-center gap-1.5">
                   <Landmark size={14} className="text-amber-400" />
-                  Fonduri Mutuale
+                  {t("Fonduri Mutuale")}
                 </h3>
               </div>
               <div className="grid sm:grid-cols-3 gap-3">
@@ -460,23 +463,23 @@ export function InvestmentsPanel({ baniDisponibili, onInvest }: InvestmentsPanel
                         <div className="flex items-center gap-2">
                           <span className="text-xl">{INVEST_EMOJIS[f.id]}</span>
                           <div>
-                            <p className="text-sm font-semibold text-main leading-tight">{f.nume.replace(/\(.*\)/, "").trim()}</p>
-                            <p className="text-[10px] text-muted">{f.nume.match(/\((.*?)\)/)?.[1]}</p>
+                            <p className="text-sm font-semibold text-main leading-tight">{t(f.nume.replace(/\(.*\)/, "").trim())}</p>
+                            <p className="text-[10px] text-muted">{t(f.nume.match(/\((.*?)\)/)?.[1] ?? "")}</p>
                           </div>
                         </div>
                       </div>
 
                       <div className="flex items-center gap-2 mb-3">
-                        <div className="text-xs text-muted">Preț:</div>
+                        <div className="text-xs text-muted">{t("Preț:")}</div>
                         <div className="text-sm font-bold text-main">{f.valoareCurenta} RON</div>
                         <div className="ml-auto flex items-center gap-1">
-                          <span className="text-[10px] font-medium text-emerald-400">{(f.randamentAnual * 100).toFixed(0)}%/an</span>
+                          <span className="text-[10px] font-medium text-emerald-400">{(f.randamentAnual * 100).toFixed(0)}{t("%/an")}</span>
                         </div>
                       </div>
 
                       <div className="flex items-center gap-1.5 mb-3">
                         <span className={`w-1.5 h-1.5 rounded-full ${risk.dot}`} />
-                        <span className={`text-[10px] font-medium ${risk.color}`}>{risk.label}</span>
+                        <span className={`text-[10px] font-medium ${risk.color}`}>{t(risk.label)}</span>
                       </div>
 
                       <div className="flex items-center justify-between">
@@ -508,7 +511,7 @@ export function InvestmentsPanel({ baniDisponibili, onInvest }: InvestmentsPanel
                               : "bg-gradient-to-r from-emerald-500/15 to-emerald-500/5 border border-emerald-500/25 text-emerald-400 hover:from-emerald-500/25 hover:shadow-lg hover:shadow-emerald-500/10"
                           }`}
                         >
-                          {cost > baniDisponibili ? `${cost} RON` : "Cumpără"}
+                          {cost > baniDisponibili ? `${cost} RON` : t("Cumpără")}
                         </motion.button>
                       </div>
                     </motion.div>
@@ -529,7 +532,7 @@ export function InvestmentsPanel({ baniDisponibili, onInvest }: InvestmentsPanel
             <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-rose-500 to-pink-600 flex items-center justify-center shadow-lg shadow-rose-500/20">
               <Rocket size={16} className="text-white" />
             </div>
-            <h2 className="text-lg font-bold text-main">Obiective pe Termen Lung</h2>
+            <h2 className="text-lg font-bold text-main">{t("Obiective pe Termen Lung")}</h2>
           </div>
 
           <div className="grid sm:grid-cols-2 gap-3">
@@ -563,14 +566,14 @@ export function InvestmentsPanel({ baniDisponibili, onInvest }: InvestmentsPanel
                       <GoalIcon size={16} className="text-white" />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-semibold text-main">{obj.nume}</p>
+                      <p className="text-sm font-semibold text-main">{t(obj.nume)}</p>
                       <div className="flex items-center gap-3 text-xs text-muted mt-0.5">
                         <span className="font-medium">
                           <span className="text-main">{sumaAcumulata} RON</span> / {obj.sumaTinta} RON
                         </span>
                         <span className="flex items-center gap-1">
                           <Timer size={10} />
-                          {obj.termenLuni} luni
+                          {obj.termenLuni} {t("luni")}
                         </span>
                       </div>
                     </div>
@@ -604,7 +607,7 @@ export function InvestmentsPanel({ baniDisponibili, onInvest }: InvestmentsPanel
                         max={baniDisponibili}
                         value={alocare[obj.id] || ""}
                         onChange={(e) => setAlocare((prev) => ({ ...prev, [obj.id]: e.target.value }))}
-                        placeholder="Sumă de alocat"
+                        placeholder={t("Sumă de alocat")}
                         className="w-full px-3 py-2 text-xs rounded-xl bg-card-strong border border-subtle text-main placeholder:text-muted/50 focus:outline-none focus:border-rose-500/40 focus:ring-1 focus:ring-rose-500/20 transition-all"
                       />
                     </div>
@@ -615,7 +618,7 @@ export function InvestmentsPanel({ baniDisponibili, onInvest }: InvestmentsPanel
                       disabled={!alocare[obj.id] || Number(alocare[obj.id]) <= 0 || Number(alocare[obj.id]) > baniDisponibili}
                       className="shrink-0 px-4 py-2 text-xs font-medium rounded-xl bg-gradient-to-r from-rose-500/15 to-rose-500/5 border border-rose-500/25 text-rose-400 hover:from-rose-500/25 hover:shadow-lg hover:shadow-rose-500/10 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
                     >
-                      Alocă
+                      {t("Alocă")}
                     </motion.button>
                   </div>
                 </motion.div>
@@ -630,13 +633,13 @@ export function InvestmentsPanel({ baniDisponibili, onInvest }: InvestmentsPanel
               className="mt-4 pt-4 border-t border-subtle/50"
             >
               <p className="text-xs text-muted text-center">
-                Total alocat:{" "}
+                {t("Total alocat:")}{" "}
                 <span className="text-main font-semibold">
                   {obiective.reduce((s, o) => s + o.sumaAcumulata, 0)} RON
                 </span>
                 <span className="text-muted/50 mx-1.5">·</span>
                 <span className="text-muted/70">
-                  {obiective.filter((o) => o.sumaAcumulata >= o.sumaTinta).length}/{obiective.length} atinse
+                  {obiective.filter((o) => o.sumaAcumulata >= o.sumaTinta).length}/{obiective.length} {t("atinse")}
                 </span>
               </p>
             </motion.div>

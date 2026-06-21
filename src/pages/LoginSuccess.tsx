@@ -3,8 +3,10 @@ import { useLocation } from "wouter";
 import { motion } from "framer-motion";
 import { CheckCircle2 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
+import { useTranslation } from "@/context/TranslationContext";
 
 export default function LoginSuccess() {
+  const { t } = useTranslation();
   const [, setLocation] = useLocation();
   const { isVerified } = useAuth();
 
@@ -28,8 +30,8 @@ export default function LoginSuccess() {
         <div className="w-20 h-20 mx-auto rounded-full bg-green-500/20 flex items-center justify-center">
           <CheckCircle2 size={48} className="text-green-400" />
         </div>
-        <h1 className="text-2xl font-bold text-main">Logare reușită</h1>
-        <p className="text-dim">Te redirecționăm acum...</p>
+        <h1 className="text-2xl font-bold text-main">{t("Logare reușită")}</h1>
+        <p className="text-dim">{t("Te redirecționăm acum...")}</p>
         <div className="flex justify-center gap-1.5 mt-4">
           {[0, 1, 2].map((i) => (
             <motion.div

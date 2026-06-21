@@ -41,8 +41,7 @@ describe("Achievement conditions", () => {
     totalJocuri: 0, totalVictorii: 0, scenariiDeblocate: 0,
     scenariiJucate: [], nivelCurent: 1, baniTotaliCastigati: 0,
     evenimenteCompletate: 0, tutorialCompletat: false,
-    premiumActiv: false, utilizatorConectat: false,
-    limitedEventsCompletate: 0, achievementIds: [],
+    premiumActiv: false, utilizatorConectat: false, achievementIds: [],
   };
 
   it("primul_pas unlocks after first game", () => {

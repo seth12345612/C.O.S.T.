@@ -1,8 +1,10 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { useGame } from "@/context/GameContext";
 import { Coins, Smile, ChevronRight } from "lucide-react";
+import { useTranslation } from "@/context/TranslationContext";
 
 export function EventModal() {
+  const { t } = useTranslation();
   const { state, chooseOption } = useGame();
 
   if (!state || !state.evenimentCurent) return null;
@@ -40,18 +42,18 @@ export function EventModal() {
               <Smile size={14} className="text-green-400" />
               <span className="font-bold text-main">{Math.round(state.fericire)}%</span>
             </div>
-            <span className="ml-auto text-xs text-subtle">Luna {state.luna} · Săpt. {state.saptamanaInLuna}</span>
+            <span className="ml-auto text-xs text-subtle">{t("Luna")} {state.luna} · {t("Săpt.")} {state.saptamanaInLuna}</span>
           </div>
 
           <div className="p-5">
-            <h3 className="text-xl font-black text-main mb-2">{ev.titlu}</h3>
-            <p className="text-strong text-sm mb-6">{ev.descriere}</p>
+            <h3 className="text-xl font-black text-main mb-2">{t(ev.titlu)}</h3>
+            <p className="text-strong text-sm mb-6">{t(ev.descriere)}</p>
 
             <button
               onClick={handleContinue}
               className="w-full py-3 rounded-xl bg-gradient-to-r from-purple-600 to-fuchsia-600 hover:from-purple-500 hover:to-fuchsia-500 transition-all text-main font-bold text-sm flex items-center justify-center gap-2"
             >
-              Continuă <ChevronRight size={16} />
+              {t("Continuă")} <ChevronRight size={16} />
             </button>
           </div>
         </motion.div>

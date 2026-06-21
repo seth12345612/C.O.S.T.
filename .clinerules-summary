@@ -42,11 +42,11 @@
 
 ## Project structure
 - `src/types/index.ts` — all centralized interfaces
-- `src/data/` — scenarios, events, limited events, achievements
+- `src/data/` — scenarios, events, achievements
 - `src/lib/` — supabase client + REST, leaderboard, export, sounds
 - `src/context/` — Auth, Game, Finance, XP, Theme, Achievement
 - `src/pages/` — Game, Leaderboard, Admin, Profile, Tutorial, Finance, Premium, Contact, Despre, Achievements
-- `src/components/` — EventModal, LimitedEventModal, GameOver, Layout, OrbBackground, MentorChat, FinancialReport, AchievementNotification, Skeletons, DarkModeToggle, ThemePicker, GoogleAuthButton
+- `src/components/` — EventModal, GameOver, Layout, OrbBackground, MentorChat, FinancialReport, AchievementNotification, Skeletons, DarkModeToggle, ThemePicker, GoogleAuthButton
 - `supabase/functions/` — mentor (AI Mentor edge function)
 
 ## Design

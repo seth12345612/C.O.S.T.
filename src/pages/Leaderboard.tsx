@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import type { LeaderboardEntry } from "@/types";
 import { loadLocalScores } from "@/lib/leaderboard";
+import { useTranslation } from "@/context/TranslationContext";
 
 const RANK_ICONS = [
   { icon: Trophy, color: "text-yellow-400" },
@@ -40,7 +41,7 @@ function ScoreRow({ entry, rank, isUserScore, showRank = true, sortKey }: ScoreR
       : "border-subtle8 bg-card-soft4";
 
   const sortValue = sortKey === "datorii" ? entry.months : sortKey === "xp" ? entry.score * 2 : entry.score;
-  const sortUnit = sortKey === "economii" ? "RON" : sortKey === "xp" ? "XP" : "luni";
+  const sortUnit = sortKey === "economii" ? "RON" : sortKey === "xp" ? "XP" : t("luni");
 
   return (
     <div className={"flex items-center gap-3 p-3.5 rounded-2xl border transition-all " + rowClass}>
@@ -60,12 +61,12 @@ function ScoreRow({ entry, rank, isUserScore, showRank = true, sortKey }: ScoreR
           </span>
           {isUserScore && (
             <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-purple-500/30 text-purple-300 font-medium">
-              Scorul tau
+              {t("Scorul tau")}
             </span>
           )}
         </div>
         <div className="text-xs text-subtle">
-          {entry.months} luni . {entry.scenario}
+          {entry.months} {t("luni")} . {entry.scenario}
           {entry.date > 0 && (
             <span className="ml-2 text-faint">. {formatDate(entry.date)}</span>
           )}
@@ -85,6 +86,7 @@ function ScoreRow({ entry, rank, isUserScore, showRank = true, sortKey }: ScoreR
 }
 
 export default function Leaderboard() {
+  const { t } = useTranslation();
   const [userScores, setUserScores] = useState<LeaderboardEntry[]>(() => loadLocalScores());
 
   useEffect(() => {
@@ -107,8 +109,8 @@ export default function Leaderboard() {
           className="text-center mb-8"
         >
           <div className="text-4xl mb-3">🏆</div>
-          <h1 className="text-3xl font-black text-main mb-2">Clasament personal</h1>
-          <p className="text-dim text-sm">Istoricul scenariilor tale finalizate.</p>
+          <h1 className="text-3xl font-black text-main mb-2">{t("Clasament personal")}</h1>
+          <p className="text-dim text-sm">{t("Istoricul scenariilor tale finalizate.")}</p>
         </motion.div>
 
         {!hasScores ? (
@@ -120,13 +122,13 @@ export default function Leaderboard() {
             <div className="w-20 h-20 mx-auto mb-5 rounded-3xl bg-gradient-to-br from-amber-500/10 to-yellow-500/5 border border-amber-500/20 flex items-center justify-center">
               <Trophy size={36} className="text-amber-400" />
             </div>
-            <h2 className="text-xl font-bold text-main mb-2">Niciun joc finalizat încă</h2>
+            <h2 className="text-xl font-bold text-main mb-2">{t("Niciun joc finalizat încă")}</h2>
             <p className="text-muted text-sm max-w-xs mx-auto leading-relaxed">
-              Joacă și termină un scenariu ca să-ți vezi scorurile aici!
+              {t("Joacă și termină un scenariu ca să-ți vezi scorurile aici!")}
             </p>
             <div className="mt-6 flex items-center justify-center gap-2 text-xs text-faint">
               <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
-              Fii primul pe listă
+              {t("Fii primul pe listă")}
             </div>
           </motion.div>
         ) : (
@@ -139,7 +141,7 @@ export default function Leaderboard() {
 
         <div className="mt-6 p-4 rounded-2xl border border-subtle bg-card text-center">
           <p className="text-xs text-subtle">
-            Scorurile tale sunt salvate local pe acest dispozitiv.
+            {t("Scorurile tale sunt salvate local pe acest dispozitiv.")}
           </p>
         </div>
       </div>

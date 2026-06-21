@@ -9,15 +9,16 @@ import { GameOver } from "@/components/GameOver";
 import { WeeklyQuiz } from "@/components/WeeklyQuiz";
 import { useGame } from "@/context/GameContext";
 import { useXP } from "@/context/XPContext";
+import { useTranslation } from "@/context/TranslationContext";
 import { useFinance } from "@/context/FinanceContext";
 import { SCENARII, DIFICULTATI } from "@/data/scenarios";
-import { LIMITED_EVENTS } from "@/data/limitedEvents";
 import { Link } from "wouter";
 import type { DifficultyKey, DecizieIstorica, SursaVenit, HistoryFilter } from "@/types";
 
 const STORAGE_KEY = "cost_income_sources";
 
 function SetupScreen() {
+  const { t } = useTranslation();
   const [, navigate] = useLocation();
   const { initGame, resetGame } = useGame();
   const { isUnlocked, xpRequiredFor } = useXP();
@@ -25,7 +26,6 @@ function SetupScreen() {
   const [selectedScenariu, setSelectedScenariu] = useState<string>("camin");
   const [selectedSub, setSelectedSub] = useState<string>("coleg");
   const [selectedDiff, setSelectedDiff] = useState<DifficultyKey>("mediu");
-  const [eventId, setEventId] = useState<string | null>(null);
   const [surseVenit, setSurseVenit] = useState<SursaVenit[]>(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
@@ -57,12 +57,10 @@ function SetupScreen() {
     resetGame();
     const params = new URLSearchParams(window.location.search);
     const sc = params.get("scenario");
-    const ev = params.get("event");
     if (sc && SCENARII[sc]) {
       setSelectedScenariu(sc);
       setSelectedSub(SCENARII[sc].subScenarii[0].id);
     }
-    if (ev) setEventId(ev);
   }, []);
 
   useEffect(() => {
@@ -71,12 +69,10 @@ function SetupScreen() {
   }, [selectedScenariu]);
 
   const scenario = SCENARII[selectedScenariu];
-  const limitedEvent = eventId ? LIMITED_EVENTS.find((e) => e.id === eventId) : null;
 
   const FINANCE_ADDED_KEY = "cost_initial_finance_added";
 
   function start() {
-    const bonus = limitedEvent ? { xp: limitedEvent.bonusXP, bani: limitedEvent.bonusBani, fericire: limitedEvent.bonusFericire } : undefined;
     if (!localStorage.getItem(FINANCE_ADDED_KEY)) {
       surseVenit.forEach((s) => {
         if (s.suma > 0) {
@@ -91,7 +87,7 @@ function SetupScreen() {
       });
       localStorage.setItem(FINANCE_ADDED_KEY, "1");
     }
-    initGame(selectedScenariu, selectedSub, selectedDiff, venitTotal, bonus);
+    initGame(selectedScenariu, selectedSub, selectedDiff, venitTotal);
   }
 
   const allScenarii = Object.values(SCENARII);
@@ -99,44 +95,29 @@ function SetupScreen() {
   return (
     <div className="max-w-2xl mx-auto px-4 py-8">
       <Link href="/" className="inline-flex items-center gap-1.5 text-dim hover:text-main text-sm mb-6 transition-colors">
-        <ArrowLeft size={14} /> Înapoi
+        <ArrowLeft size={14} /> {t("Înapoi")}
       </Link>
 
       <div className="flex items-center justify-between mb-2">
-        <h1 className="text-3xl font-black text-main">Configurează jocul</h1>
+        <h1 className="text-3xl font-black text-main">{t("Configurează jocul")}</h1>
         <Link
           href="/tutorial"
           className="px-3 py-1.5 rounded-lg border border-yellow-500/40 bg-yellow-500/10 text-yellow-300 text-xs font-semibold hover:bg-yellow-500/20 transition-colors"
         >
-          📖 Tutorial
+          {t("📖 Tutorial")}
         </Link>
       </div>
-      <p className="text-dim text-sm mb-8">Alege scenariul, sub-scenariul și dificultatea ta.</p>
-
-      {limitedEvent && (
-        <div className="mb-6 p-4 rounded-2xl border border-orange-500/30 bg-orange-500/10">
-          <div className="flex items-center gap-2 mb-1">
-            <span className="text-lg">{limitedEvent.emoji}</span>
-            <span className="font-bold text-orange-300 text-sm">{limitedEvent.titlu} — Eveniment cu timp limitat!</span>
-          </div>
-          <p className="text-xs text-dim">{limitedEvent.descriere}</p>
-          <div className="flex gap-3 mt-2 flex-wrap">
-            <span className="text-xs font-bold text-purple-300">+{limitedEvent.bonusXP} XP</span>
-            {limitedEvent.bonusBani && limitedEvent.bonusBani > 0 && <span className="text-xs font-bold text-green-400">+{limitedEvent.bonusBani} RON start</span>}
-            {limitedEvent.bonusFericire && limitedEvent.bonusFericire > 0 && <span className="text-xs font-bold text-blue-400">+{limitedEvent.bonusFericire}% fericire</span>}
-          </div>
-        </div>
-      )}
+      <p className="text-dim text-sm mb-8">{t("Alege scenariul, sub-scenariul și dificultatea ta.")}</p>
 
       {/* Income selection - custom sources */}
       <div className="mb-6">
-        <h2 className="text-sm font-bold text-muted uppercase tracking-wider mb-3">Veniturile tale</h2>
+        <h2 className="text-sm font-bold text-muted uppercase tracking-wider mb-3">{t("Veniturile tale")}</h2>
         <div className="space-y-2">
           {surseVenit.map((sursa) => (
             <div key={sursa.id} className="flex items-center gap-2">
               <input
                 type="text"
-                placeholder="Nume venit (ex: Salariu)"
+                placeholder={t("Nume venit (ex: Salariu)")}
                 value={sursa.nume}
                 onChange={(e) => updateSursa(sursa.id, "nume", e.target.value)}
                 className="flex-1 px-3 py-2 rounded-xl bg-card border border-subtle text-main text-sm placeholder-white/30 focus:outline-none focus:border-green-500/40"
@@ -144,7 +125,7 @@ function SetupScreen() {
               <div className="relative w-32">
                 <input
                   type="number"
-                  placeholder="Suma"
+                  placeholder={t("Suma")}
                   value={sursa.suma || ""}
                   onChange={(e) => updateSursa(sursa.id, "suma", Number(e.target.value))}
                   className="w-full pl-3 pr-8 py-2 rounded-xl bg-card border border-subtle text-main text-sm placeholder-white/30 focus:outline-none focus:border-green-500/40"
@@ -163,15 +144,15 @@ function SetupScreen() {
           onClick={addSursa}
           className="mt-2 flex items-center gap-1.5 text-xs font-semibold text-green-400 hover:text-green-300 transition-colors"
         >
-          <Plus size={14} /> Adaugă sursă de venit
+          <Plus size={14} /> {t("Adaugă sursă de venit")}
         </button>
         <div className="mt-3 p-3 rounded-xl border border-green-500/20 bg-green-500/10">
-          <span className="text-sm font-semibold text-green-300">Venit lunar total: </span>
+          <span className="text-sm font-semibold text-green-300">{t("Venit lunar total: ")}</span>
           <span className="text-sm font-black text-green-400">{venitTotal} RON</span>
         </div>
         {capitalSalvat > 0 && (
           <div className="mt-2 p-3 rounded-xl border border-yellow-500/20 bg-yellow-500/10">
-            <span className="text-sm font-semibold text-yellow-300">Capital economisit: </span>
+            <span className="text-sm font-semibold text-yellow-300">{t("Capital economisit: ")}</span>
             <span className="text-sm font-black text-yellow-400">+{capitalSalvat} RON</span>
           </div>
         )}
@@ -179,7 +160,7 @@ function SetupScreen() {
 
       {/* Scenario selection */}
       <div className="mb-6">
-        <h2 className="text-sm font-bold text-muted uppercase tracking-wider mb-3">Scenariu</h2>
+        <h2 className="text-sm font-bold text-muted uppercase tracking-wider mb-3">{t("Scenariu")}</h2>
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
           {allScenarii.map((sc) => {
             const unlocked = isUnlocked(sc.id);
@@ -200,9 +181,9 @@ function SetupScreen() {
                 <div className={`absolute inset-0 ${sc.bgClass} opacity-30`} />
                 <div className="relative">
                   <span className="text-xl block mb-1">{sc.emoji}</span>
-                  <span className="text-xs font-semibold text-main block leading-tight">{sc.nume}</span>
-                  {!unlocked && <span className="text-xs text-subtle">🔒 {xpNeeded} XP</span>}
-                  {sc.seasonal && <span className="text-xs text-orange-400">Sezonier</span>}
+                  <span className="text-xs font-semibold text-main block leading-tight">{t(sc.nume)}</span>
+                  {!unlocked && <span className="text-xs text-subtle">{t("🔒")} {sc.isPremium ? t("Premium") : `${xpNeeded} XP`}</span>}
+                  {sc.seasonal && <span className="text-xs text-orange-400">{t("Sezonier")}</span>}
                 </div>
               </button>
             );
@@ -212,7 +193,7 @@ function SetupScreen() {
 
       {/* Sub-scenario */}
       <div className="mb-6">
-        <h2 className="text-sm font-bold text-muted uppercase tracking-wider mb-3">Sub-scenariu</h2>
+        <h2 className="text-sm font-bold text-muted uppercase tracking-wider mb-3">{t("Sub-scenariu")}</h2>
         <div className="space-y-2">
           {scenario.subScenarii.map((sub) => (
             <button
@@ -224,17 +205,17 @@ function SetupScreen() {
                   : "border-subtle bg-card hover:border-strong"
               }`}
             >
-              <div className="font-semibold text-main text-sm">{sub.label}</div>
-              <div className="text-xs text-dim mt-0.5">{sub.description}</div>
+              <div className="font-semibold text-main text-sm">{t(sub.label)}</div>
+              <div className="text-xs text-dim mt-0.5">{t(sub.description)}</div>
               <div className="flex gap-3 mt-1.5 flex-wrap">
                 {sub.venitBonus !== 0 && (
                   <span className={`text-xs font-bold ${sub.venitBonus > 0 ? "text-green-400" : "text-red-400"}`}>
-                    {sub.venitBonus > 0 ? "+" : ""}{sub.venitBonus} RON/lună
+                    {sub.venitBonus > 0 ? "+" : ""}{sub.venitBonus} RON/{t("lună")}
                   </span>
                 )}
                 {sub.cheltuieliExtra.map((c) => (
                   <span key={c.nume} className={`text-xs ${c.suma > 0 ? "text-red-400" : "text-green-400"}`}>
-                    {c.suma > 0 ? "-" : "+"}{Math.abs(c.suma)} {c.nume}
+                    {c.suma > 0 ? "-" : "+"}{Math.abs(c.suma)} {t(c.nume)}
                   </span>
                 ))}
               </div>
@@ -245,7 +226,7 @@ function SetupScreen() {
 
       {/* Difficulty */}
       <div className="mb-8">
-        <h2 className="text-sm font-bold text-muted uppercase tracking-wider mb-3">Dificultate</h2>
+        <h2 className="text-sm font-bold text-muted uppercase tracking-wider mb-3">{t("Dificultate")}</h2>
         <div className="grid grid-cols-3 gap-2">
           {(Object.entries(DIFICULTATI) as [DifficultyKey, typeof DIFICULTATI[DifficultyKey]][]).map(([key, diff]) => (
             <button
@@ -259,7 +240,7 @@ function SetupScreen() {
                   : "border-subtle bg-card text-muted hover:border-strong"
               }`}
             >
-              <div className="font-bold text-sm">{diff.nume}</div>
+              <div className="font-bold text-sm">{t(diff.nume)}</div>
             </button>
           ))}
         </div>
@@ -269,7 +250,7 @@ function SetupScreen() {
         onClick={start}
         className="w-full py-4 rounded-2xl bg-gradient-to-r from-purple-600 to-fuchsia-600 hover:from-purple-500 hover:to-fuchsia-500 text-main font-black text-lg transition-all shadow-lg shadow-purple-900/30 flex items-center justify-center gap-2"
       >
-        Începe jocul <ChevronRight size={20} />
+        {t("Începe jocul")} <ChevronRight size={20} />
       </button>
     </div>
   );
@@ -280,6 +261,7 @@ function HistoryPanel({ decizii, filter, setFilter }: {
   filter: HistoryFilter;
   setFilter: (f: HistoryFilter) => void;
 }) {
+  const { t } = useTranslation();
   const filtered = decizii.filter((d) => {
     if (filter === "tutto") return true;
     if (filter === "luna") return d.luna === Math.max(...decizii.map((x) => x.luna));
@@ -291,7 +273,7 @@ function HistoryPanel({ decizii, filter, setFilter }: {
     <div className="flex flex-col h-full">
       <div className="flex items-center gap-2 mb-3">
         <Filter size={14} className="text-subtle" />
-        <span className="text-sm font-bold text-muted">Filtrare:</span>
+        <span className="text-sm font-bold text-muted">{t("Filtrare:")}</span>
         {(["tutto", "luna", "saptamana"] as HistoryFilter[]).map((f) => (
           <button
             key={f}
@@ -300,13 +282,13 @@ function HistoryPanel({ decizii, filter, setFilter }: {
               filter === f ? "bg-purple-600/30 text-purple-300 border border-purple-500/40" : "text-subtle hover:text-muted"
             }`}
           >
-            {f === "tutto" ? "Toate" : f === "luna" ? "Luna curentă" : "Săptămâna curentă"}
+            {f === "tutto" ? t("Toate") : f === "luna" ? t("Luna curentă") : t("Săptămâna curentă")}
           </button>
         ))}
       </div>
       <div className="flex-1 overflow-y-auto space-y-2 pr-1 max-h-[400px] lg:max-h-[600px]">
         {filtered.length === 0 ? (
-          <div className="text-center text-faint text-sm py-8">Nicio decizie încă.</div>
+          <div className="text-center text-faint text-sm py-8">{t("Nicio decizie încă.")}</div>
         ) : (
           [...filtered].reverse().map((d, i) => (
             <motion.div
@@ -317,10 +299,10 @@ function HistoryPanel({ decizii, filter, setFilter }: {
               className="p-3 rounded-xl border border-subtle8 bg-card-soft4"
             >
               <div className="flex items-center justify-between mb-1">
-                <span className="text-xs font-bold text-strong">{d.titluEveniment}</span>
+                <span className="text-xs font-bold text-strong">{t(d.titluEveniment)}</span>
                 <span className="text-xs text-faint">L{d.luna}·S{d.saptamana}</span>
               </div>
-              <div className="text-xs text-muted mb-1">"{d.alegere}"</div>
+              <div className="text-xs text-muted mb-1">"{t(d.alegere)}"</div>
               <div className="flex items-center gap-3">
                 <span className={`text-xs font-bold ${d.baniDelta >= 0 ? "text-green-400" : "text-red-400"}`}>
                   {d.baniDelta >= 0 ? "+" : ""}{Math.round(d.baniDelta)} RON
@@ -329,7 +311,7 @@ function HistoryPanel({ decizii, filter, setFilter }: {
                   {d.fericireDelta >= 0 ? "+" : ""}{Math.round(d.fericireDelta)}%
                 </span>
               </div>
-              <div className="text-xs text-faint italic mt-1">{d.lectie}</div>
+              <div className="text-xs text-faint italic mt-1">{t(d.lectie)}</div>
             </motion.div>
           ))
         )}
@@ -339,6 +321,7 @@ function HistoryPanel({ decizii, filter, setFilter }: {
 }
 
 function GameScreen() {
+  const { t } = useTranslation();
   const { state, nextWeek, resetGame } = useGame();
   const [, navigate] = useLocation();
   const [historyFilter, setHistoryFilter] = useState<HistoryFilter>("tutto");
@@ -361,8 +344,8 @@ function GameScreen() {
     <div className="max-w-6xl mx-auto px-4 py-6">
       <div className="flex items-center justify-between mb-6">
         <button onClick={() => { resetGame(); window.location.href = "/game"; }} className="inline-flex items-center gap-1.5 text-dim hover:text-main text-sm transition-colors">
-          <ArrowLeft size={14} /> Schimbă scenariul</button>
-        <div className="text-xs text-subtle">{diff.nume} · {scenario.emoji} {scenario.nume}</div>
+          <ArrowLeft size={14} /> {t("Schimbă scenariul")}</button>
+        <div className="text-xs text-subtle">{t(diff.nume)} · {scenario.emoji} {t(scenario.nume)}</div>
       </div>
 
       <div className="grid lg:grid-cols-3 gap-5">
@@ -374,7 +357,7 @@ function GameScreen() {
               <div className="flex items-center gap-2">
                 <Calendar size={14} className="text-purple-400" />
                 <span className="font-bold text-main text-sm">
-                  Luna {state.luna} · Săptămâna {state.saptamanaInLuna} din 4
+                  {t("Luna")} {state.luna} · {t("Săptămâna")} {state.saptamanaInLuna} {t("din")} 4
                 </span>
               </div>
               <span className="text-xs text-subtle">{state.saptamana}/48</span>
@@ -392,7 +375,7 @@ function GameScreen() {
             <div className="p-4 rounded-2xl border border-subtle bg-card">
               <div className="flex items-center gap-2 mb-2">
                 <Coins size={16} className="text-yellow-400" />
-                <span className="text-sm font-bold text-strong">Bani disponibili</span>
+                <span className="text-sm font-bold text-strong">{t("Bani disponibili")}</span>
               </div>
               <div className={`text-2xl font-black mb-2 ${state.bani < 0 ? "text-red-400" : state.bani < 500 ? "text-orange-400" : "text-main"}`}>
                 {Math.round(state.bani).toLocaleString("ro-RO")} RON
@@ -407,7 +390,7 @@ function GameScreen() {
             <div className="p-4 rounded-2xl border border-subtle bg-card">
               <div className="flex items-center gap-2 mb-2">
                 <Smile size={16} className="text-green-400" />
-                <span className="text-sm font-bold text-strong">Fericire / Energie</span>
+                <span className="text-sm font-bold text-strong">{t("Fericire / Energie")}</span>
               </div>
               <div className={`text-2xl font-black mb-2 ${state.fericire < 20 ? "text-red-400" : state.fericire < 50 ? "text-orange-400" : "text-main"}`}>
                 {Math.round(state.fericire)}%
@@ -423,16 +406,16 @@ function GameScreen() {
 
           {/* Fixed costs */}
           <div className="p-4 rounded-2xl border border-subtle bg-card">
-            <h3 className="text-sm font-bold text-muted mb-3">Cheltuieli fixe lunare</h3>
+            <h3 className="text-sm font-bold text-muted mb-3">{t("Cheltuieli fixe lunare")}</h3>
             <div className="space-y-1.5">
               {allCheltuieli.map((c, i) => (
                 <div key={i} className="flex items-center justify-between">
-                  <span className="text-xs text-muted">{c.nume}</span>
+                  <span className="text-xs text-muted">{t(c.nume)}</span>
                   <span className="text-xs font-bold text-red-400">-{c.suma} RON</span>
                 </div>
               ))}
               <div className="border-t border-subtle pt-1.5 flex items-center justify-between">
-                <span className="text-xs font-bold text-muted">Total / lună</span>
+                <span className="text-xs font-bold text-muted">{t("Total / lună")}</span>
                 <span className="text-xs font-black text-red-400">
                   -{allCheltuieli.reduce((s, c) => s + c.suma, 0)} RON
                 </span>
@@ -446,7 +429,7 @@ function GameScreen() {
             disabled={!!state.evenimentCurent}
             className="w-full py-4 rounded-2xl bg-gradient-to-r from-purple-600 to-fuchsia-600 hover:from-purple-500 hover:to-fuchsia-500 disabled:opacity-50 disabled:cursor-not-allowed text-main font-black text-base transition-all shadow-lg shadow-purple-900/30 flex items-center justify-center gap-2"
           >
-            Avansează la săptămâna următoare <ChevronRight size={18} />
+            {t("Avansează la săptămâna următoare")} <ChevronRight size={18} />
           </button>
 
           {/* History toggle (mobile) */}
@@ -454,7 +437,7 @@ function GameScreen() {
             className="lg:hidden w-full py-2.5 rounded-xl border border-medium bg-card text-muted text-sm font-semibold"
             onClick={() => setShowHistory((v) => !v)}
           >
-            {showHistory ? "Ascunde istoricul" : `Afișează istoricul (${state.istoricDecizii.length} decizii)`}
+            {showHistory ? t("Ascunde istoricul") : <>{t("Afișează istoricul")} ({state.istoricDecizii.length} {t("decizii")})</>}
           </button>
 
           {/* History (mobile) */}
@@ -476,7 +459,7 @@ function GameScreen() {
 
         {/* History sidebar (desktop) */}
         <div className="hidden lg:block p-4 rounded-2xl border border-subtle bg-card self-start sticky top-20">
-          <h3 className="text-sm font-bold text-main mb-3">Istoricul deciziilor</h3>
+          <h3 className="text-sm font-bold text-main mb-3">{t("Istoricul deciziilor")}</h3>
           <HistoryPanel decizii={state.istoricDecizii} filter={historyFilter} setFilter={setHistoryFilter} />
         </div>
       </div>
@@ -490,12 +473,9 @@ export default function GamePage() {
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const sc = params.get("scenario");
-    const ev = params.get("event");
     if (sc && state && state.scenariuId !== sc) {
       resetGame();
-    } else if (sc && ev && (!state || state.scenariuId !== sc)) {
-      resetGame();
-    } else if (!sc && !ev) {
+    } else if (!sc) {
       resetGame();
     }
   }, []);

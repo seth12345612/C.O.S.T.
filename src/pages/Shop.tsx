@@ -6,6 +6,7 @@ import { OrbBackground } from "@/components/OrbBackground";
 import { Layout } from "@/components/Layout";
 import { useXP } from "@/context/XPContext";
 import { useTheme } from "@/context/ThemeContext";
+import { useTranslation } from "@/context/TranslationContext";
 import { SHOP_ITEMS } from "@/data/shop";
 import { useEquipped, loadActiveBooster } from "@/lib/shop-equip";
 import type { ShopItem } from "@/types";
@@ -37,6 +38,7 @@ function saveOwned(ids: string[]) {
 }
 
 export default function Shop() {
+  const { t } = useTranslation();
   const { xpState, addXP } = useXP();
   const { setPreset } = useTheme();
   const { equipped, equipTheme, equipAvatar, equipBadge, activateBooster, isBoosterActive } = useEquipped();
@@ -63,17 +65,17 @@ export default function Shop() {
   const handleBuy = useCallback((item: ShopItem) => {
     if (item.tip !== "booster" && owned.includes(item.id)) return;
     if (xpState.xp < item.pretXP) {
-      toast.error("XP insuficient!", { description: `Ai nevoie de ${item.pretXP} XP pentru a cumpăra ${item.nume}.` });
+      toast.error(t("XP insuficient!"), { description: t("Ai nevoie de") + ` ${item.pretXP} ` + t("XP pentru a cumpăra") + ` ${item.nume}.` });
       return;
     }
     addXP(-item.pretXP);
     if (item.tip === "booster") {
       activateBooster(item.id, item.durataZile ?? 1);
-      toast.success("Booster activat!", { description: `${item.emoji} ${item.nume} — ${item.efect ?? "activ"} pentru ${item.durataZile ?? 1} zi(le).` });
+      toast.success(t("Booster activat!"), { description: `${item.emoji} ${item.nume} — ${item.efect ?? t("activ")} ` + t("pentru") + ` ${item.durataZile ?? 1} ` + t("zi(le).") });
     } else {
       setOwned((prev) => [...prev, item.id]);
-      toast.success("AI CUMPĂRAT!", {
-        description: `${item.emoji} ${item.nume} — ai plătit ${item.pretXP} XP.`,
+      toast.success(t("AI CUMPĂRAT!"), {
+        description: `${item.emoji} ${item.nume} — ` + t("ai plătit") + ` ${item.pretXP} ` + t("XP."),
       });
     }
   }, [owned, xpState.xp, addXP, activateBooster]);
@@ -84,14 +86,14 @@ export default function Shop() {
       if (presetId) {
         setPreset(presetId);
         equipTheme(item.id);
-        toast.success("Temă aplicată!", { description: `${item.emoji} ${item.nume} este acum activă.` });
+        toast.success(t("Temă aplicată!"), { description: `${item.emoji} ${item.nume} ` + t("este acum activă.") });
       }
     } else if (item.tip === "avatar") {
       equipAvatar(item.id);
-      toast.success("Avatar echipat!", { description: `${item.emoji} ${item.nume} este acum avatarul tău.` });
+      toast.success(t("Avatar echipat!"), { description: `${item.emoji} ${item.nume} ` + t("este acum avatarul tău.") });
     } else if (item.tip === "badge") {
       equipBadge(item.id);
-      toast.success("Insignă echipată!", { description: `${item.emoji} ${item.nume} este acum afișată.` });
+      toast.success(t("Insignă echipată!"), { description: `${item.emoji} ${item.nume} ` + t("este acum afișată.") });
     }
   }, [setPreset, equipTheme, equipAvatar, equipBadge]);
 
@@ -109,11 +111,11 @@ export default function Shop() {
       <div className="relative z-10 max-w-5xl mx-auto px-4 py-12">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-10">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-300 text-xs mb-4">
-            <Store size={12} /> Magazin
+            <Store size={12} /> {t("Magazin")}
           </div>
-          <h1 className="text-3xl font-bold text-main mb-2">Magazin cosmetic</h1>
+          <h1 className="text-3xl font-bold text-main mb-2">{t("Magazin cosmetic")}</h1>
           <p className="text-muted text-sm">
-            Balanța ta: <span className="font-bold text-amber-400">{xpState.xp} XP</span>
+            {t("Balanța ta:")} <span className="font-bold text-amber-400">{xpState.xp} XP</span>
           </p>
         </motion.div>
 
@@ -131,14 +133,14 @@ export default function Shop() {
             >
               <h2 className="text-xl font-bold text-main mb-1 flex items-center gap-2">
                 <Icon size={18} className="text-amber-400" />
-                {info.label}
+                {t(info.label)}
                 <span className="text-sm font-normal text-faint">({items.length})</span>
               </h2>
               <p className="text-xs text-muted mb-4">
-                {tip === "tema" && "Deblochează teme noi pentru interfață."}
-                {tip === "avatar" && "Schimbă-ți avatarul din setări."}
-                {tip === "booster" && "Boostere active temporar în profilul tău."}
-                {tip === "badge" && "Insigne speciale de colecționat."}
+                {tip === "tema" && t("Deblochează teme noi pentru interfață.")}
+                {tip === "avatar" && t("Schimbă-ți avatarul din setări.")}
+                {tip === "booster" && t("Boostere active temporar în profilul tău.")}
+                {tip === "badge" && t("Insigne speciale de colecționat.")}
               </p>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {items.map((item) => {
@@ -181,7 +183,7 @@ export default function Shop() {
                           {isEquipped && (
                             <span className="flex items-center gap-1 text-xs font-bold text-green-400 bg-green-500/10 px-2 py-0.5 rounded-full border border-green-500/20">
                               <Check size={10} />
-                              Activ
+                              {t("Activ")}
                               {boosterRemaining && (
                                 <span className="flex items-center gap-0.5 ml-1 text-green-400/70">
                                   <Clock size={9} /> {boosterRemaining}
@@ -191,16 +193,16 @@ export default function Shop() {
                           )}
                           {isOwned && !isEquipped && (
                             <span className="flex items-center gap-1 text-xs font-bold text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded-full border border-amber-500/20">
-                              Deținut
+                              {t("Deținut")}
                             </span>
                           )}
                         </div>
-                        <h3 className="text-base font-bold text-main mb-1">{item.nume}</h3>
-                        <p className="text-xs text-muted mb-3 leading-relaxed">{item.descriere}</p>
+                        <h3 className="text-base font-bold text-main mb-1">{t(item.nume)}</h3>
+                        <p className="text-xs text-muted mb-3 leading-relaxed">{t(item.descriere)}</p>
                         {item.efect && (
                           <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-300 text-[10px] font-semibold mb-3">
                             <Zap size={10} />
-                            {item.efect}
+                            {t(item.efect)}
                           </div>
                         )}
                         <div className="flex items-center gap-3 text-xs">
@@ -220,11 +222,11 @@ export default function Shop() {
                             onClick={() => handleApply(item)}
                             className="mt-4 w-full py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 bg-blue-500/15 text-blue-300 border border-blue-500/30 hover:bg-blue-500/25 hover:text-blue-200 cursor-pointer"
                           >
-                            <Sparkles size={12} /> Aplică
+                            <Sparkles size={12} /> {t("Aplică")}
                           </button>
                         ) : isEquipped && !isBooster ? (
                           <div className="mt-4 w-full py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 bg-green-500/10 text-green-400 border border-green-500/20">
-                            <Check size={12} /> Echipat
+                            <Check size={12} /> {t("Echipat")}
                           </div>
                         ) : (
                           <button
@@ -237,11 +239,11 @@ export default function Shop() {
                             }`}
                           >
                             {insuficient ? (
-                              <><X size={12} /> Insuficient</>
+                              <><X size={12} /> {t("Insuficient")}</>
                             ) : isBooster && isEquipped ? (
-                              <><ShoppingBag size={12} /> Cumpără +{item.durataZile ?? 1}z</>
+                              <><ShoppingBag size={12} /> {t("Cumpără")} +{item.durataZile ?? 1}z</>
                             ) : (
-                              <><ShoppingBag size={12} /> Cumpără</>
+                              <><ShoppingBag size={12} /> {t("Cumpără")}</>
                             )}
                           </button>
                         )}

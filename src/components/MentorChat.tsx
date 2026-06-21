@@ -4,6 +4,7 @@ import { useLocation } from "wouter";
 import { MessageCircle, X, Send, Loader2, Sparkles, Crown } from "lucide-react";
 import { useGame } from "@/context/GameContext";
 import { useAuth } from "@/context/AuthContext";
+import { useTranslation } from "@/context/TranslationContext";
 
 const FUNC_URL = "https://twdvhkwrlwhadbmortqk.supabase.co/functions/v1/mentor";
 const ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR3ZHZoa3dybHdoYWRibW9ydHFrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkyMDM4OTAsImV4cCI6MjA5NDc3OTg5MH0.mvQkXjYR3YDChjbuGmmm006QOTjw6rQz6UdAKZYG-lQ";
@@ -38,6 +39,7 @@ function incrementDailyUsage() {
 }
 
 export function MentorChat() {
+  const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
@@ -88,13 +90,13 @@ export function MentorChat() {
       if (!res.ok || data.error) {
         throw new Error(data.error || `HTTP ${res.status}`);
       }
-      return data.reply ?? "Scuze, nu pot răspunde acum.";
+      return data.reply ?? t("Scuze, nu pot răspunde acum.");
     } catch (err) {
       clearTimeout(timer);
       if (err instanceof DOMException && err.name === "AbortError") {
-        return "Cererea a durat prea mult. Încearcă din nou.";
+        return t("Cererea a durat prea mult. Încearcă din nou.");
       }
-      return `Eroare: ${err instanceof Error ? err.message : "conexiune eșuată"}. Încearcă din nou.`;
+      return t(`Eroare: ${err instanceof Error ? err.message : "conexiune eșuată"}. Încearcă din nou.`);
     }
   };
 
@@ -151,21 +153,21 @@ export function MentorChat() {
                   <Sparkles size={16} className="text-main" />
                 </div>
                 <div>
-                  <h3 className="text-sm font-bold text-main">Mentorul C.O.S.T.</h3>
+                  <h3 className="text-sm font-bold text-main">{t("Mentorul C.O.S.T.")}</h3>
                   <div className="flex items-center gap-1.5 mt-0.5">
                     {isAdvanced ? (
                       <span className="flex items-center gap-1 text-[10px] text-purple-400 font-medium">
                         <Sparkles size={10} />
-        Mentor AI personalizat
+        {t("Mentor AI personalizat")}
                       </span>
                     ) : isPremium ? (
                       <span className="flex items-center gap-1 text-[10px] text-yellow-400 font-medium">
                         <Crown size={10} />
-                        Acces nelimitat
+                        {t("Acces nelimitat")}
                       </span>
                     ) : (
                       <span className="text-[10px] text-subtle">
-                        {remaining}/{FREE_DAILY_LIMIT} întrebări azi
+                        {t(`${remaining}/${FREE_DAILY_LIMIT} întrebări azi`)}
                       </span>
                     )}
                   </div>
@@ -182,7 +184,7 @@ export function MentorChat() {
             <div className="flex-1 overflow-y-auto p-4 space-y-3">
               {messages.length === 0 && (
                 <p className="text-subtle text-sm text-center py-8">
-                  Bună! Cu ce te pot ajuta cu finanțele tale?
+                  {t("Bună! Cu ce te pot ajuta cu finanțele tale?")}
                 </p>
               )}
 
@@ -201,7 +203,7 @@ export function MentorChat() {
               {isTyping && (
                 <div className="flex items-center gap-2 text-subtle text-sm ml-8">
                   <Loader2 size={14} className="animate-spin" />
-                  Scrie...
+                  {t("Scrie...")}
                 </div>
               )}
 
@@ -213,7 +215,7 @@ export function MentorChat() {
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && handleSend()}
-                placeholder="Întreabă ceva..."
+                placeholder={t("Întreabă ceva...")}
                 className="flex-1 px-3 py-2 rounded-xl border border-medium bg-card text-main placeholder:text-fainter text-sm focus:outline-none focus:border-purple-500/50"
               />
               <button

@@ -4,11 +4,13 @@ import { motion } from "framer-motion";
 import { useAuth } from "@/context/AuthContext";
 import { useTheme } from "@/context/ThemeContext";
 import { LogIn, Mail, User, Loader2, ArrowLeft } from "lucide-react";
+import { useTranslation } from "@/context/TranslationContext";
 
 export default function Login() {
   const { login, loginManual, user } = useAuth();
   const { currentPreset } = useTheme();
   const [, setLocation] = useLocation();
+  const { t } = useTranslation();
   const [nume, setNume] = useState("");
   const [prenume, setPrenume] = useState("");
   const [email, setEmail] = useState("");
@@ -25,12 +27,12 @@ export default function Login() {
     setError("");
 
     if (!nume.trim() || !prenume.trim() || !email.trim()) {
-      setError("Toate câmpurile sunt obligatorii");
+      setError(t("Toate c\u00e2mpurile sunt obligatorii"));
       return;
     }
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email.trim())) {
-      setError("Adresa de email nu este validă");
+      setError(t("Adresa de email nu este valid\u0103"));
       return;
     }
 
@@ -39,7 +41,7 @@ export default function Login() {
       loginManual(nume.trim(), prenume.trim(), email.trim());
       setLocation("/");
     } catch {
-      setError("A apărut o eroare. Încearcă din nou.");
+      setError(t("A ap\u0103rut o eroare. \u00cencearc\u0103 din nou."));
     } finally {
       setSubmitting(false);
     }
@@ -64,7 +66,7 @@ export default function Login() {
           className="flex items-center gap-1.5 text-subtle hover:text-strong text-sm mb-4 transition-colors"
         >
           <ArrowLeft size={16} />
-          Înapoi
+          {t("\u00cenapoi")}
         </button>
 
         <div className="bg-card backdrop-blur-xl border border-subtle rounded-3xl p-8 shadow-2xl">
@@ -75,7 +77,7 @@ export default function Login() {
             >
               C.O.S.T.
             </span>
-            <p className="text-subtle text-sm mt-2">Conectează-te pentru a continua</p>
+            <p className="text-subtle text-sm mt-2">{t("Conecteaz\u0103-te pentru a continua")}</p>
           </div>
 
           {/* Google login */}
@@ -89,12 +91,12 @@ export default function Login() {
               <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
               <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
             </svg>
-            Conectare cu Google
+            {t("Conectare cu Google")}
           </button>
 
           <div className="flex items-center gap-3 mb-6">
             <div className="flex-1 h-px bg-card-hover" />
-            <span className="text-xs text-faint">sau cu email</span>
+            <span className="text-xs text-faint">{t("sau cu email")}</span>
             <div className="flex-1 h-px bg-card-hover" />
           </div>
 
@@ -103,12 +105,12 @@ export default function Login() {
             <div>
               <label className="flex items-center gap-2 text-xs text-dim mb-1.5">
                 <User size={13} />
-                Prenume
+                {t("Prenume")}
               </label>
               <input
                 value={prenume}
                 onChange={(e) => setPrenume(e.target.value)}
-                placeholder="ex: Ioana"
+                placeholder={t("ex: Ioana")}
                 className="w-full px-4 py-2.5 rounded-xl border border-medium bg-card text-main placeholder:text-faintest text-sm focus:outline-none focus:border-purple-500/50 transition-all"
               />
             </div>
@@ -116,12 +118,12 @@ export default function Login() {
             <div>
               <label className="flex items-center gap-2 text-xs text-dim mb-1.5">
                 <User size={13} />
-                Nume
+                {t("Nume")}
               </label>
               <input
                 value={nume}
                 onChange={(e) => setNume(e.target.value)}
-                placeholder="ex: Popescu"
+                placeholder={t("ex: Popescu")}
                 className="w-full px-4 py-2.5 rounded-xl border border-medium bg-card text-main placeholder:text-faintest text-sm focus:outline-none focus:border-purple-500/50 transition-all"
               />
             </div>
@@ -129,13 +131,13 @@ export default function Login() {
             <div>
               <label className="flex items-center gap-2 text-xs text-dim mb-1.5">
                 <Mail size={13} />
-                Email
+                {t("Email")}
               </label>
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="ex: ioana@example.com"
+                placeholder={t("ex: ioana@example.com")}
                 className="w-full px-4 py-2.5 rounded-xl border border-medium bg-card text-main placeholder:text-faintest text-sm focus:outline-none focus:border-purple-500/50 transition-all"
               />
             </div>
@@ -153,7 +155,7 @@ export default function Login() {
               }}
             >
               {submitting ? <Loader2 size={16} className="animate-spin" /> : <LogIn size={16} />}
-              {submitting ? "Se procesează..." : "Continuă"}
+              {submitting ? t("Se proceseaz\u0103...") : t("Continu\u0103")}
             </button>
           </form>
         </div>

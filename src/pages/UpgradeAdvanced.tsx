@@ -5,6 +5,7 @@ import { Shield, ArrowUp, Crown, Calendar, Sparkles, BarChart3, MessageCircle, Z
 import { OrbBackground } from "@/components/OrbBackground";
 import { Layout } from "@/components/Layout";
 import { useAuth } from "@/context/AuthContext";
+import { useTranslation } from "@/context/TranslationContext";
 import type { SubscriptionTier } from "@/types";
 
 const CHECKOUT_FUNC = "https://twdvhkwrlwhadbmortqk.supabase.co/functions/v1/create-checkout";
@@ -27,6 +28,7 @@ const ADVANCED_BENEFITS = [
 ];
 
 export default function UpgradeAdvanced() {
+  const { t } = useTranslation();
   const { isPremium, premiumTrialEndsAt, user, subscriptionTier } = useAuth();
   const [, setLocation] = useLocation();
   const [loading, setLoading] = useState(false);
@@ -72,7 +74,7 @@ export default function UpgradeAdvanced() {
       if (data.url) window.location.href = data.url;
       else throw new Error("No checkout URL returned");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Eroare la inițierea plății");
+      setError(err instanceof Error ? err.message : t("Eroare la inițierea plății"));
     } finally {
       setLoading(false);
     }
@@ -87,7 +89,7 @@ export default function UpgradeAdvanced() {
           className="flex items-center gap-1.5 text-subtle hover:text-strong text-sm mb-8 transition-colors"
         >
           <ArrowLeft size={16} />
-          Înapoi la planuri
+          {t("Înapoi la planuri")}
         </button>
 
         <motion.div
@@ -110,7 +112,7 @@ export default function UpgradeAdvanced() {
             >
               <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-purple-500/40 bg-purple-500/15 text-purple-300 text-sm font-medium">
                 <ArrowUp size={14} />
-                Upgrade Plan
+                {t("Upgrade Plan")}
               </div>
             </motion.div>
 
@@ -128,7 +130,7 @@ export default function UpgradeAdvanced() {
                 Premium <span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">Advanced</span>
               </h1>
               <p className="text-muted text-sm max-w-md mx-auto">
-                Deblochează toate funcțiile avansate și maximizează-ți experiența de învățare financiară.
+                {t("Deblochează toate funcțiile avansate și maximizează-ți experiența de învățare financiară.")}
               </p>
             </motion.div>
 
@@ -142,9 +144,9 @@ export default function UpgradeAdvanced() {
               <div className="text-center">
                 <div className="flex items-baseline justify-center gap-1">
                   <span className="text-5xl font-black text-main">19</span>
-                  <span className="text-lg font-bold text-dim">.00 RON</span>
+                  <span className="text-lg font-bold text-dim">{t(".00 RON")}</span>
                 </div>
-                <span className="text-xs text-subtle">pe lună</span>
+                <span className="text-xs text-subtle">{t("pe lună")}</span>
               </div>
             </motion.div>
 
@@ -157,16 +159,16 @@ export default function UpgradeAdvanced() {
             >
               <div className="flex items-start gap-3">
                 <Calendar size={20} className="text-yellow-400 shrink-0 mt-0.5" />
-                <div>
-                  <p className="text-sm font-semibold text-yellow-300 mb-1">
-                    Când începe noul abonament?
-                  </p>
-                  <p className="text-xs text-yellow-200/70 leading-relaxed">
-                    Noul tău plan <strong className="text-yellow-200">Premium Advanced</strong> va intra în vigoare imediat după expirarea abonamentului tău curent, pe data de{" "}
-                    <strong className="text-yellow-200">{expirationDate}</strong>.
-                    Nu vei fi taxat suplimentar pentru perioada deja acoperită de planul actual.
-                  </p>
-                </div>
+                  <div>
+                    <p className="text-sm font-semibold text-yellow-300 mb-1">
+                      {t("Când începe noul abonament?")}
+                    </p>
+                    <p className="text-xs text-yellow-200/70 leading-relaxed">
+                      {t("Noul tău plan")} <strong className="text-yellow-200">Premium Advanced</strong> {t("va intra în vigoare imediat după expirarea abonamentului tău curent, pe data de")}{" "}
+                      <strong className="text-yellow-200">{expirationDate}</strong>.
+                      {t("Nu vei fi taxat suplimentar pentru perioada deja acoperită de planul actual.")}
+                    </p>
+                  </div>
               </div>
             </motion.div>
 
@@ -179,10 +181,10 @@ export default function UpgradeAdvanced() {
             >
               <div className="flex items-center gap-2">
                 <Crown size={16} className="text-yellow-400" />
-                <span className="text-xs text-dim">Planul tău curent</span>
+                <span className="text-xs text-dim">{t("Planul tău curent")}</span>
               </div>
               <span className="text-xs font-bold text-yellow-300 px-2 py-0.5 rounded-full bg-yellow-500/15 border border-yellow-500/20">
-                Premium Basic • 9 RON/lună
+                {t("Premium Basic • 9 RON/lună")}
               </span>
             </motion.div>
 
@@ -195,7 +197,7 @@ export default function UpgradeAdvanced() {
             >
               <h3 className="text-sm font-bold text-purple-300 mb-4 flex items-center gap-2">
                 <Sparkles size={14} />
-                Ce primești în plus față de Basic
+                {t("Ce primești în plus față de Basic")}
               </h3>
               <div className="space-y-3">
                 {ADVANCED_BENEFITS.map((b, i) => (
@@ -209,7 +211,7 @@ export default function UpgradeAdvanced() {
                     <div className="w-8 h-8 rounded-lg bg-purple-500/20 flex items-center justify-center shrink-0">
                       <b.icon size={16} className="text-purple-400" />
                     </div>
-                    <span className="text-sm text-strong">{b.text}</span>
+                    <span className="text-sm text-strong">{t(b.text)}</span>
                     <Check size={14} className="text-green-400 ml-auto shrink-0" />
                   </motion.div>
                 ))}
@@ -241,19 +243,19 @@ export default function UpgradeAdvanced() {
               {loading ? (
                 <span className="inline-flex items-center gap-2">
                   <Loader2 size={16} className="animate-spin" />
-                  Se procesează...
+                  {t("Se procesează...")}
                 </span>
               ) : (
                 <span className="inline-flex items-center gap-2">
                   <ArrowUp size={16} />
-                  Continuă la plată • 19 RON/lună
+                  {t("Continuă la plată • 19 RON/lună")}
                 </span>
               )}
             </motion.button>
 
             {/* Fine print */}
             <p className="text-[11px] text-faint text-center mt-4 leading-relaxed">
-              Plata se procesează securizat prin Stripe. Abonamentul Premium Advanced va începe automat pe <strong>{expirationDate}</strong>.
+              {t(`Plata se procesează securizat prin Stripe. Abonamentul Premium Advanced va începe automat pe ${expirationDate}.`)}
             </p>
           </div>
         </motion.div>

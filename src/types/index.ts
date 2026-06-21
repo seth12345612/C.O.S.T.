@@ -36,10 +36,6 @@ export interface Optiune {
   bonusXP?: number;
 }
 
-export interface LimitedEventOptiune extends Optiune {
-  explicatie: string;
-}
-
 export interface SubScenariuModificari {
   descriere?: string;
   optiuni?: Optiune[];
@@ -56,21 +52,6 @@ export interface GameEvent {
   subScenariuModificari?: SubScenariuOverrides;
   isTutorialEvent?: boolean;
   isPremium?: boolean;
-}
-
-export interface LimitedEvent {
-  id: string;
-  titlu: string;
-  descriere: string;
-  emoji: string;
-  endsAt: number;
-  bonusXP: number;
-  bonusBani?: number;
-  bonusFericire?: number;
-  scenariuCompatibil: string[];
-  culoare: string;
-  optiuni?: LimitedEventOptiune[];
-  sezon?: "iarna" | "vara";
 }
 
 // === GAME STATE ===
@@ -105,7 +86,6 @@ export interface GameState {
   isEndless: boolean;
   evenimentCurent: GameEvent | null;
   evenimenteRamase: GameEvent[];
-  limitedEventBonus?: { xp: number; bani?: number; fericire?: number };
   aiQuestion: AiQuestion | null;
   isRecoveryMode: boolean;
   recoveryWeeksRemaining: number;
@@ -317,15 +297,6 @@ export interface SursaVenit {
 
 export type HistoryFilter = "tutto" | "luna" | "saptamana";
 
-export interface CompletedChoice {
-  eventId: string;
-  optionIndex: number;
-  bani: number;
-  fericirePct: number;
-  lectie: string;
-  timestamp: number;
-}
-
 // === AI QUESTIONS ===
 export interface AiAnswerResult {
   corect: boolean;
@@ -365,7 +336,6 @@ export interface AchievementStats {
   tutorialCompletat: boolean;
   premiumActiv: boolean;
   utilizatorConectat: boolean;
-  limitedEventsCompletate: number;
   achievementIds: string[];
 }
 

@@ -5,6 +5,7 @@ import { Layout } from "@/components/Layout";
 import { useAchievements } from "@/context/AchievementContext";
 import { ACHIEVEMENTS } from "@/data/achievements";
 import { Lock, Sparkles, Trophy } from "lucide-react";
+import { useTranslation } from "@/context/TranslationContext";
 
 const categorieIcone: Record<string, string> = {
   joc: "🎮",
@@ -20,7 +21,18 @@ const categorieLabel: Record<string, string> = {
   ascuns: "Ascunse",
 };
 
+function useCategorieLabel() {
+  const { t } = useTranslation();
+  return {
+    joc: t("Joc"),
+    social: t("Social"),
+    progresie: t("Progresie"),
+    ascuns: t("Ascunse"),
+  };
+}
+
 export default function Achievements() {
+  const { t } = useTranslation();
   const { deblocate, stats } = useAchievements();
 
   const grouped = useMemo(() => {
@@ -40,10 +52,10 @@ export default function Achievements() {
       <div className="relative z-10 max-w-4xl mx-auto px-4 py-12">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-8">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-yellow-500/10 border border-yellow-500/20 text-yellow-300 text-xs mb-4">
-            <Sparkles size={12} /> Realizări
+            <Sparkles size={12} /> {t("Realizări")}
           </div>
-          <h1 className="text-3xl font-bold text-main mb-2">Achievements</h1>
-          <p className="text-dim">{deblocate.length} / {ACHIEVEMENTS.length} deblocate</p>
+          <h1 className="text-3xl font-bold text-main mb-2">{t("Achievements")}</h1>
+          <p className="text-dim">{deblocate.length} / {ACHIEVEMENTS.length} {t("deblocate")}</p>
           <div className="max-w-md mx-auto mt-4">
             <div className="h-2 bg-card-hover rounded-full overflow-hidden">
               <motion.div
@@ -65,7 +77,7 @@ export default function Achievements() {
           >
             <h2 className="text-xl font-bold text-main mb-4 flex items-center gap-2">
               <span>{categorieIcone[cat]}</span>
-              <span>{categorieLabel[cat]}</span>
+              <span>{useCategorieLabel()[cat]}</span>
               <span className="text-sm font-normal text-faint">
                 ({items.filter((a) => deblocate.includes(a.id)).length}/{items.length})
               </span>
@@ -90,13 +102,13 @@ export default function Achievements() {
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-1.5">
                           <p className={`font-semibold text-sm ${deblocat ? "text-main" : "text-muted"}`}>
-                            {a.titlu}
+                            {t(a.titlu)}
                           </p>
                           {deblocat && <Trophy size={12} className="text-yellow-400 shrink-0" />}
                           {!deblocat && <Lock size={10} className="text-faint shrink-0" />}
                         </div>
                         {a.categorie !== "ascuns" && (
-                          <p className="text-xs text-subtle mt-0.5">{a.descriere}</p>
+                          <p className="text-xs text-subtle mt-0.5">{t(a.descriere)}</p>
                         )}
                         {deblocat && (
                           <span className="text-xs text-yellow-400/70 mt-1 inline-block">+{a.xpReward} XP</span>

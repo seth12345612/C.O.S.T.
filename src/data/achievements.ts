@@ -83,15 +83,6 @@ export const ACHIEVEMENTS: Achievement[] = [
     conditie: (s) => s.evenimenteCompletate >= 20,
   },
   {
-    id: "limited_completionist",
-    titlu: "Vânătorul de Oferte",
-    descriere: "Completează 3 evenimente limitate",
-    icon: "🔥",
-    categorie: "joc",
-    xpReward: 60,
-    conditie: (s) => s.limitedEventsCompletate >= 3,
-  },
-  {
     id: "social",
     titlu: "Social",
     descriere: "Conectează-te cu contul Google",

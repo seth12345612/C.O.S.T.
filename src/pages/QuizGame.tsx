@@ -5,6 +5,7 @@ import { Brain, Sparkles, TrendingUp, X } from "lucide-react";
 import { OrbBackground } from "@/components/OrbBackground";
 import { Layout } from "@/components/Layout";
 import { useXP } from "@/context/XPContext";
+import { useTranslation } from "@/context/TranslationContext";
 import { toast } from "sonner";
 import type { MiniGameResult } from "@/types";
 
@@ -116,24 +117,25 @@ const INTREBARI: Question[] = [
 const STORAGE_KEY = "cost_quiz_results";
 
 function StartScreen({ onStart }: { onStart: () => void }) {
+  const { t } = useTranslation();
   return (
     <div className="max-w-2xl mx-auto px-4 py-8">
       <div className="text-center mb-8">
         <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-purple-500/30 bg-purple-500/10 text-purple-300 text-sm font-medium mb-6">
           <Brain size={14} />
-          Chestionar
+          {t("Chestionar")}
         </div>
-        <h1 className="text-4xl font-black text-main mb-4">Quiz financiar</h1>
+        <h1 className="text-4xl font-black text-main mb-4">{t("Quiz financiar")}</h1>
         <p className="text-muted max-w-md mx-auto">
-          Testează-ți cunoștințele despre dobândă compusă, investiții și educație financiară.
+          {t("Testează-ți cunoștințele despre dobândă compusă, investiții și educație financiară.")}
         </p>
       </div>
 
       <div className="space-y-4 mb-8">
         {[
-          { emoji: <Brain size={20} className="text-purple-400" />, title: "10 întrebări", desc: "Dobândă compusă, inflație, investiții" },
-          { emoji: <Sparkles size={20} className="text-yellow-400" />, title: "Explicații după fiecare răspuns", desc: "Înveți pe parcurs" },
-          { emoji: <TrendingUp size={20} className="text-green-400" />, title: "Câștigă XP și RON", desc: "Recompensă bazată pe scor" },
+          { emoji: <Brain size={20} className="text-purple-400" />, title: t("10 întrebări"), desc: t("Dobândă compusă, inflație, investiții") },
+          { emoji: <Sparkles size={20} className="text-yellow-400" />, title: t("Explicații după fiecare răspuns"), desc: t("Înveți pe parcurs") },
+          { emoji: <TrendingUp size={20} className="text-green-400" />, title: t("Câștigă XP și RON"), desc: t("Recompensă bazată pe scor") },
         ].map((item, i) => (
           <motion.div
             key={i}
@@ -155,14 +157,14 @@ function StartScreen({ onStart }: { onStart: () => void }) {
         onClick={onStart}
         className="w-full py-4 rounded-2xl bg-gradient-to-r from-purple-600 to-fuchsia-600 hover:from-purple-500 hover:to-fuchsia-500 text-main font-black text-lg transition-all shadow-lg shadow-purple-900/30 flex items-center justify-center gap-2"
       >
-        Începe quizul <Brain size={20} />
+        {t("Începe quizul")} <Brain size={20} />
       </button>
 
       <Link
         href="/"
         className="block text-center mt-4 text-subtle hover:text-main text-sm transition-colors"
       >
-        Înapoi la meniu
+        {t("Înapoi la meniu")}
       </Link>
     </div>
   );
@@ -183,17 +185,18 @@ function ResultScreen({
   raspunsuri: { corect: boolean }[];
   onRetry: () => void;
 }) {
+  const { t } = useTranslation();
   const procent = Math.round((scor / total) * 100);
   const mesaj =
     procent === 100
-      ? "Perfect! Ești un expert financiar!"
+      ? t("Perfect! Ești un expert financiar!")
       : procent >= 80
-      ? "Excelent! Cunoștințe solide!"
+      ? t("Excelent! Cunoștințe solide!")
       : procent >= 60
-      ? "Bine! Mai ai de învățat dar ești pe drumul cel bun."
+      ? t("Bine! Mai ai de învățat dar ești pe drumul cel bun.")
       : procent >= 40
-      ? "Ok. Mai studiază conceptele financiare."
-      : "Mai ai mult de învățat. Nu te descuraja!";
+      ? t("Ok. Mai studiază conceptele financiare.")
+      : t("Mai ai mult de învățat. Nu te descuraja!");
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-8">
@@ -205,7 +208,7 @@ function ResultScreen({
         <div className="text-6xl mb-4">
           {procent === 100 ? "🏆" : procent >= 80 ? "🎉" : procent >= 60 ? "👏" : "💪"}
         </div>
-        <h1 className="text-3xl font-black text-main mb-2">Quiz complet!</h1>
+        <h1 className="text-3xl font-black text-main mb-2">{t("Quiz complet!")}</h1>
         <p className="text-muted">{mesaj}</p>
       </motion.div>
 
@@ -217,20 +220,20 @@ function ResultScreen({
       >
         <div className="flex items-center gap-2 mb-4">
           <Brain size={18} className="text-purple-400" />
-          <h2 className="font-bold text-main">Rezultatele tale</h2>
+          <h2 className="font-bold text-main">{t("Rezultatele tale")}</h2>
         </div>
         <div className="grid grid-cols-3 gap-3 mb-4">
           <div className="p-4 rounded-xl bg-card border border-subtle text-center">
             <div className="text-3xl font-black text-main">{scor}/{total}</div>
-            <div className="text-xs text-subtle">Scor</div>
+            <div className="text-xs text-subtle">{t("Scor")}</div>
           </div>
           <div className="p-4 rounded-xl bg-card border border-subtle text-center">
             <div className="text-3xl font-black text-purple-400">+{xpCastigat}</div>
-            <div className="text-xs text-subtle">XP</div>
+            <div className="text-xs text-subtle">{t("XP")}</div>
           </div>
           <div className="p-4 rounded-xl bg-card border border-subtle text-center">
             <div className="text-3xl font-black text-green-400">+{baniCastigati}</div>
-            <div className="text-xs text-subtle">RON</div>
+            <div className="text-xs text-subtle">{t("RON")}</div>
           </div>
         </div>
         <div className="flex gap-1 justify-center">
@@ -257,13 +260,13 @@ function ResultScreen({
           onClick={onRetry}
           className="w-full py-3 rounded-2xl bg-gradient-to-r from-purple-600 to-fuchsia-600 hover:from-purple-500 hover:to-fuchsia-500 text-main font-bold transition-all"
         >
-          Încearcă din nou
+          {t("Încearcă din nou")}
         </button>
         <Link
           href="/"
           className="block w-full py-3 rounded-2xl border border-strong hover:border-strongest text-bright hover:text-main text-center font-semibold transition-all"
         >
-          Înapoi la meniu
+          {t("Înapoi la meniu")}
         </Link>
       </motion.div>
     </div>
@@ -271,6 +274,7 @@ function ResultScreen({
 }
 
 export default function QuizGame() {
+  const { t } = useTranslation();
   const { addXP } = useXP();
   const [screen, setScreen] = useState<"start" | "quiz" | "result">("start");
   const [currentQuestion, setCurrentQuestion] = useState(0);
@@ -297,9 +301,9 @@ export default function QuizGame() {
     setRaspunsuri((prev) => [...prev, { corect: isCorrect }]);
 
     if (isCorrect) {
-      toast.success("Corect! 🎉", { description: INTREBARI[currentQuestion].explicatie });
+      toast.success(t("Corect! 🎉"), { description: t(INTREBARI[currentQuestion].explicatie) });
     } else {
-      toast.error("Incorect!", { description: INTREBARI[currentQuestion].explicatie });
+      toast.error(t("Incorect!"), { description: t(INTREBARI[currentQuestion].explicatie) });
     }
   }
 
@@ -353,9 +357,9 @@ export default function QuizGame() {
         <div className="max-w-2xl mx-auto px-4 py-6">
           <div className="flex items-center justify-between mb-4">
             <Link href="/" className="inline-flex items-center gap-1.5 text-dim hover:text-main text-sm transition-colors">
-              <X size={14} /> Înapoi
+              <X size={14} /> {t("Înapoi")}
             </Link>
-            <span className="text-xs text-subtle">Întrebarea {currentQuestion + 1} / {INTREBARI.length}</span>
+            <span className="text-xs text-subtle">{t("Întrebarea")} {currentQuestion + 1} / {INTREBARI.length}</span>
           </div>
 
           <div className="w-full h-1.5 bg-card-hover rounded-full overflow-hidden mb-6">
@@ -373,9 +377,9 @@ export default function QuizGame() {
               <div className="p-6 rounded-2xl border border-medium bg-card mb-4">
                 <div className="flex items-center gap-2 mb-4">
                   <Brain size={18} className="text-purple-400" />
-                  <span className="text-xs text-purple-300 font-medium">Întrebarea {currentQuestion + 1}</span>
+                  <span className="text-xs text-purple-300 font-medium">{t("Întrebarea")} {currentQuestion + 1}</span>
                 </div>
-                <h2 className="text-lg font-bold text-main mb-6">{INTREBARI[currentQuestion].intrebare}</h2>
+                <h2 className="text-lg font-bold text-main mb-6">{t(INTREBARI[currentQuestion].intrebare)}</h2>
                 <div className="space-y-3">
                   {INTREBARI[currentQuestion].optiuni.map((optiune, i) => {
                     let cls = "border-subtle bg-card hover:bg-card-hover hover:border-strong text-left";
@@ -395,7 +399,7 @@ export default function QuizGame() {
                         disabled={answered}
                         className={`w-full p-4 rounded-xl border transition-all group ${cls}`}
                       >
-                        <div className="font-semibold text-main text-sm">{optiune}</div>
+                        <div className="font-semibold text-main text-sm">{t(optiune)}</div>
                       </button>
                     );
                   })}
@@ -414,10 +418,10 @@ export default function QuizGame() {
                 >
                   <div className="flex items-center gap-2 mb-1">
                     <span className={`font-bold text-sm ${selectedAnswer === INTREBARI[currentQuestion].corect ? "text-green-300" : "text-red-300"}`}>
-                      {selectedAnswer === INTREBARI[currentQuestion].corect ? "Corect!" : "Incorect!"}
+                      {selectedAnswer === INTREBARI[currentQuestion].corect ? t("Corect!") : t("Incorect!")}
                     </span>
                   </div>
-                  <p className="text-xs text-muted">{INTREBARI[currentQuestion].explicatie}</p>
+                  <p className="text-xs text-muted">{t(INTREBARI[currentQuestion].explicatie)}</p>
                 </motion.div>
               )}
             </motion.div>
@@ -430,7 +434,7 @@ export default function QuizGame() {
               onClick={nextQuestion}
               className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-purple-600 to-fuchsia-600 hover:from-purple-500 hover:to-fuchsia-500 text-main font-bold text-base transition-all shadow-lg shadow-purple-900/30"
             >
-              {currentQuestion < INTREBARI.length - 1 ? "Următoarea întrebare" : "Vezi rezultatul"}
+              {currentQuestion < INTREBARI.length - 1 ? t("Următoarea întrebare") : t("Vezi rezultatul")}
             </motion.button>
           )}
         </div>

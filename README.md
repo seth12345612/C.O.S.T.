@@ -47,7 +47,6 @@ C.O.S.T. simulează viața financiară a unui student timp de 12 luni (48 de să
 ### Alte Features
 - **Tutorial interactiv** de 4 săptămâni
 - **Finance Tracker** personal (tranzacții, bugete, economii)
-- **Evenimente limitate** sezoniere (Black Friday, Sesiune, Revelion)
 - **Clasament online** cu suport offline (localStorage fallback)
 - **Autentificare Google OAuth** prin Supabase
 - **Panou Admin** — gestionare utilizatori, banări, clasament
@@ -155,7 +154,7 @@ src/
 │   ├── ui/           # ~70+ componente Radix UI (Shadcn)
 │   ├── Layout.tsx    # App shell cu header, nav, footer
 │   ├── EventModal.tsx # Modal evenimente în joc
-│   ├── LimitedEventModal.tsx # Evenimente limitate
+│   ├── EventModal.tsx # Evenimente generale
 │   ├── GameOver.tsx  # Ecran final joc
 │   ├── MentorChat.tsx # Chat AI Mentor
 │   └── GoogleAuthButton.tsx # Login Google
@@ -168,7 +167,7 @@ src/
 ├── data/             # Conținutul jocului
 │   ├── scenarios.ts     # 17 scenarii cu config
 │   ├── events.ts        # ~200+ evenimente
-│   └── limitedEvents.ts # Evenimente sezoniere
+│   └── achievements.ts # Realizări
 ├── lib/              # Servicii și utilități
 │   ├── supabase.ts     # Auth + REST API client
 │   └── leaderboard.ts  # Clasament online/local

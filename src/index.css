@@ -229,13 +229,6 @@
   from { width: 0%; }
 }
 
-/* Countdown timer pulse */
-@keyframes pulse-red {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.6; }
-}
-.pulse-red { animation: pulse-red 1s ease-in-out infinite; }
-
 /* Grid pattern overlay */
 .grid-overlay {
   position: fixed; inset: 0; pointer-events: none; z-index: 0;

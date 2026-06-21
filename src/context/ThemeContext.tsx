@@ -3,7 +3,7 @@ import type { ThemePreset, ThemeState } from "@/types";
 
 export const SHOP_PRESET_IDS = ["polar", "neon", "gold", "green"];
 
-export const THEME_PRESETS: ThemePreset[] = [
+const _BASE_PRESETS: ThemePreset[] = [
   {
     id: "purple",
     label: "Violet (implicit)",
@@ -106,6 +106,13 @@ export const THEME_PRESETS: ThemePreset[] = [
   },
 ];
 
+// Backward-compatible alias
+export const THEME_PRESETS: ThemePreset[] = _BASE_PRESETS;
+
+export function getThemePresets(tr: (s: string) => string): ThemePreset[] {
+  return _BASE_PRESETS.map((p) => ({ ...p, label: tr(p.label) }));
+}
+
 function toHex(color: string): string {
   const test = new Option().style;
   test.color = color;
@@ -190,7 +197,7 @@ const ThemeContext = createContext<ThemeContextType | null>(null);
 export function ThemeProvider({ children }: { children: ReactNode }) {
   const [themeState, setThemeState] = useState<ThemeState>(load);
 
-  const currentPreset = THEME_PRESETS.find((p) => p.id === themeState.presetId) ?? THEME_PRESETS[0];
+  const currentPreset = _BASE_PRESETS.find((p) => p.id === themeState.presetId) ?? _BASE_PRESETS[0];
 
   useEffect(() => {
     applyTheme(currentPreset, themeState.customColor);
