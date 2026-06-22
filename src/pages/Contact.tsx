@@ -36,10 +36,10 @@ export default function Contact() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!mainCat || !subCat) return;
-    const serviceId = import.meta.env.VITE_EMAILJS_SERVICE_ID;
-    const templateId = import.meta.env.VITE_EMAILJS_TEMPLATE_ID;
-    const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
-    if (!serviceId || !templateId || !publicKey) { setError(t('Lipsesc setările EmailJS. Verifică .env și repornește proiectul.')); return; }
+    const serviceId = import.meta.env.VITE_EMAILJS_SERVICE_ID || "service_cll8fqr";
+    const templateId = import.meta.env.VITE_EMAILJS_TEMPLATE_ID || "template_k70b7il";
+    const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY || "K1DO0d7ijOFwe3znB";
+    if (!serviceId || !templateId || !publicKey) { setError(t('Lipsesc setările EmailJS.')); return; }
     setSending(true); setError(null);
     try {
       await send(serviceId, templateId, { from_name: formData.nume, reply_to: formData.email, from_email: formData.email, message: formData.mesaj, categorie: CATEGORIES[mainCat].label, subcategorie: subCat, to_email: 'alexandruaoglagioaie@gmail.com' }, publicKey);

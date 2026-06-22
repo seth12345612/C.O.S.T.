@@ -4,7 +4,7 @@ import { supabase, syncUserToDB } from "@/lib/supabase";
 import { useTranslation } from "@/context/TranslationContext";
 
 const CHECK_PREMIUM_FUNC = "https://twdvhkwrlwhadbmortqk.supabase.co/functions/v1/check-premium";
-const ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || "";
+const ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR3ZHZoa3dybHdoYWRibW9ydHFrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkyMDM4OTAsImV4cCI6MjA5NDc3OTg5MH0.mvQkXjYR3YDChjbuGmmm006QOTjw6rQz6UdAKZYG-lQ";
 
 interface AuthContextType {
   user: AuthUser | null;

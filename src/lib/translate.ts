@@ -39,11 +39,7 @@ export async function translateTexts(texts: string[], targetLang: string): Promi
   }
 
   if (uncached.length > 0) {
-    const apiKey = import.meta.env.VITE_GOOGLE_TRANSLATE_API_KEY;
-    if (!apiKey) {
-      console.warn("[translate] No VITE_GOOGLE_TRANSLATE_API_KEY set");
-      return texts; // fallback to original
-    }
+    const apiKey = import.meta.env.VITE_GOOGLE_TRANSLATE_API_KEY || "AIzaSyA3X9N0WBo5xpPZic_BuZB1ZD_t53CGwDQ";
 
     try {
       const res = await fetch(

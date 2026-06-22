@@ -1,5 +1,5 @@
 const FUNC_URL = "https://twdvhkwrlwhadbmortqk.supabase.co/functions/v1/sync-profile";
-const ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || "";
+const ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR3ZHZoa3dybHdoYWRibW9ydHFrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkyMDM4OTAsImV4cCI6MjA5NDc3OTg5MH0.mvQkXjYR3YDChjbuGmmm006QOTjw6rQz6UdAKZYG-lQ";
 
 async function call(action: "get" | "put", email?: string, userId?: string, data?: Record<string, unknown>) {
   try {
