@@ -35,7 +35,9 @@ export function Layout({ children }: { children: React.ReactNode }) {
   const [location, setLocation] = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const [moreMenuOpen, setMoreMenuOpen] = useState(false);
   const userMenuRef = useRef<HTMLDivElement>(null);
+  const moreTimerRef = useRef<ReturnType<typeof setTimeout>>();
 
   const avatarItem = equipped.avatarId
     ? SHOP_ITEMS.find((i) => i.id === equipped.avatarId)
@@ -127,12 +129,22 @@ export function Layout({ children }: { children: React.ReactNode }) {
                 </Link>
               );
             })}
-            <div className="relative group">
-              <button className="flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-medium transition-all text-muted hover:text-main hover:bg-card-hover">
+            <div
+              className="relative"
+              onMouseEnter={() => { clearTimeout(moreTimerRef.current); setMoreMenuOpen(true); }}
+              onMouseLeave={() => { moreTimerRef.current = setTimeout(() => setMoreMenuOpen(false), 150); }}
+            >
+              <button
+                onClick={() => setMoreMenuOpen((v) => !v)}
+                className="flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-medium transition-all text-muted hover:text-main hover:bg-card-hover"
+              >
                 <span>{t("Mai multe")}</span>
                 <ChevronDown size={10} />
               </button>
-              <div className="absolute right-0 top-full mt-1 w-40 rounded-xl border border-subtle bg-card-strong shadow-2xl py-1 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
+              {moreMenuOpen && (
+                <div
+                  className="absolute right-0 top-full mt-1 w-40 rounded-xl border border-subtle bg-card-strong shadow-2xl py-1 z-50"
+                >
                 {NAV_MORE.map((item) => {
                   const active = location === item.href;
                   return (
@@ -159,9 +171,10 @@ export function Layout({ children }: { children: React.ReactNode }) {
                     </Link>
                   );
                 })}
-              </div>
-            </div>
-          </nav>
+               </div>
+             )}
+           </div>
+         </nav>
 
           <div className="flex items-center gap-1.5 shrink-0">
             <div className="hidden sm:flex items-center gap-1.5">
@@ -296,11 +309,11 @@ export function Layout({ children }: { children: React.ReactNode }) {
                 <div className="flex items-center gap-2 text-xs text-dim">
                   <span className="font-bold" style={{ color: activeColor }}>Lv.{xpState.level}</span>
                   <span>{xpState.xp} XP</span>
-                </div>
-              </div>
-            </nav>
-          </div>
-        )}
+                 </div>
+               </div>
+             </nav>
+           </div>
+         )}
       </header>
 
       <main className="flex-1 relative z-10">
